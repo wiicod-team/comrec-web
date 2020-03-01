@@ -1,0 +1,92 @@
+<div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+  <div class="cell-md-4 d-flex flex-align-center">
+    <h3 class="dashboard-section-title  text-center text-left-md w-100">Factures</h3>
+  </div>
+
+  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+    <ul class="breadcrumbs bg-transparent">
+      <li class="page-item"><a href="#" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="m-3">
+  <div class="row mt-2">
+    <button class="button ml-auto mr-2 primary" (click)="openBillModal()">Encaisser</button>
+
+  </div>
+
+  <div class="row mt-2">
+    <table class="table cell-border compact table-border"
+           data-role="table"
+           data-rownum="true"
+           data-table-search-title="Recherche"
+           data-table-rows-count-title="Afficher"
+           data-pagination-prev-title="Préc"
+           data-pagination-next-title="Suiv"
+           data-table-info-title="$1 à $2 sur $3 éléments"
+           data-search-min-length="3"
+           data-search-fields="client,facture">
+      <thead>
+      <tr>
+        <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
+        <th data-sortable="true">Date</th>
+        <th data-sortable="true" data-name="client">Client</th>
+        <th data-sortable="true">Montant</th>
+        <th data-sortable="true">Avance</th>
+        <th data-sortable="true">Reste</th>
+        <th data-sortable="true">Statut</th>
+        <th>Selectionner</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let i of factures" [ngClass]="{'dark':i.check==true}">
+        <td>{{i.id}}</td>
+        <td>{{i.date}}</td>
+        <td>{{i.client}}</td>
+        <td>{{i.montant}}</td>
+        <td>{{i.avance}}</td>
+        <td>{{i.reste}}</td>
+        <td>{{i.statut}}</td>
+        <td>
+          <button class="button mini" (click)="checkFacture(i)" *ngIf="!i.check">Sélectionner</button>
+          <button class="button mini" (click)="uncheckFacture(i)" *ngIf="i.check">Désélectionner</button>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="demoDialog1">
+    <div class="dialog-title">Encaissement</div>
+    <div class="dialog-content" *ngIf="selected_bill.length>0">
+      Souhaitez-vous encaisser les factures ci-dessous ?
+      <table class="table compact">
+        <thead>
+        <tr>
+          <th>N° Facture</th>
+          <th>Date</th>
+          <th>Montant</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let i of selected_bill">
+          <td>{{i.id}}</td>
+          <td>{{i.date}}</td>
+          <td>{{i.montant}}</td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+    <div class="dialog-content"  *ngIf="selected_bill.length<=0">
+      Aucune facture selectionnée.
+    </div>
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close" (click)="validerEncaissement()" *ngIf="selected_bill.length>0">Oui</button>
+      <button class="button primary js-dialog-close" *ngIf="selected_bill.length>0">Non</button>
+      <button class="button primary js-dialog-close" *ngIf="selected_bill.length<=0">Fermer</button>
+    </div>
+  </div>
+</div>
