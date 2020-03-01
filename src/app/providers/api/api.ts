@@ -11,6 +11,10 @@ import {Restangular} from 'ngx-restangular';
 @Injectable()
 export class ApiProvider {
 
+  public Bills: any = this.restangular.service('bills');
+  public Customers: any = this.restangular.service('customers');
+  public CustomerUsers: any = this.restangular.service('customer_users');
+  public Receipts: any = this.restangular.service('receipts');
   public Users: any = this.restangular.service('users');
 
   public date_format : string = "Y-M-D";

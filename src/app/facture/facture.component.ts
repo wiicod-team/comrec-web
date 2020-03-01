@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ApiProvider} from '../providers/api/api';
 
 @Component({
   selector: 'app-facture',
@@ -11,87 +12,47 @@ export class FactureComponent implements OnInit {
   selected_bill = [];
   display = 'none';
 
-  constructor() {
-    this.factures = [
-      {
-        id: '1',
-        client: 'John DOE',
-        date: '20/01/2020',
-        montant: 350000,
-        avance: 250000,
-        reste: 100000,
-        statut: 'Echué',
-      },
-      {
-        id: '10',
-        client: 'John DOE',
-        date: '20/01/2020',
-        montant: 350000,
-        avance: 250000,
-        reste: 100000,
-        statut: 'Echué',
-      },
-      {
-        id: '100',
-        client: 'John DOE',
-        date: '20/01/2020',
-        montant: 350000,
-        avance: 250000,
-        reste: 100000,
-        statut: 'Echué',
-      },
-      {
-        id: '1000',
-        client: 'John DOE',
-        date: '20/01/2020',
-        montant: 350000,
-        avance: 250000,
-        reste: 100000,
-        statut: 'Echué',
-      },
-      {
-        id: '10000',
-        client: 'John DOE',
-        date: '20/01/2020',
-        montant: 350000,
-        avance: 250000,
-        reste: 100000,
-        statut: 'Echué',
-      },
-      {
-        id: '100000',
-        client: 'Galse DOE',
-        date: '20/01/2020',
-        montant: 350000,
-        avance: 250000,
-        reste: 100000,
-        statut: 'Echué',
-      },
-      {
-        id: '1000000',
-        client: 'John DOE',
-        date: '20/01/2020',
-        montant: 350000,
-        avance: 250000,
-        reste: 100000,
-        statut: 'Echué',
-      }
-    ];
-    this.old_facture = this.factures;
+  constructor(private api: ApiProvider) {
+
   }
 
   ngOnInit() {
+    this.getBills();
+  }
+
+  getBills() {
+    const load = Metro.activity.open({
+      type: 'metro',
+      overlayColor: '#fff',
+      overlayAlpha: 1,
+      text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
+      overlayClickClose: true
+    });
+
+    this.api.Bills.getList({_includes: 'customer,receipts', should_paginate: false, _sort: 'creation_date', _sortDir: 'desc'}).subscribe(b => {
+      this.factures = b;
+      let avance = 0;
+      b.forEach(function(v, k) {
+        v.receipts.forEach(function(vv, kk) {
+         avance += vv.amount;
+        });
+        v.avance = avance;
+      });
+      this.old_facture = this.factures;
+      console.log(this.factures);
+      Metro.activity.close(load);
+    });
   }
 
   openBillModal() {
-    let tmp = [];
+    const tmp = [];
     this.factures.forEach(function(v, k) {
       if (v.check) {
         tmp.push(v);
       }
     });
     this.selected_bill = tmp;
-    //Metro.dialog.open('#demoDialog1');
+    Metro.dialog.open('#demoDialog1');
   }
 
   validerEncaissement() {

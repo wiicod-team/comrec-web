@@ -5,7 +5,7 @@
 
   <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
     <ul class="breadcrumbs bg-transparent">
-      <li class="page-item"><a href="#" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+      <li class="page-item"><a (click)="getBills()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
     </ul>
   </div>
 </div>
@@ -15,10 +15,8 @@
     <button class="button ml-auto mr-2 primary" (click)="openBillModal()">Encaisser</button>
 
   </div>
-
-  <div class="row mt-2">
-    <table class="table cell-border compact table-border"
-           data-role="table"
+<!--
+data-role="table"
            data-rownum="true"
            data-table-search-title="Recherche"
            data-table-rows-count-title="Afficher"
@@ -26,7 +24,11 @@
            data-pagination-next-title="Suiv"
            data-table-info-title="$1 à $2 sur $3 éléments"
            data-search-min-length="3"
-           data-search-fields="client,facture">
+           data-search-fields="client,facture"
+-->
+  <div class="row mt-2">
+    <table class="table cell-border compact table-border"
+           >
       <thead>
       <tr>
         <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
@@ -42,12 +44,12 @@
       <tbody>
       <tr *ngFor="let i of factures" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
-        <td>{{i.date}}</td>
-        <td>{{i.client}}</td>
-        <td>{{i.montant}}</td>
+        <td>{{i.creation_date}}</td>
+        <td>{{i.customer.name}}</td>
+        <td>{{i.amount}}</td>
         <td>{{i.avance}}</td>
-        <td>{{i.reste}}</td>
-        <td>{{i.statut}}</td>
+        <td>{{i.amount-i.avance}}</td>
+        <td>{{i.status}}</td>
         <td>
           <button class="button mini" (click)="checkFacture(i)" *ngIf="!i.check">Sélectionner</button>
           <button class="button mini" (click)="uncheckFacture(i)" *ngIf="i.check">Désélectionner</button>
@@ -67,14 +69,18 @@
         <tr>
           <th>N° Facture</th>
           <th>Date</th>
-          <th>Montant</th>
+          <th data-sortable="true">Montant</th>
+          <th data-sortable="true">Avance</th>
+          <th data-sortable="true">Reste</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let i of selected_bill">
           <td>{{i.id}}</td>
-          <td>{{i.date}}</td>
-          <td>{{i.montant}}</td>
+          <td>{{i.creation_date}}</td>
+          <td>{{i.amount}}</td>
+          <td>{{i.avance}}</td>
+          <td>{{i.amount-i.avance}}</td>
         </tr>
 
         </tbody>

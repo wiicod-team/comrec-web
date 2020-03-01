@@ -11,6 +11,9 @@ import { FactureComponent } from './facture/facture.component';
 import {RestangularModule} from 'ngx-restangular';
 import {API_ENDPOINT} from './services/contants';
 import {ApiProvider} from './providers/api/api';
+import {FormsModule} from '@angular/forms';
+import {AuthProvider} from './providers/auth/auth';
+import { EncaissementComponent } from './encaissement/encaissement.component';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -59,15 +62,18 @@ export function RestangularConfigFactory(RestangularProvider) {
     LoginComponent,
     SidemenuComponent,
     DashboardComponent,
-    FactureComponent
+    FactureComponent,
+    EncaissementComponent
   ],
   imports: [
     BrowserModule,
     RestangularModule.forRoot(RestangularConfigFactory),
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule
   ],
   providers: [
-    ApiProvider
+    ApiProvider,
+    AuthProvider
   ],
   bootstrap: [AppComponent]
 })

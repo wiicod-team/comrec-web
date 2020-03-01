@@ -1,0 +1,41 @@
+<div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+  <div class="cell-md-4 d-flex flex-align-center">
+    <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
+  </div>
+
+  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+    <ul class="breadcrumbs bg-transparent">
+      <li class="page-item"><a (click)="getReceipts()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="m-3">
+  <div class="row mt-2">
+    <table class="table cell-border compact table-border"
+    >
+      <thead>
+      <tr>
+        <th data-sortable="true">#</th>
+        <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
+        <th data-sortable="true">Date</th>
+        <th data-sortable="true" data-name="client">Client</th>
+        <th data-sortable="true">Montant</th>
+        <th data-sortable="true">Reçu</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let i of encaissements" [ngClass]="{'dark':i.check==true}">
+        <td>{{i.id}}</td>
+        <td>{{i.bill.id}}</td>
+        <td>{{i.created_at}}</td>
+        <td>{{i.bill.customer.name}}</td>
+        <td>{{i.amount}}</td>
+        <td><a href="{{i.pdf}}" class="button mini">Télécharger</a></td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>

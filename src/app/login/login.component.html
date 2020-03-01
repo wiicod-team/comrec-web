@@ -11,19 +11,19 @@
       <h1 class="mb-0">Connexion</h1>
 
       <div class="form-group">
-        <input type="text" data-role="input" placeholder="Email" data-append="<span class='mif-envelop'>" data-validate="required">
+        <input type="text" [(ngModel)]="username" name="username" data-role="input" placeholder="Identifiant" data-append="<span class='mif-envelop'>" data-validate="required">
         <span class="invalid_feedback">Identifiant absent</span>
       </div>
       <div class="form-group">
-        <input type="password" data-role="input" placeholder="Password" data-append="<span class='mif-key'>" data-validate="required">
+        <input type="password" [(ngModel)]="password" [ngModelOptions]="{standalone: true}" data-role="input" placeholder="Password" data-append="<span class='mif-key'>" data-validate="required">
         <span class="invalid_feedback">Mot de passe absent</span>
       </div>
       <div class="form-group d-flex flex-align-center flex-justify-between">
-        <button class="button primary">Connexion</button>
+        <button class="button primary" (click)="loginUser()">Connexion</button>
       </div>
 
       <div class="form-group border-top bd-default pt-2">
-        <a href="#" class="d-block">Mot de passe oublié?</a>
+        <a href="/reset_password" class="d-block">Mot de passe oublié?</a>
       </div>
     </form>
   </div>
