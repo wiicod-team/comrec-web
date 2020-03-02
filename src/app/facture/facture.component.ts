@@ -13,12 +13,10 @@ export class FactureComponent implements OnInit {
   display = 'none';
 
   constructor(private api: ApiProvider) {
-
-  }
-
-  ngOnInit() {
     this.getBills();
   }
+
+  ngOnInit() {}
 
   getBills() {
     const load = Metro.activity.open({
@@ -70,7 +68,7 @@ export class FactureComponent implements OnInit {
 
 
   getItems(ev: any) {
-    console.log("aze");
+    console.log('aze');
     // Reset items back to all of the items
     this.factures = this.old_facture;
 
@@ -80,7 +78,7 @@ export class FactureComponent implements OnInit {
     if (val && val.trim() != '') {
       this.factures = this.factures.filter((item) => {
         return (item.id.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      })
+      });
     }
 
     // if the value is an empty string don't filter the items
