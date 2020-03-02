@@ -27,6 +27,10 @@ export class EncaissementComponent implements OnInit {
     });
 
     this.api.Receipts.getList({_includes: 'bill.customer', should_paginate: false, _sort: 'creation_date', _sortDir: 'desc'}).subscribe(b => {
+      b.forEach(function(v, k) {
+        v.name = v.bill.customer.name;
+        v.bvs_id = v.bill.id;
+      });
       this.encaissements = b;
       console.log(b);
       Metro.activity.close(load);

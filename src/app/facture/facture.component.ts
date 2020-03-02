@@ -7,6 +7,7 @@ import {ApiProvider} from '../providers/api/api';
   styleUrls: ['./facture.component.scss']
 })
 export class FactureComponent implements OnInit {
+  search;
   factures;
   old_facture = [];
   selected_bill = [];
@@ -28,14 +29,15 @@ export class FactureComponent implements OnInit {
     });
 
     this.api.Bills.getList({_includes: 'customer,receipts', should_paginate: false, _sort: 'creation_date', _sortDir: 'desc'}).subscribe(b => {
-      this.factures = b;
       let avance = 0;
       b.forEach(function(v, k) {
+        v.name = v.customer.name;
         v.receipts.forEach(function(vv, kk) {
          avance += vv.amount;
         });
         v.avance = avance;
       });
+      this.factures = b;
       this.old_facture = this.factures;
       console.log(this.factures);
       Metro.activity.close(load);

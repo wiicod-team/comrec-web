@@ -11,6 +11,9 @@
 </div>
 
 <div class="m-3">
+  <div class="cell-3">
+    <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+  </div>
   <div class="row mt-2">
     <table class="table cell-border compact table-border"
     >
@@ -25,7 +28,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of encaissements" [ngClass]="{'dark':i.check==true}">
+      <tr *ngFor="let i of encaissements |filter:{ bvs_id: search, name: search, created_at: search, amount: search }" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.bill.id}}</td>
         <td>{{i.created_at}}</td>

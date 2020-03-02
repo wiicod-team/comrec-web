@@ -28,6 +28,7 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/metro4/build/css/metro-all.min.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -124,6 +125,7 @@
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "comrecmetro"
 }

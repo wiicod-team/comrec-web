@@ -1,0 +1,47 @@
+<div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+  <div class="cell-md-4 d-flex flex-align-center">
+    <h3 class="dashboard-section-title  text-center text-left-md w-100">Utilisateurs</h3>
+  </div>
+
+  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+    <ul class="breadcrumbs bg-transparent">
+      <li class="page-item"><a (click)="getUsers()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="m-3">
+  <div class="row">
+    <div class="cell-3">
+      <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <table class="table cell-border compact table-border"
+    >
+      <thead>
+      <tr>
+        <th data-sortable="true" data-sort-dir="asc" data-name="facture">#</th>
+        <th data-sortable="true">Identifiant</th>
+        <th data-sortable="true" data-name="client">Nom</th>
+        <th data-sortable="true">Statut mot de passe</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let i of users | filter:{ id: search, username: search, name: search}" [ngClass]="{'dark':i.check==true}">
+        <td>{{i.id}}</td>
+        <td>{{i.username}}</td>
+        <td>{{i.name}}</td>
+        <td>{{i.has_reset_password}}</td>
+        <td>
+          <button class="button mini" (click)="resetPassword(i)">Reinitialiser mot de passe</button>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</div>

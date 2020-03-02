@@ -12,6 +12,9 @@
 
 <div class="m-3">
   <div class="row mt-2">
+    <div class="cell-3">
+      <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+    </div>
     <button class="button ml-auto mr-2 primary" (click)="openBillModal()">Encaisser</button>
 
   </div>
@@ -42,7 +45,7 @@ data-role="table"
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of factures" [ngClass]="{'dark':i.check==true}">
+      <tr *ngFor="let i of factures |filter:{ id: search, name: search, creation_date: search, amount: search, status: search }" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.creation_date}}</td>
         <td>{{i.customer.name}}</td>

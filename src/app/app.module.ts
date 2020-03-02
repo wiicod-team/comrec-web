@@ -18,6 +18,8 @@ import { UsersComponent } from './users/users.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { RolesComponent } from './roles/roles.component';
 import { CustomersComponent } from './customers/customers.component';
+import {NgMetro4Module} from 'ng-metro4';
+import { FilterPipe } from './pipe/filter.pipe';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -71,12 +73,14 @@ export function RestangularConfigFactory(RestangularProvider) {
     UsersComponent,
     PermissionsComponent,
     RolesComponent,
-    CustomersComponent
+    CustomersComponent,
+    FilterPipe
   ],
   imports: [
     BrowserModule,
     RestangularModule.forRoot(RestangularConfigFactory),
     AppRoutingModule,
+    NgMetro4Module,
     FormsModule
   ],
   providers: [
