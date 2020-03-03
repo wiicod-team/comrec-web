@@ -24,7 +24,7 @@ import { FilterPipe } from './pipe/filter.pipe';
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
     .setBaseUrl(API_ENDPOINT)
-    .addResponseInterceptor(function (data, operation, what, url, response, deferred) {
+    .addResponseInterceptor((data, operation, what, url, response, deferred) => {
 
       if (operation === 'getList') {
 
@@ -33,7 +33,7 @@ export function RestangularConfigFactory(RestangularProvider) {
 
           // newResponse = response.data[what]
           // newResponse.error = response.error
-          return data
+          return data;
         }
         newResponse = data.data;
         newResponse.metadata = _.omit(data, 'data');
@@ -53,7 +53,7 @@ export function RestangularConfigFactory(RestangularProvider) {
       console.log('headers',headers);
       console.log('params',params);*/
 
-      let token = localStorage.getItem('jwt_token');
+      const token = localStorage.getItem('jwt_token');
       if (token) {
         headers.Authorization = 'Bearer ' + token;
         headers['Access-Token'] = token;

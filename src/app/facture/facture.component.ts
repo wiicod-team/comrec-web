@@ -20,19 +20,19 @@ export class FactureComponent implements OnInit {
   ngOnInit() {}
 
   getBills() {
-    const load = Metro.activity.open({
+    /*const load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
       overlayAlpha: 1,
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
-    });
+    });*/
 
     this.api.Bills.getList({_includes: 'customer,receipts', should_paginate: false, _sort: 'creation_date', _sortDir: 'desc'}).subscribe(b => {
       let avance = 0;
-      b.forEach(function(v, k) {
+      b.forEach((v, k) => {
         v.name = v.customer.name;
-        v.receipts.forEach(function(vv, kk) {
+        v.receipts.forEach((vv, kk) => {
          avance += vv.amount;
         });
         v.avance = avance;
@@ -40,19 +40,19 @@ export class FactureComponent implements OnInit {
       this.factures = b;
       this.old_facture = this.factures;
       console.log(this.factures);
-      Metro.activity.close(load);
+      //Metro.activity.close(load);
     });
   }
 
   openBillModal() {
     const tmp = [];
-    this.factures.forEach(function(v, k) {
+    this.factures.forEach((v, k) => {
       if (v.check) {
         tmp.push(v);
       }
     });
     this.selected_bill = tmp;
-    Metro.dialog.open('#demoDialog1');
+    // Metro.dialog.open('#demoDialog1');
   }
 
   validerEncaissement() {
@@ -77,7 +77,7 @@ export class FactureComponent implements OnInit {
     // set val to the value of the searchbar
     const val = ev.target.value;
 
-    if (val && val.trim() != '') {
+    if (val && val.trim() !== '') {
       this.factures = this.factures.filter((item) => {
         return (item.id.toLowerCase().indexOf(val.toLowerCase()) > -1);
       });

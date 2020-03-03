@@ -17,23 +17,23 @@ export class UsersComponent implements OnInit {
   }
 
   getUsers() {
-    const load = Metro.activity.open({
+    /*const load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
       overlayAlpha: 1,
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
-    });
+    });*/
     this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles'}).subscribe(data => {
       this.users = data;
       console.log(data);
-      Metro.activity.close(load);
+     // Metro.activity.close(load);
     }, err => {
       console.log(err);
-      if (err.status == 500) {
+      if (err.status === 500) {
 
       }
-      Metro.activity.close(load);
+      //Metro.activity.close(load);
     });
   }
 

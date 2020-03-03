@@ -1,0 +1,119 @@
+<div class="row">
+  <div class="cell-6">
+    <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+      <div class="cell-md-4 d-flex flex-align-center">
+        <h3 class="dashboard-section-title  text-center text-left-md w-100">Rôles</h3>
+      </div>
+
+      <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+        <ul class="breadcrumbs bg-transparent">
+          <li class="page-item"><a (click)="getRoles()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="m-3">
+      <div class="row mt-2">
+        <div class="cell-4">
+          <input type="text" [(ngModel)]="searchR" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+        </div>
+      </div>
+
+      <table class="table cell-border compact table-border"
+      >
+        <thead>
+        <tr>
+          <th data-sortable="true">Code</th>
+          <th data-sortable="true">Nom</th>
+          <th data-sortable="true">Description</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let i of roles |filter:{ id: searchR, name: searchR, seller: searchR, status: searchR }" [ngClass]="{'dark':i.check==true}">
+          <td>{{i.name}}</td>
+          <td>{{i.display_name}}</td>
+          <td>{{i.description}}</td>
+          <td>
+            <button class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
+            <button class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="cell-6">
+    <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+      <div class="cell-md-4 d-flex flex-align-center">
+        <h3 class="dashboard-section-title  text-center text-left-md w-100">Permissions</h3>
+      </div>
+
+      <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+        <ul class="breadcrumbs bg-transparent">
+          <li class="page-item"><a (click)="getPermissions()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="m-3">
+      <div class="row mt-2">
+        <div class="cell-4">
+          <input type="text" [(ngModel)]="searchP" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+        </div>
+      </div>
+
+      <table class="table cell-border compact table-border"
+      >
+        <thead>
+        <tr>
+          <th data-sortable="true">Code</th>
+          <th data-sortable="true">Nom</th>
+          <th data-sortable="true">Description</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let i of permissions |filter:{ id: searchP, name: searchP, seller: searchP, status: searchP }" [ngClass]="{'dark':i.check==true}">
+          <td>{{i.name}}</td>
+          <td>{{i.display_name}}</td>
+          <td>{{i.description}}</td>
+          <td>
+            <button class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
+            <button class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="editDialog">
+  <div class="dialog-title">Edition</div>
+  <div class="dialog-content">
+    <form>
+      <div class="form-group">
+        <label>Code</label>
+        <input type="text" placeholder="Code" name="update.name" [(ngModel)]="update.name"/>
+      </div>
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" placeholder="Nom" name="update.display_name" [(ngModel)]="update.display_name"/>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" placeholder="Description" name="update.description" [(ngModel)]="update.description"/>
+      </div>
+    </form>
+  </div>
+
+  <div class="dialog-actions text-right">
+    <button class="button js-dialog-close" (click)="edit()">Enregistrer</button>
+    <button class="button primary js-dialog-close">Annuler</button>
+  </div>
+</div>

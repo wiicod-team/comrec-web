@@ -18,22 +18,22 @@ export class EncaissementComponent implements OnInit {
   }
 
   getReceipts() {
-    const load = Metro.activity.open({
+    /*const load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
       overlayAlpha: 1,
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
-    });
+    });*/
 
     this.api.Receipts.getList({_includes: 'bill.customer', should_paginate: false, _sort: 'creation_date', _sortDir: 'desc'}).subscribe(b => {
-      b.forEach(function(v, k) {
+      b.forEach((v, k) => {
         v.name = v.bill.customer.name;
         v.bvs_id = v.bill.id;
       });
       this.encaissements = b;
       console.log(b);
-      Metro.activity.close(load);
+      //Metro.activity.close(load);
     });
   }
 }

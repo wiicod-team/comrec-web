@@ -10,7 +10,6 @@ export class LoginComponent implements OnInit {
 
   username: string;
   password: string;
-  private Metro: any;
 
   constructor(private auth: AuthProvider) {
     this.username = '';
@@ -32,7 +31,7 @@ export class LoginComponent implements OnInit {
         console.log(rep);
 
       }).catch((err) => {
-        if (err.data.error.status_code == 401) {
+        if (err.data.error.status_code === 401) {
           // this.toast("Email ou mot de passe incorrect.", false);
         } else {
           // this.toast("Erreur " + err.data.error.status_code + " : Service temporairement indisponible, Merci de réessayer dans quelques minutes.", false);
