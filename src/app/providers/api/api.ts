@@ -14,7 +14,9 @@ export class ApiProvider {
   public Bills: any = this.restangular.service('bills');
   public Customers: any = this.restangular.service('customers');
   public CustomerUsers: any = this.restangular.service('customer_users');
+  public Permissions: any = this.restangular.service('permissions');
   public Receipts: any = this.restangular.service('receipts');
+  public Roles: any = this.restangular.service('roles');
   public Users: any = this.restangular.service('users');
 
   public date_format : string = "Y-M-D";

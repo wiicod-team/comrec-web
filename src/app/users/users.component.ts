@@ -24,11 +24,15 @@ export class UsersComponent implements OnInit {
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
     });
-    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
+    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles'}).subscribe(data => {
       this.users = data;
+      console.log(data);
       Metro.activity.close(load);
     }, err => {
       console.log(err);
+      if (err.status == 500) {
+
+      }
       Metro.activity.close(load);
     });
   }
@@ -36,7 +40,7 @@ export class UsersComponent implements OnInit {
   resetPassword(u) {
     console.log(u);
     u.has_reset_password = false;
-    u.put(u.id).subscribe(p => {
+    u.put().subscribe(p => {
       console.log(p);
     });
   }
