@@ -69,9 +69,27 @@
   <div data-role="panel" data-title-caption="Recouvrement du mois" data-collapsible="true"
        data-title-icon="<span class='mif-chart-line'></span>" class="mt-4">
     <div class="row">
+      <div class="cell-1 text-right">
+        Du
+      </div>
+      <div class="cell-2">
+        <input type="text" data-role="calendarpicker" data-locale="fr-FR">
+      </div>
+      <div class="cell-1 text-right">
+        Au
+      </div>
+      <div class="cell-2">
+        <input type="text" data-role="calendarpicker" data-locale="fr-FR">
+      </div>
+    </div>
+    <div class="row">
       <div class="cell-md-8 p-10">
-        <h5 class="text-center">Sales: 1 Jan, 2014 - 30 Jul, 2014</h5>
-        <canvas id="dashboardChart1"></canvas>
+        <h5 class="text-center">Recouvrement du mois de {{month}}</h5>
+        <canvas id="dashboardChart1"
+                baseChart
+                [datasets]="barChartData"
+                [labels]="barChartLabels"
+                [chartType]="barChartType"></canvas>
       </div>
       <div class="cell-md-4 p-10">
         <h5 class="text-center">Goal Completion</h5>

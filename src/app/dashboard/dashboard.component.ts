@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import * as moment from 'moment';
+import {ChartOptions} from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +17,13 @@ export class DashboardComponent implements OnInit {
   fin;
   best_seller;
   sum_receipt;
+  month;
   today;
+  public barChartLabels;
+  public barChartType = 'bar';
+  public barChartData = [
+    {data: [], label: 'Montant recouvré'}
+  ];
 
   constructor(private api: ApiProvider) {
     const date = new Date();
@@ -27,7 +34,7 @@ export class DashboardComponent implements OnInit {
       d = 7;
       f = -1;
     }
-    moment.lang('fr');
+    moment.locale('fr');
     this.deb = moment(new Date()).subtract(d - 1, 'days');
     this.fin = moment(new Date()).add(f + 1, 'days');
     this.init();
@@ -38,6 +45,8 @@ export class DashboardComponent implements OnInit {
 
   init() {
     this.today = moment(new Date()).format('DD MMMM YYYY');
+    this.month = moment(new Date()).format('MMMM YYYY');
+
     this.getBestSeller();
     this.getReceipts();
     this.getCustomersCount();
@@ -45,22 +54,22 @@ export class DashboardComponent implements OnInit {
   }
   getUsersCount() {
     this.api.Users.getList({should_paginate: false}).subscribe(d => {
-      console.log(d);
+      //console.log(d);
       this.users_count = d.length;
     });
   }
 
   getCustomersCount() {
     this.api.Customers.getList({should_paginate: false}).subscribe(d => {
-      console.log(d);
-      this.customers_count = d.length
+      //console.log(d);
+      this.customers_count = d.length;
     });
   }
 
   getReceipts() {
     const opt = {
-      'created_at-get': this.deb.format(this.date_format),
-      'created_at-let': this.fin.format(this.date_format),
+      'created_at-lk': this.deb.format('MM-YYYY'),
+      'created_at-let': this.fin.format('MM-YYYY'),
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
@@ -89,6 +98,8 @@ export class DashboardComponent implements OnInit {
       console.log(d);
       this.best_seller = d[0].user.username;
 
+
+
       // creation des données du chart couple (vendeur, montant)
       const vente = [];
       const vendeur = [];
@@ -96,6 +107,12 @@ export class DashboardComponent implements OnInit {
         vente.push(v.total_amount);
         vendeur.push(v.user.username);
       });
+      this.barChartData = [
+        {data: vente, label: 'Montant recouvré'}
+      ];
+      this.barChartLabels = vendeur;
     });
   }
+
+
 }
