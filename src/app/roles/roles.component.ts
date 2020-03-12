@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
+declare var Metro;
 
 @Component({
   selector: 'app-roles',
   templateUrl: './roles.component.html',
   styleUrls: ['./roles.component.scss']
 })
+
 export class RolesComponent implements OnInit {
   update;
   roles;

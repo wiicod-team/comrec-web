@@ -7,17 +7,30 @@ import {EncaissementComponent} from './encaissement/encaissement.component';
 import {UsersComponent} from './users/users.component';
 import {CustomersComponent} from './customers/customers.component';
 import {RolesComponent} from './roles/roles.component';
+import {Page404Component} from './page404/page404.component';
+import {SidemenuComponent} from './sidemenu/sidemenu.component';
 
 
 
 const routes: Routes = [
-  {path : 'dashboard', component : DashboardComponent},
+  {
+    path : 's',
+    component : SidemenuComponent,
+    children : [
+      {path : 'dashboard', component : DashboardComponent},
+      {path : 'users', component : UsersComponent},
+      {path : 'roles', component : RolesComponent},
+      {path : 'customers', component : CustomersComponent},
+      {path : 'facture', component : FactureComponent},
+      {path : 'encaissement', component : EncaissementComponent}
+    ]
+  },
   {path : 'login', component : LoginComponent},
-  {path : 'users', component : UsersComponent},
-  {path : 'roles', component : RolesComponent},
-  {path : 'customers', component : CustomersComponent},
-  {path : 'facture', component : FactureComponent},
-  {path : 'encaissement', component : EncaissementComponent}
+  { path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
+  },
+  { path: '**', component: Page404Component }
 ];
 
 @NgModule({

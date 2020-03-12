@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-users',
@@ -9,7 +10,7 @@ import {ApiProvider} from '../providers/api/api';
 export class UsersComponent implements OnInit {
   users;
   search;
-  constructor(private api: ApiProvider) {
+  constructor(private api: ApiProvider, private router: Router) {
     this.getUsers();
   }
 
@@ -32,6 +33,10 @@ export class UsersComponent implements OnInit {
       console.log(err);
       if (err.status === 500) {
 
+      } else if (err.status === 401) {
+        // utilisateur non logué, redirection vers la page de login
+        //Metro.notify.create('Votre session à expirée', 'Info', {});
+        this.router.navigate(['/login']);
       }
       //Metro.activity.close(load);
     });

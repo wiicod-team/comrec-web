@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthProvider} from '../providers/auth/auth';
+import {ActivatedRoute, Router} from '@angular/router';
 
+declare var Metro;
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,7 +13,7 @@ export class LoginComponent implements OnInit {
   username: string;
   password: string;
 
-  constructor(private auth: AuthProvider) {
+  constructor(private auth: AuthProvider, private route: ActivatedRoute, private router: Router) {
     this.username = '';
     this.password = '';
   }
@@ -29,12 +31,14 @@ export class LoginComponent implements OnInit {
     } else {
       this.auth.login({username: this.username, password: this.password}).then(rep => {
         console.log(rep);
+        // redirection vers side-menu
+        this.router.navigate(['/s/dashboard']);
 
       }).catch((err) => {
         if (err.data.error.status_code === 401) {
-          // this.toast("Email ou mot de passe incorrect.", false);
+          Metro.notify.create('Email ou mot de passe incorrect', 'Echec de connexion', {cls: 'alert'});
         } else {
-          // this.toast("Erreur " + err.data.error.status_code + " : Service temporairement indisponible, Merci de réessayer dans quelques minutes.", false);
+          Metro.notify.create('Erreur ' + err.data.error.status_code + ' : Service temporairement indisponible, Merci de réessayer dans quelques minutes.', 'Echec de connexion', {cls: 'alert'});
         }
       });
     }
