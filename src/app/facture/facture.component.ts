@@ -12,8 +12,13 @@ export class FactureComponent implements OnInit {
   old_facture = [];
   selected_bill = [];
   display = 'none';
-
+  user;
+  facture = {};
+  commentaire;
+  montant_avance;
   constructor(private api: ApiProvider) {
+    this.api.checkUser();
+    this.user = JSON.parse(localStorage.getItem('user'));
     this.getBills();
   }
 
@@ -28,9 +33,21 @@ export class FactureComponent implements OnInit {
       overlayClickClose: true
     });*/
 
-    this.api.Bills.getList({_includes: 'customer,receipts', should_paginate: false, _sort: 'creation_date', _sortDir: 'desc'}).subscribe(b => {
+    const opt = {
+      _includes: 'customer,receipts',
+      should_paginate: false,
+      'status-in': 'pending,new',
+      _sort: 'creation_date',
+      _sortDir: 'desc'
+    };
+    this.api.Bills.getList(opt).subscribe(b => {
       let avance = 0;
       b.forEach((v, k) => {
+        if (v.status === 'pending') {
+          v.statut = 'Echue';
+        } else if (v.status === 'new') {
+          v.statut = 'Non echue';
+        }
         v.name = v.customer.name;
         v.receipts.forEach((vv, kk) => {
          avance += vv.amount;
@@ -39,7 +56,7 @@ export class FactureComponent implements OnInit {
       });
       this.factures = b;
       this.old_facture = this.factures;
-      console.log(this.factures);
+      //console.log(this.factures);
       //Metro.activity.close(load);
     });
   }
@@ -52,7 +69,7 @@ export class FactureComponent implements OnInit {
       }
     });
     this.selected_bill = tmp;
-    // Metro.dialog.open('#demoDialog1');
+    Metro.dialog.open('#demoDialog1');
   }
 
   validerEncaissement() {
@@ -68,22 +85,33 @@ export class FactureComponent implements OnInit {
     f.check = false;
   }
 
-
-  getItems(ev: any) {
-    console.log('aze');
-    // Reset items back to all of the items
-    this.factures = this.old_facture;
-
-    // set val to the value of the searchbar
-    const val = ev.target.value;
-
-    if (val && val.trim() !== '') {
-      this.factures = this.factures.filter((item) => {
-        return (item.id.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      });
+  avancer() {
+    const f = [];
+    this.factures.forEach((v, k) => {
+      if (v.check) {
+        f.push(v);
+      }
+    });
+    if (f.length >= 1 && f.length < 2) {
+      // ok
+      Metro.dialog.open('#avanceDialog1');
+      this.facture = f[0];
+      console.log(f);
+    } else if (f.length === 0) {
+      // pas de factures selectionnées
+      Metro.notify.create('Pas de facture selectionnée', 'Absence de facture', {cls: 'warning'});
+    } else {
+      // plus d'une facture selectionnée
+      Metro.notify.create('Vous ne pouvez faire d\'avance sur plus d\'une facture', 'Trop de facture', {cls: 'warning'});
     }
+  }
 
-    // if the value is an empty string don't filter the items
-
+  validerAvance() {
+    console.log(this.montant_avance, this.commentaire);
+    this.api.Receipts.post({amount: this.montant_avance, note: this.commentaire, bill_id: this.facture.id, user_id: this.user.id}).subscribe(d => {
+      console.log(d);
+    }, q => {
+      console.log(q);
+    });
   }
 }

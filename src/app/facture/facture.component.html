@@ -15,7 +15,8 @@
     <div class="cell-3">
       <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
     </div>
-    <button class="button ml-auto mr-2 primary" (click)="openBillModal()">Encaisser</button>
+    <button class="button ml-auto mr-2 primary" (click)="avancer()">Avancer</button>
+    <button class="button mr-2 primary" (click)="openBillModal()">Encaisser</button>
 
   </div>
 <!--
@@ -52,7 +53,7 @@ data-role="table"
         <td>{{i.amount}}</td>
         <td>{{i.avance}}</td>
         <td>{{i.amount-i.avance}}</td>
-        <td>{{i.status}}</td>
+        <td>{{i.statut}}</td>
         <td>
           <button class="button mini" (click)="checkFacture(i)" *ngIf="!i.check">Sélectionner</button>
           <button class="button mini" (click)="uncheckFacture(i)" *ngIf="i.check">Désélectionner</button>
@@ -96,6 +97,27 @@ data-role="table"
       <button class="button js-dialog-close" (click)="validerEncaissement()" *ngIf="selected_bill.length>0">Oui</button>
       <button class="button primary js-dialog-close" *ngIf="selected_bill.length>0">Non</button>
       <button class="button primary js-dialog-close" *ngIf="selected_bill.length<=0">Fermer</button>
+    </div>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="avanceDialog1">
+    <div class="dialog-title">Avance de paiement</div>
+    <div class="dialog-content" >
+      Combien souhaitez-vous avancer ?
+      <div class="form-group">
+        <label>Montant</label>
+        <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}" placeholder="Montant de l'avance"/>
+        <small class="text-muted">Reste à payer : {{facture.amount-facture.avance}} FCFA</small>
+      </div>
+      <div class="form-group">
+        <label>Commentaire</label>
+        <input type="text" [(ngModel)]="commentaire" placeholder="Commentaire"/>
+      </div>
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close" (click)="validerAvance()">Valider</button>
+      <button class="button primary js-dialog-close">Fermer</button>
     </div>
   </div>
 </div>

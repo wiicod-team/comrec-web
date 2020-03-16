@@ -1,13 +1,13 @@
 <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
-  <div class="cell-md-4 d-flex flex-align-center">
-    <h3 class="dashboard-section-title  text-center text-left-md w-100">Dashboard <small>du {{today}}</small></h3>
+  <div class="cell-md-6 d-flex flex-align-center">
+    <h3 class="dashboard-section-title  text-center text-left-md w-100">Dashboard <small>{{today}}</small></h3>
   </div>
 
-  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+  <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
 
     <div class="buttongroup">
-      <button class="button link"> <a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
-      <button class="button link"> <a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
+      <button class="button"><a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
+      <button class="button"><a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
     </div>
   </div>
 </div>
@@ -71,22 +71,8 @@
   <div data-role="panel" data-title-caption="Recouvrement du mois" data-collapsible="true"
        data-title-icon="<span class='mif-chart-line'></span>" class="mt-4">
     <div class="row">
-      <div class="cell-1 text-right">
-        Du
-      </div>
-      <div class="cell-2">
-        <input type="text" data-role="calendarpicker" data-locale="fr-FR">
-      </div>
-      <div class="cell-1 text-right">
-        Au
-      </div>
-      <div class="cell-2">
-        <input type="text" data-role="calendarpicker" data-locale="fr-FR">
-      </div>
-    </div>
-    <div class="row">
       <div class="cell-md-8 p-10">
-        <h5 class="text-center">Recouvrement du mois de {{month}}</h5>
+        <h5 class="text-center">Recouvrement {{today}}</h5>
         <canvas id="dashboardChart1"
                 baseChart
                 [datasets]="barChartData"
@@ -94,22 +80,35 @@
                 [chartType]="barChartType"></canvas>
       </div>
       <div class="cell-md-4 p-10">
-        <h5 class="text-center">Goal Completion</h5>
-        <div class="mt-6">
+        <h5 class="text-center">Details du recouvrement</h5>
+        <div class="mt-6" *ngFor="let item of sellers">
           <div class="clear">
-            <div class="place-left">Janvier 2020</div>
-            <div class="place-right"><strong>10 023 000 </strong>FCFA</div>
-          </div>
-        </div>
-        <div class="mt-6">
-          <div class="clear">
-            <div class="place-left">Decembre 2019</div>
-            <div class="place-right"><strong>43 231 000 </strong>FCFA</div>
+            <div class="place-left">{{item.user.name}}</div>
+            <div class="place-right"><strong>{{item.total_amount}}</strong> FCFA</div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
+<div class="dialog" data-role="dialog" id="periodDialog">
+  <div class="dialog-title">Période</div>
+  <div class="dialog-content">
+    <div class="row">
+      <div class="cell-6">
+        <div class="label">Du</div>
+        <input data-role="datepicker" id="from" data-distance="1" data-locale="fr-FR" data-min-year="2020" data-max-year="2030">
+      </div>
+      <div class="cell-6">
+        <div class="label">Au</div>
+        <input data-role="datepicker" id="to" data-distance="1" data-locale="fr-FR" data-min-year="2020" data-max-year="2030">
+      </div>
+    </div>
   </div>
 
+  <div class="dialog-actions text-right">
+    <button class="button js-dialog-close" (click)="validate()">Valider</button>
+    <button class="button primary js-dialog-close">Fermer</button>
+  </div>
 </div>

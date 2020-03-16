@@ -3,6 +3,7 @@ import {ApiProvider} from '../providers/api/api';
 import * as moment from 'moment';
 import {ChartOptions} from 'chart.js';
 
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -17,8 +18,10 @@ export class DashboardComponent implements OnInit {
   fin;
   best_seller;
   sum_receipt;
-  month;
+  sellers;
   today;
+  from;
+  to;
   public barChartLabels;
   public barChartType = 'bar';
   public barChartData = [
@@ -26,6 +29,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   constructor(private api: ApiProvider) {
+
     const date = new Date();
     const j = date.getDay();
     let d = j % 7;
@@ -35,18 +39,16 @@ export class DashboardComponent implements OnInit {
       f = -1;
     }
     moment.locale('fr');
-    this.deb = moment(new Date()).subtract(d - 1, 'days');
-    this.fin = moment(new Date()).add(f + 1, 'days');
-    this.init();
+
+    this.init(new Date(), new Date());
   }
 
   ngOnInit() {
   }
 
-  init() {
-    this.today = moment(new Date()).format('DD MMMM YYYY');
-    this.month = moment(new Date()).format('MMMM YYYY');
-
+  init(deb, fin) {
+    this.deb = moment(deb);
+    this.fin = moment(fin);
     this.getBestSeller();
     this.getReceipts();
     this.getCustomersCount();
@@ -54,14 +56,14 @@ export class DashboardComponent implements OnInit {
   }
   getUsersCount() {
     this.api.Users.getList({should_paginate: false}).subscribe(d => {
-      //console.log(d);
+      // console.log(d);
       this.users_count = d.length;
     });
   }
 
   getCustomersCount() {
     this.api.Customers.getList({should_paginate: false}).subscribe(d => {
-      //console.log(d);
+      // console.log(d);
       this.customers_count = d.length;
     });
   }
@@ -73,7 +75,7 @@ export class DashboardComponent implements OnInit {
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
-      console.log(d);
+      //console.log(d);
       this.sum_receipt = this.api.formarPrice( _.reduce(d, (memo, num) => {
         return memo + num.amount;
       }, 0));
@@ -96,6 +98,7 @@ export class DashboardComponent implements OnInit {
     console.log(opt);
     this.api.Receipts.getList(opt).subscribe(d => {
       console.log(d);
+      this.sellers = d;
       if (d.length > 0) {
         this.best_seller = d[0].user.username;
         // creation des données du chart couple (vendeur, montant)
@@ -103,7 +106,7 @@ export class DashboardComponent implements OnInit {
         const vendeur = [];
         d.forEach((v, k) => {
           vente.push(v.total_amount);
-          vendeur.push(v.user.username);
+          vendeur.push(v.user.name);
         });
         this.barChartData = [
           {data: vente, label: 'Montant recouvré'}
@@ -113,5 +116,16 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  period() {
+    Metro.dialog.open('#periodDialog');
+  }
 
+  validate() {
+    console.log(document.getElementById('from').value);
+    this.from = document.getElementById('from').value;
+    this.to = document.getElementById('to').value;
+    this.today = 'du ' + this.from + ' au ' + this.to;
+    console.log(this.today);
+    this.init(this.from, this.to);
+  }
 }

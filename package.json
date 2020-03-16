@@ -24,6 +24,7 @@
     "moment": "^2.24.0",
     "ng-metro4": "^2.0.0",
     "ng2-charts": "^2.3.0",
+    "ngx-permissions": "^7.0.3",
     "ngx-restangular": "^5.0.0",
     "rxjs": "~6.4.0",
     "storage": "^0.2.0",

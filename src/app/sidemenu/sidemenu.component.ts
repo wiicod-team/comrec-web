@@ -10,9 +10,10 @@ import {ApiProvider} from '../providers/api/api';
 export class SidemenuComponent implements OnInit {
   user;
   constructor(private router: Router, private api: ApiProvider) {
+    const perm = ['ADMIN', 'EDITOR'];
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
-    // console.log(this.user);
+    console.log(this.user);
   }
 
   ngOnInit() {
