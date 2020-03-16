@@ -4,9 +4,11 @@
   </div>
 
   <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-    <ul class="breadcrumbs bg-transparent">
-      <li class="page-item"><a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
-    </ul>
+
+    <div class="buttongroup">
+      <button class="button link"> <a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
+      <button class="button link"> <a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
+    </div>
   </div>
 </div>
 

@@ -68,8 +68,8 @@ export class DashboardComponent implements OnInit {
 
   getReceipts() {
     const opt = {
-      'created_at-lk': this.deb.format('MM-YYYY'),
-      'created_at-let': this.fin.format('MM-YYYY'),
+      'created_at-get': this.deb.format(this.date_format),
+      'created_at-let': this.fin.format(this.date_format),
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
@@ -96,21 +96,20 @@ export class DashboardComponent implements OnInit {
     console.log(opt);
     this.api.Receipts.getList(opt).subscribe(d => {
       console.log(d);
-      this.best_seller = d[0].user.username;
-
-
-
-      // creation des données du chart couple (vendeur, montant)
-      const vente = [];
-      const vendeur = [];
-      d.forEach((v, k) => {
-        vente.push(v.total_amount);
-        vendeur.push(v.user.username);
-      });
-      this.barChartData = [
-        {data: vente, label: 'Montant recouvré'}
-      ];
-      this.barChartLabels = vendeur;
+      if (d.length > 0) {
+        this.best_seller = d[0].user.username;
+        // creation des données du chart couple (vendeur, montant)
+        const vente = [];
+        const vendeur = [];
+        d.forEach((v, k) => {
+          vente.push(v.total_amount);
+          vendeur.push(v.user.username);
+        });
+        this.barChartData = [
+          {data: vente, label: 'Montant recouvré'}
+        ];
+        this.barChartLabels = vendeur;
+      }
     });
   }
 

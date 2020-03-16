@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Restangular} from 'ngx-restangular';
+import {Router} from '@angular/router';
 
 /*
   Generated class for the ApiProvider provider.
@@ -24,7 +25,7 @@ export class ApiProvider {
   public autoplay_val = 5000;
   public slide_speed = 700;
 
-  constructor(public restangular: Restangular) {
+  constructor(public restangular: Restangular, private router: Router) {
     restangular.withConfig((RestangularConfigurer) => {});
   }
 
@@ -42,6 +43,15 @@ export class ApiProvider {
         p += tab[tab.length - i];
       }
       return p;
+    }
+  }
+
+  checkUser() {
+    if (JSON.parse(localStorage.getItem('user')) == null) {
+      Metro.notify.create('Vous n\'êtes pas connecté', 'Erreur de connexion', {cls: 'alert'});
+      this.router.navigate(['/login']);
+    } else {
+      // rien
     }
   }
 }

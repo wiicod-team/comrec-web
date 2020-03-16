@@ -31,7 +31,7 @@ export class AuthProvider {
           console.log(response);
           const data = response.body.data;
           localStorage.setItem(this.token_key, data.token);
-          localStorage.setItem('user', data.user);
+          localStorage.setItem('user', JSON.stringify(data.user));
           // this.save_token(data.user);
           /*angular.forEach(data.userRole, function (value) {
             AclService.attachRole(value)
