@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import * as moment from 'moment';
-import {ChartOptions} from 'chart.js';
 
+declare var Metro;
 
 @Component({
   selector: 'app-dashboard',
@@ -121,7 +121,7 @@ export class DashboardComponent implements OnInit {
   }
 
   validate() {
-    console.log(document.getElementById('from').value);
+    //console.log(document.getElementById('from').value);
     this.from = document.getElementById('from').value;
     this.to = document.getElementById('to').value;
     this.today = 'du ' + this.from + ' au ' + this.to;

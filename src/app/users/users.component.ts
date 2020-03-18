@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import {Router} from '@angular/router';
-
+declare var Metro;
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',

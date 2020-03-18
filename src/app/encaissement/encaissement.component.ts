@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-
+declare var Metro;
 @Component({
   selector: 'app-encaissement',
   templateUrl: './encaissement.component.html',
@@ -18,13 +18,13 @@ export class EncaissementComponent implements OnInit {
   }
 
   getReceipts() {
-    /*const load = Metro.activity.open({
+    const load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
       overlayAlpha: 1,
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
-    });*/
+    });
 
     this.api.Receipts.getList({_includes: 'bill.customer', should_paginate: false, _sort: 'creation_date', _sortDir: 'desc'}).subscribe(b => {
       b.forEach((v, k) => {
@@ -33,7 +33,7 @@ export class EncaissementComponent implements OnInit {
       });
       this.encaissements = b;
       console.log(b);
-      //Metro.activity.close(load);
+      Metro.activity.close(load);
     });
   }
 }

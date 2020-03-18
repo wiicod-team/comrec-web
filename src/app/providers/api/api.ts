@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Restangular} from 'ngx-restangular';
 import {Router} from '@angular/router';
-
+declare var Metro;
 /*
   Generated class for the ApiProvider provider.
 

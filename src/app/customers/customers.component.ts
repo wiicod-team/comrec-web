@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-
+declare var Metro;
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
@@ -44,7 +44,7 @@ export class CustomersComponent implements OnInit {
     }, err => {
       if (err.status === 401) {
         // token expiré
-        //Metro.notify.create('Votre session a expiré', 'Veuillez-vous reconnecter', {cls: 'alert'});
+        Metro.notify.create('Votre session a expiré', 'Veuillez-vous reconnecter', {cls: 'alert'});
       }
     });
   }

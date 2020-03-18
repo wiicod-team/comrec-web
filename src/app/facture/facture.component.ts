@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-
+declare var Metro;
 @Component({
   selector: 'app-facture',
   templateUrl: './facture.component.html',
@@ -13,7 +13,7 @@ export class FactureComponent implements OnInit {
   selected_bill = [];
   display = 'none';
   user;
-  facture = {};
+  facture = {id: 0};
   commentaire;
   montant_avance;
   constructor(private api: ApiProvider) {
@@ -25,13 +25,13 @@ export class FactureComponent implements OnInit {
   ngOnInit() {}
 
   getBills() {
-    /*const load = Metro.activity.open({
+    const load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
       overlayAlpha: 1,
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
-    });*/
+    });
 
     const opt = {
       _includes: 'customer,receipts',
@@ -41,8 +41,8 @@ export class FactureComponent implements OnInit {
       _sortDir: 'desc'
     };
     this.api.Bills.getList(opt).subscribe(b => {
-      let avance = 0;
       b.forEach((v, k) => {
+        let avance = 0;
         if (v.status === 'pending') {
           v.statut = 'Echue';
         } else if (v.status === 'new') {
@@ -57,7 +57,7 @@ export class FactureComponent implements OnInit {
       this.factures = b;
       this.old_facture = this.factures;
       //console.log(this.factures);
-      //Metro.activity.close(load);
+      Metro.activity.close(load);
     });
   }
 
@@ -75,6 +75,14 @@ export class FactureComponent implements OnInit {
   validerEncaissement() {
     console.log('Validation de l\'encaissement');
     // actualisation
+    this.selected_bill.forEach(f => {
+      f.status = 'paid';
+      f.put().subscribe(d => {
+        this.api.Receipts.post({bill_id: f.id, amount: f.amount, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
+          console.log('ok', f.id);
+        });
+      });
+    });
   }
 
   checkFacture(f) {
@@ -107,9 +115,30 @@ export class FactureComponent implements OnInit {
   }
 
   validerAvance() {
-    console.log(this.montant_avance, this.commentaire);
-    this.api.Receipts.post({amount: this.montant_avance, note: this.commentaire, bill_id: this.facture.id, user_id: this.user.id}).subscribe(d => {
+    const opt = {
+      amount: this.montant_avance,
+      note: this.commentaire,
+      bill_id: this.facture.id,
+      user_id: this.user.id
+    };
+
+    this.api.Receipts.post(opt).subscribe(d => {
       console.log(d);
+      if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
+        Metro.notify.create('Encaissement validé', 'Succès', {cls: 'success', timeout: 3000});
+        // modification du statut de la facture
+        this.api.Bills.get(this.facture.id).subscribe(data => {
+          data.status = 'paid';
+          data.id = data.body.id;
+          data.put().subscribe(datap => {
+            console.log('ok');
+          }, q => {
+            console.log(q);
+          });
+        }, q => {
+          console.log(q);
+        });
+      }
     }, q => {
       console.log(q);
     });
