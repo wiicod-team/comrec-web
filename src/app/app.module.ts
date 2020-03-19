@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import { NgModule} from '@angular/core';
 
 import * as _ from 'lodash';
 import { AppRoutingModule } from './app-routing.module';
@@ -15,7 +15,6 @@ import {FormsModule} from '@angular/forms';
 import {AuthProvider} from './providers/auth/auth';
 import { EncaissementComponent } from './encaissement/encaissement.component';
 import { UsersComponent } from './users/users.component';
-// import { PermissionsComponent } from './permissions/permissions.component';
 import { RolesComponent } from './roles/roles.component';
 import { CustomersComponent } from './customers/customers.component';
 import {NgMetro4Module} from 'ng-metro4';
@@ -77,7 +76,6 @@ export function RestangularConfigFactory(RestangularProvider) {
     FactureComponent,
     EncaissementComponent,
     UsersComponent,
-    // PermissionsComponent,
     RolesComponent,
     CustomersComponent,
     FilterPipe,

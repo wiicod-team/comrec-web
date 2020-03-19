@@ -24,17 +24,17 @@
         <th data-sortable="true">Date</th>
         <th data-sortable="true" data-name="client">Client</th>
         <th data-sortable="true">Montant</th>
-        <th data-sortable="true">Reçu</th>
+        <th data-sortable="true">Vendeur</th>
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of encaissements |filter:{ bvs_id: search, name: search, created_at: search, amount: search }" [ngClass]="{'dark':i.check==true}">
+      <tr *ngFor="let i of encaissements |filter:{ bvs_id: search, name: search, created_at: search, amount: search, vendeur: search }" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.bill.id}}</td>
         <td>{{i.created_at}}</td>
         <td>{{i.bill.customer.name}}</td>
         <td>{{i.amount}}</td>
-        <td><a href="{{i.pdf}}" class="button mini">Télécharger</a></td>
+        <td>{{i.vendeur}}</td>
       </tr>
 
       </tbody>
