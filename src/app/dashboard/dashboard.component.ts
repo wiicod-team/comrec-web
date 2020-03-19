@@ -122,8 +122,8 @@ export class DashboardComponent implements OnInit {
 
   validate() {
     // console.log(document.getElementById('from').value);
-    this.from = document.getElementById('from').value;
-    this.to = document.getElementById('to').value;
+    this.from = (document.getElementById('from') as HTMLInputElement).value;
+    this.to = (document.getElementById('to') as HTMLInputElement).value;
     this.today = 'du ' + this.from + ' au ' + this.to;
     console.log(this.today);
     this.init(this.from, this.to);

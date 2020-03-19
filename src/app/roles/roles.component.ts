@@ -12,6 +12,8 @@ export class RolesComponent implements OnInit {
   update;
   roles;
   permissions;
+  searchR: any;
+  searchP: any;
   constructor(private api: ApiProvider) {
     this.refresh();
     this.update = {

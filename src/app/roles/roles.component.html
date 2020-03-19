@@ -30,7 +30,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of roles |filter:{ id: searchR, name: searchR, seller: searchR, status: searchR }" [ngClass]="{'dark':i.check==true}">
+        <tr *ngFor="let i of roles | filter:{ id: searchR, name: searchR, seller: searchR, status: searchR }" [ngClass]="{'dark':i.check==true}">
           <td>{{i.name}}</td>
           <td>{{i.display_name}}</td>
           <td>{{i.description}}</td>
@@ -77,7 +77,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of permissions |filter:{ id: searchP, name: searchP, seller: searchP, status: searchP }" [ngClass]="{'dark':i.check==true}">
+        <tr *ngFor="let i of permissions | filter:{ id: searchP, name: searchP, seller: searchP, status: searchP }"
+            [ngClass]="{'dark':i.check==true}">
           <td>{{i.name}}</td>
           <td>{{i.display_name}}</td>
           <td>{{i.description}}</td>
