@@ -13,7 +13,7 @@ export class FactureComponent implements OnInit {
   selected_bill = [];
   display = 'none';
   user;
-  facture = {id: 0};
+  facture: {id: number, avance?: number, amount?: number} = {id: 0};
   commentaire;
   montant_avance;
   constructor(private api: ApiProvider) {

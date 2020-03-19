@@ -29,25 +29,28 @@
           </a>
         </li>
 
-        <li class="item-header">Administration</li>
-        <li>
-          <a routerLink="/s/users">
-            <span class="icon"><span class="mif-user"></span></span>
-            <span class="caption">Utilisateurs</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/s/customers">
-            <span class="icon"><span class="mif-users"></span></span>
-            <span class="caption">Clients</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="/s/roles">
-            <span class="icon"><span class="mif-lock"></span></span>
-            <span class="caption">Rôles et permissions</span>
-          </a>
-        </li>
+        <div *ngxPermissionsOnly="['manage.authorization']">
+          <li class="item-header">Administration</li>
+
+          <li>
+            <a routerLink="/admin/users">
+              <span class="icon"><span class="mif-user"></span></span>
+              <span class="caption">Utilisateurs</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/admin/customers">
+              <span class="icon"><span class="mif-users"></span></span>
+              <span class="caption">Clients</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/admin/roles">
+              <span class="icon"><span class="mif-lock"></span></span>
+              <span class="caption">Rôles et permissions</span>
+            </a>
+          </li>
+        </div>
         <li>
           <a routerLink="/login">
             <span class="icon"><span class="mif-lock"></span></span>

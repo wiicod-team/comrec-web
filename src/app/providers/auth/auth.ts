@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiProvider} from '../api/api';
 import * as _ from 'lodash';
+import {NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
 
 /*
   Generated class for the AuthProvider provider.
@@ -14,7 +15,7 @@ export class AuthProvider {
   public token: string;
   public token_key = 'jwt_token';
 
-  constructor(public api: ApiProvider) {
+  constructor(public api: ApiProvider, private permissionsService: NgxPermissionsService, private rolesService: NgxRolesService) {
     console.log('Hello AuthProvider Provider');
     this.token = localStorage.getItem(this.token_key);
   }
@@ -25,13 +26,13 @@ export class AuthProvider {
   }
 
   login(credentials: {username: string, password: string}) {
+    this.permissionsService.flushPermissions();
     return new Promise((resolve, reject) => {
       this.api.restangular.all('auth/signin').post(credentials)
         .subscribe( (response) => {
           console.log(response);
           const data = response.body.data;
-          localStorage.setItem(this.token_key, data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          this.storeSession(response.body.data)
           // this.save_token(data.user);
           /*angular.forEach(data.userRole, function (value) {
             AclService.attachRole(value)
@@ -138,9 +139,21 @@ export class AuthProvider {
       } else {
         reject('not logged');
       }
-      // AclService.flushRoles();
-      // AclService.setAbilities({});
     });
   }
 
+  loadPermissions() {
+    this.api.me.get().subscribe((data) => {
+      this.storeSession(data.body.data);
+    });
+
+  }
+  private storeSession(data: any) {
+    localStorage.setItem(this.token_key, data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    _.forEach(data.roles, (value) => {
+      this.permissionsService.addPermission(value);
+    });
+    this.rolesService.addRoles(data.roles);
+  }
 }

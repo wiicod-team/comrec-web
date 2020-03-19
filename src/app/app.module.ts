@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 
 import * as _ from 'lodash';
 import { AppRoutingModule } from './app-routing.module';
@@ -15,13 +15,15 @@ import {FormsModule} from '@angular/forms';
 import {AuthProvider} from './providers/auth/auth';
 import { EncaissementComponent } from './encaissement/encaissement.component';
 import { UsersComponent } from './users/users.component';
-import { PermissionsComponent } from './permissions/permissions.component';
+// import { PermissionsComponent } from './permissions/permissions.component';
 import { RolesComponent } from './roles/roles.component';
 import { CustomersComponent } from './customers/customers.component';
 import {NgMetro4Module} from 'ng-metro4';
 import { FilterPipe } from './pipe/filter.pipe';
 import { Page404Component } from './page404/page404.component';
 import {ChartsModule} from 'ng2-charts';
+import {NgxPermissionsModule, NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
+import { Page403Component } from './page403/page403.component';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -64,6 +66,8 @@ export function RestangularConfigFactory(RestangularProvider) {
   ;
 }
 
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -73,24 +77,31 @@ export function RestangularConfigFactory(RestangularProvider) {
     FactureComponent,
     EncaissementComponent,
     UsersComponent,
-    PermissionsComponent,
+    // PermissionsComponent,
     RolesComponent,
     CustomersComponent,
     FilterPipe,
-    Page404Component
+    Page404Component,
+    Page403Component
   ],
   imports: [
     BrowserModule,
     RestangularModule.forRoot(RestangularConfigFactory),
+    NgxPermissionsModule.forRoot(),
     AppRoutingModule,
     NgMetro4Module,
     ChartsModule,
     FormsModule
   ],
+
   providers: [
     ApiProvider,
-    AuthProvider
+    AuthProvider,
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(public auth: AuthProvider) {
+    this.auth.loadPermissions();
+  }
+}

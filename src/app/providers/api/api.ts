@@ -19,6 +19,7 @@ export class ApiProvider {
   public Receipts: any = this.restangular.service('receipts');
   public Roles: any = this.restangular.service('roles');
   public Users: any = this.restangular.service('users');
+  public me: any = this.restangular.one('auth/me');
 
   public date_format : string = "Y-M-D";
 

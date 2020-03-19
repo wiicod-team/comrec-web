@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import * as moment from 'moment';
-
+import * as _ from 'lodash';
 declare var Metro;
 
 @Component({
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
-      //console.log(d);
+      // console.log(d);
       this.sum_receipt = this.api.formarPrice( _.reduce(d, (memo, num) => {
         return memo + num.amount;
       }, 0));
@@ -121,7 +121,7 @@ export class DashboardComponent implements OnInit {
   }
 
   validate() {
-    //console.log(document.getElementById('from').value);
+    // console.log(document.getElementById('from').value);
     this.from = document.getElementById('from').value;
     this.to = document.getElementById('to').value;
     this.today = 'du ' + this.from + ' au ' + this.to;
