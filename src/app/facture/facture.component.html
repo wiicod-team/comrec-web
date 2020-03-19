@@ -15,6 +15,9 @@
     <div class="cell-3">
       <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
     </div>
+    <div class="cell-2" *ngIf="state">
+      <div data-role="activity" data-type="metro" data-style="dark"></div>
+    </div>
     <button class="button ml-auto mr-2 primary" (click)="avancer()">Avancer</button>
     <button class="button mr-2 primary" (click)="openBillModal()">Encaisser</button>
 

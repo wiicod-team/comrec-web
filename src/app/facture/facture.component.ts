@@ -13,6 +13,7 @@ export class FactureComponent implements OnInit {
   selected_bill = [];
   display = 'none';
   user;
+  state = false;
   facture = {id: 0};
   commentaire;
   montant_avance;
@@ -73,15 +74,24 @@ export class FactureComponent implements OnInit {
   }
 
   validerEncaissement() {
+    this.state = true;
     console.log('Validation de l\'encaissement');
     // actualisation
+    let i = 0;
     this.selected_bill.forEach(f => {
       f.status = 'paid';
       f.put().subscribe(d => {
         this.api.Receipts.post({bill_id: f.id, amount: f.amount, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
           console.log('ok', f.id);
+          i++;
+          Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'success', timeout: 3000});
         });
       });
+      if (i === this.selected_bill.length) {
+        // arret du loading
+        this.getBills();
+        this.state = false;
+      }
     });
   }
 
@@ -115,6 +125,7 @@ export class FactureComponent implements OnInit {
   }
 
   validerAvance() {
+    this.state = true;
     const opt = {
       amount: this.montant_avance,
       note: this.commentaire,
@@ -132,6 +143,8 @@ export class FactureComponent implements OnInit {
           data.id = data.body.id;
           data.put().subscribe(datap => {
             console.log('ok');
+            this.state = false;
+            this.getBills()
           }, q => {
             console.log(q);
           });
