@@ -18,8 +18,8 @@
     <div class="cell-2" *ngIf="state">
       <div data-role="activity" data-type="metro" data-style="dark"></div>
     </div>
-    <button class="button ml-auto mr-2 primary" (click)="avancer()">Avancer</button>
-    <button class="button mr-2 primary" (click)="openBillModal()">Encaisser</button>
+    <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2 primary" (click)="avancer()">Avancer</button>
+    <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 primary" (click)="openBillModal()">Encaisser</button>
 
   </div>
 <!--

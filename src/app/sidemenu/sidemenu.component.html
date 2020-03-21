@@ -10,53 +10,47 @@
 
       <ul class="navview-menu mt-4" id="side-menu">
         <li class="item-header">MENU</li>
-        <li>
+        <li *ngxPermissionsOnly="['consult.dashboard']">
           <a routerLink="/s/dashboard">
             <span class="icon"><span class="mif-meter"></span></span>
             <span class="caption">Dashboard</span>
           </a>
         </li>
-        <li>
+        <li *ngxPermissionsOnly="['consult.bill']">
           <a routerLink="/s/facture">
             <span class="icon"><span class="mif-file-pdf"></span></span>
             <span class="caption">Factures</span>
           </a>
         </li>
-        <li>
+        <li *ngxPermissionsOnly="['consult.receipt']">
           <a routerLink="/s/encaissement">
             <span class="icon"><span class="mif-money"></span></span>
             <span class="caption">Encaissements</span>
           </a>
         </li>
 
-        <div *ngxPermissionsOnly="['manage.authorization']">
+        <div *ngxPermissionsOnly="['manage.admin']">
           <li class="item-header">Administration</li>
 
-          <li>
+          <li *ngxPermissionsOnly="['consult.user']">
             <a routerLink="/admin/users">
               <span class="icon"><span class="mif-user"></span></span>
               <span class="caption">Utilisateurs</span>
             </a>
           </li>
-          <li>
+          <li *ngxPermissionsOnly="['consult.customer']">
             <a routerLink="/admin/customers">
               <span class="icon"><span class="mif-users"></span></span>
               <span class="caption">Clients</span>
             </a>
           </li>
-          <li>
+          <li *ngxPermissionsOnly="['consult.role']">
             <a routerLink="/admin/roles">
               <span class="icon"><span class="mif-lock"></span></span>
               <span class="caption">Rôles et permissions</span>
             </a>
           </li>
         </div>
-        <li>
-          <a routerLink="/login">
-            <span class="icon"><span class="mif-lock"></span></span>
-            <span class="caption">Login</span>
-          </a>
-        </li>
       </ul>
 
       <div class="w-100 text-center text-small data-box p-2 border-top bd-grayMouse" style="position: absolute; bottom: 0">

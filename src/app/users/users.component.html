@@ -27,7 +27,7 @@
         <th data-sortable="true" data-name="client">Nom</th>
         <th data-sortable="true" data-name="client">Rôles</th>
         <th data-sortable="true">Statut mot de passe</th>
-        <th>Actions</th>
+        <th *ngxPermissionsOnly="['reset.password']">Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -35,9 +35,11 @@
         <td>{{i.id}}</td>
         <td>{{i.username}}</td>
         <td>{{i.name}}</td>
-        <td>{{i.roles}}</td>
-        <td>{{i.has_reset_password}}</td>
         <td>
+          <span *ngFor="let r of i.roles">{{r.name}},</span>
+        </td>
+        <td>{{i.has_reset_password}}</td>
+        <td *ngxPermissionsOnly="['reset.password']">
           <button class="button mini" (click)="resetPassword(i)">Reinitialiser mot de passe</button>
         </td>
       </tr>

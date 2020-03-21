@@ -35,8 +35,8 @@
           <td>{{i.display_name}}</td>
           <td>{{i.description}}</td>
           <td>
-            <button class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
-            <button class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button>
+            <button *ngxPermissionsOnly="['edit.role']" class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
+            <button *ngxPermissionsOnly="['delete.role']" class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button>
           </td>
         </tr>
 
@@ -73,7 +73,6 @@
           <th data-sortable="true">Code</th>
           <th data-sortable="true">Nom</th>
           <th data-sortable="true">Description</th>
-          <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -82,10 +81,6 @@
           <td>{{i.name}}</td>
           <td>{{i.display_name}}</td>
           <td>{{i.description}}</td>
-          <td>
-            <button class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
-            <button class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button>
-          </td>
         </tr>
 
         </tbody>

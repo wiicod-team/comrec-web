@@ -34,7 +34,7 @@ const routes: Routes = [
     canActivate: [NgxPermissionsGuard],
     data: {
       permissions: {
-        only: ['manage.authorization'],
+        only: ['manage.admin'],
         redirectTo: '/403'
       }
     },

@@ -37,7 +37,7 @@
         <td>{{i.sale_network}}</td>
         <td>{{i.username}}</td>
         <td>{{i.status}}</td>
-        <td>
+        <td *ngxPermissionsOnly="['link.customer']">
           <button class="button mini" (click)="link(i)" *ngIf="!i.check">Lier</button>
           <button class="button mini" (click)="unLink(i)" *ngIf="i.check">Délier</button>
         </td>
