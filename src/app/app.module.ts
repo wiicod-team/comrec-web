@@ -23,6 +23,7 @@ import { Page404Component } from './page404/page404.component';
 import {ChartsModule} from 'ng2-charts';
 import {NgxPermissionsModule, NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
 import { Page403Component } from './page403/page403.component';
+import { ResetComponent } from './reset/reset.component';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -80,7 +81,8 @@ export function RestangularConfigFactory(RestangularProvider) {
     CustomersComponent,
     FilterPipe,
     Page404Component,
-    Page403Component
+    Page403Component,
+    ResetComponent
   ],
   imports: [
     BrowserModule,

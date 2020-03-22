@@ -10,14 +10,27 @@ declare var Metro;
 export class CustomersComponent implements OnInit {
   customers;
   users;
+  load;
+  user_id;
+  customer;
   constructor(private api: ApiProvider) {
-    this.getCustomers();
-    this.getUsers();
+    this.init();
   }
 
   ngOnInit() {
   }
 
+  init() {
+    this.load = Metro.activity.open({
+      type: 'metro',
+      overlayColor: '#fff',
+      overlayAlpha: 1,
+      text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
+      overlayClickClose: true
+    });
+    this.getCustomers();
+    this.getUsers();
+  }
   getCustomers() {
     this.api.Customers.getList({_includes: 'users', should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       data.forEach((v, k) => {
@@ -31,21 +44,35 @@ export class CustomersComponent implements OnInit {
         v.username = user;
       });
       this.customers = data;
+      Metro.activity.close(this.load);
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
-  link(customerId) {
+  oepnLink(c) {
+    this.customer = c;
+    Metro.dialog.open('#linkDialog1');
+  }
 
+  link() {
+    console.log(this.user_id);
+    this.api.CustomerUsers.post({user_id: this.user_id, customer_id: this.customer.id}).subscribe(d => {
+      Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-gris', timeout: 3000});
+      this.getCustomers();
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+    });
   }
 
   getUsers() {
-    this.api.Users.getList({should_paginate: false, _sort: 'username', _sortDir: 'asc'}).subscribe(data => {
+    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       this.users = data;
-    }, err => {
-      if (err.status === 401) {
-        // token expiré
-        Metro.notify.create('Votre session a expiré', 'Veuillez-vous reconnecter', {cls: 'alert'});
-      }
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 }
