@@ -9,8 +9,11 @@ declare var Metro;
 export class EncaissementComponent implements OnInit {
 
   encaissements;
+  user;
 
   constructor( private api: ApiProvider) {
+    this.api.checkUser();
+    this.user = JSON.parse(localStorage.getItem('user'));
     this.getReceipts();
   }
 
@@ -26,7 +29,7 @@ export class EncaissementComponent implements OnInit {
       overlayClickClose: true
     });
 
-    this.api.Receipts.getList({_includes: 'bill.customer,user', should_paginate: false, _sort: 'created_at', _sortDir: 'desc'}).subscribe(b => {
+    this.api.Receipts.getList({_includes: 'bill.customer,user', user_id: this.user.id, should_paginate: false, _sort: 'created_at', _sortDir: 'desc'}).subscribe(b => {
       b.forEach((v, k) => {
         v.name = v.bill.customer.name;
         v.bvs_id = v.bill.id;
@@ -35,6 +38,9 @@ export class EncaissementComponent implements OnInit {
       this.encaissements = b;
       console.log('b', b);
       Metro.activity.close(load);
+    }, q => {
+      Metro.activity.close(load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 }

@@ -11,6 +11,7 @@ declare var Metro;
 export class RolesComponent implements OnInit {
   update;
   roles;
+  load;
   permissions;
   searchR: any;
   searchP: any;
@@ -27,6 +28,14 @@ export class RolesComponent implements OnInit {
   }
 
   refresh() {
+    this.load = Metro.activity.open({
+      type: 'metro',
+      overlayColor: '#fff',
+      overlayAlpha: 1,
+      text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
+      overlayClickClose: true
+    });
+
     this.getRoles();
     this.getPermissions();
   }
@@ -35,6 +44,9 @@ export class RolesComponent implements OnInit {
     this.api.Roles.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       console.log(data);
       this.roles = data;
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -42,6 +54,9 @@ export class RolesComponent implements OnInit {
     this.api.Permissions.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       console.log(data);
       this.permissions = data;
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -78,10 +93,9 @@ export class RolesComponent implements OnInit {
   edit() {
     this.update.put(this.update.id).subscribe(data => {
       Metro.notify.create(this.update.display_name + 'mis à jour', 'Info', {});
-    }, err => {
-      if (err.status === 500) {
-        Metro.notify.create('Erreur système', 'Info', {});
-      }
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 }

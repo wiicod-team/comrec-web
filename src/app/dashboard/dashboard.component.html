@@ -7,7 +7,7 @@
 
     <div class="buttongroup">
       <button class="button"><a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
-      <button class="button"><a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
+      <button class="button"><a (click)="init(now,now)" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
     </div>
   </div>
 </div>
@@ -15,8 +15,8 @@
 <div class="m-3">
   <div class="row mt-2">
     <div class="cell-lg-4 cell-sm-6 mt-2">
-      <div class="icon-box border bd-cyan">
-        <div class="icon bg-cyan fg-white"><span class="mif-user"></span></div>
+      <div class="icon-box border bd-noir">
+        <div class="icon bg-noir fg-white"><span class="mif-user"></span></div>
         <div class="content p-4">
           <div class="text-upper">Vendeurs</div>
           <div class="text-upper text-bold text-lead">{{users_count}}</div>
@@ -24,8 +24,8 @@
       </div>
     </div>
     <div class="cell-lg-4 cell-sm-6 mt-2">
-      <div class="icon-box border bd-red">
-        <div class="icon bg-red fg-white"><span class="mif-user-secret"></span></div>
+      <div class="icon-box border bd-noir">
+        <div class="icon bg-noir fg-white"><span class="mif-user-secret"></span></div>
         <div class="content p-4">
           <div class="text-upper">Clients</div>
           <div class="text-upper text-bold text-lead">{{customers_count}}</div>
@@ -33,8 +33,8 @@
       </div>
     </div>
     <div class="cell-lg-4 cell-sm-6 mt-2">
-      <div class="icon-box border bd-green">
-        <div class="icon bg-green fg-white"><span class="mif-money"></span></div>
+      <div class="icon-box border bd-noir">
+        <div class="icon bg-noir fg-white"><span class="mif-money"></span></div>
         <div class="content p-4">
           <div class="text-upper">Encaissements</div>
           <div class="text-upper text-bold text-lead">{{receipts_count}}</div>
@@ -45,24 +45,24 @@
 
   <div class="row">
     <div class="cell-lg-6 cell-md-6 mt-2">
-      <div class="more-info-box bg-cyan fg-white">
+      <div class="more-info-box bg-or fg-noir">
         <div class="content">
           <h2 class="text-bold mb-0">{{best_seller}}</h2>
-          <div>Meilleur recouvreur</div>
+          <div class="text-upper">Meilleur recouvreur</div>
         </div>
         <div class="icon">
-          <span class="mif-star-full"></span>
+          <span class="mif-star-full fg-noir"></span>
         </div>
       </div>
     </div>
     <div class="cell-lg-6 cell-md-6 mt-2">
-      <div class="more-info-box bg-green fg-white">
+      <div class="more-info-box bg-or fg-noir">
         <div class="content">
           <h2 class="text-bold mb-0">{{sum_receipt}} FCFA</h2>
-          <div>Recouvré</div>
+          <div class="text-upper">Recouvré</div>
         </div>
         <div class="icon">
-          <span class="mif-money"></span>
+          <span class="mif-money fg-noir"></span>
         </div>
       </div>
     </div>
@@ -108,7 +108,7 @@
   </div>
 
   <div class="dialog-actions text-right">
-    <button class="button js-dialog-close" (click)="validate()">Valider</button>
-    <button class="button primary js-dialog-close">Fermer</button>
+    <button class="button js-dialog-close bg-or" (click)="validate()">Valider</button>
+    <button class="button primary js-dialog-close bg-noir">Fermer</button>
   </div>
 </div>

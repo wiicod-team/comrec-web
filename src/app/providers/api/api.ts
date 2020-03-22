@@ -21,7 +21,7 @@ export class ApiProvider {
   public Users: any = this.restangular.service('users');
   public me: any = this.restangular.one('auth/me');
 
-  public date_format : string = "Y-M-D";
+  public date_format = 'Y-M-D';
 
   public autoplay_val = 5000;
   public slide_speed = 700;
@@ -31,14 +31,14 @@ export class ApiProvider {
   }
 
   formarPrice(price) {
-    if (price == undefined) {
-      return "";
+    if (price === undefined) {
+      return '';
     } else {
       price += '';
-      let tab = price.split('');
+      const tab = price.split('');
       let p = '';
       for (let i = tab.length; i > 0; i--) {
-        if (i % 3 == 0) {
+        if (i % 3 === 0) {
           p += ' ';
         }
         p += tab[tab.length - i];

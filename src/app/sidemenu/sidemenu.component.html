@@ -1,11 +1,11 @@
 <div class="m4-cloaks h-vh-100">
   <div data-role="navview" data-toggle="#paneToggle" data-expand="xl" data-compact="lg" data-active-state="true">
     <div class="navview-pane">
-      <div class="bg-cyan d-flex flex-align-center">
-        <button class="pull-button m-0 bg-darkCyan-hover">
+      <div class="bg-noir d-flex flex-align-center">
+        <button class="pull-button m-0 bg-noir-hover">
           <span class="mif-menu fg-white"></span>
         </button>
-        <h2 class="text-light m-0 fg-white pl-7" style="line-height: 52px">Recouvrement</h2>
+        <h2 class="text-light m-0 fg-or pl-7" style="line-height: 52px">Recouvrement</h2>
       </div>
 
       <ul class="navview-menu mt-4" id="side-menu">
@@ -53,26 +53,26 @@
         </div>
       </ul>
 
-      <div class="w-100 text-center text-small data-box p-2 border-top bd-grayMouse" style="position: absolute; bottom: 0">
-        <div>&copy; 2020 <a href="mailto:info@bvssas.com" class="text-muted fg-white-hover no-decor">BVS Distribution Cameroun S.A.S</a></div>
+      <div class="w-100 text-center text-small data-box p-2 border-top bg-noir bd-grayMouse" style="position: absolute; bottom: 0">
+        <div><span class="fg-or">&copy; 2020 </span><a href="mailto:info@bvssas.com" class="text-muted fg-white-hover no-decor">BVS Distribution Cameroun S.A.S</a></div>
         <div><a href="https://wiicod.com" class="text-muted fg-white-hover no-decor">Wiicod</a></div>
       </div>
     </div>
 
     <div class="navview-content h-100">
-      <div data-role="appbar" class="pos-absolute bg-darkCyan fg-white">
+      <div data-role="appbar" class="pos-absolute bg-noir fg-white">
         <div class="app-bar-container ml-auto">
           <div class="app-bar-container">
             <a href="#" class="app-bar-item">
               <span class="ml-2 app-bar-name">{{user.name}}</span>
             </a>
             <div class="user-block shadow-1" data-role="collapse" data-collapsed="true">
-              <div class="bg-darkCyan fg-white p-2 text-center">
+              <div class="bg-or fg-noir p-2 text-center">
                 <div class="h4 mb-0">{{user.name}}</div>
-                <div>{{user.username}}</div>
+                <div class="text-upper">{{user.username}}</div>
               </div>
-              <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
-                <button class="button ml-1" (click)="logout()">Déconnexion</button>
+              <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-gris">
+                <button class="button ml-1 bg-noir fg-or" (click)="logout()">Déconnexion</button>
               </div>
             </div>
           </div>

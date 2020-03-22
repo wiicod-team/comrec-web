@@ -1,2 +1,45 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~metro4/build/css/metro-all.min.css';
+
+$or : #c29d3d;
+$gris : #ebebeb;
+$noir : #282725;
+
+.bg-or{
+  background: $or !important;
+}
+
+.fg-or{
+  color: $or !important;
+}
+
+.bd-or{
+  border-color: $or !important;
+}
+
+.bg-noir{
+  background: $noir !important;
+}
+
+.bd-noir{
+  border-color: $noir !important;
+}
+
+.fg-noir{
+  color: $noir !important;
+}
+
+.bg-noir-hover{
+  &:hover{
+    background: $noir !important;
+  }
+}
+
+.bg-gris{
+  background: $gris !important;
+}
+
+
+.more-info-box{
+  color: $noir !important;
+}

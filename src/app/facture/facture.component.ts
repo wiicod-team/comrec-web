@@ -35,30 +35,36 @@ export class FactureComponent implements OnInit {
     });
 
     const opt = {
-      _includes: 'customer,receipts',
+      _includes : 'customers.bills.receipts',
       should_paginate: false,
-      'status-in': 'pending,new',
-      _sort: 'creation_date',
+      _sort: 'created_at',
       _sortDir: 'desc'
     };
-    this.api.Bills.getList(opt).subscribe(b => {
-      b.forEach((v, k) => {
-        let avance = 0;
-        if (v.status === 'pending') {
-          v.statut = 'Echue';
-        } else if (v.status === 'new') {
-          v.statut = 'Non echue';
-        }
-        v.name = v.customer.name;
-        v.receipts.forEach((vv, kk) => {
-         avance += vv.amount;
+
+    this.api.Users.get(this.user.id, opt).subscribe(d => {
+      this.factures = [];
+      d.body.customers.forEach((v, k) => {
+        v.bills.forEach((vv, kk) => {
+          let avance = 0;
+          vv.name = v.name;
+          vv.receipts.forEach((vvv, kkk) => {
+            avance += vvv.amount;
+          });
+          vv.avance = avance;
+          if (vv.status === 'pending') {
+            vv.statut = 'Echue';
+            this.factures.push(vv);
+          } else if (vv.status === 'new') {
+            vv.statut = 'Non echue';
+            this.factures.push(vv);
+          }
         });
-        v.avance = avance;
       });
-      this.factures = b;
       this.old_facture = this.factures;
-      //console.log(this.factures);
       Metro.activity.close(load);
+    }, q => {
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      this.state = false;
     });
   }
 
@@ -79,19 +85,28 @@ export class FactureComponent implements OnInit {
     // actualisation
     let i = 0;
     this.selected_bill.forEach(f => {
-      f.status = 'paid';
-      f.put().subscribe(d => {
-        this.api.Receipts.post({bill_id: f.id, amount: f.amount, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
-          console.log('ok', f.id);
-          i++;
-          Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'success', timeout: 3000});
+      this.api.Bills.get(f.id).subscribe(fa => {
+        fa.status = 'paid';
+        fa.id = f.id;
+        fa.put().subscribe(d => {
+          this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
+            console.log('ok', f.id);
+            i++;
+            Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-gris', timeout: 3000});
+            if (i === this.selected_bill.length) {
+              // arret du loading
+              this.getBills();
+              this.state = false;
+            }
+          });
+        }, q => {
+          Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          this.state = false;
         });
-      });
-      if (i === this.selected_bill.length) {
-        // arret du loading
-        this.getBills();
+      }, q => {
+        Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
         this.state = false;
-      }
+      });
     });
   }
 
@@ -134,9 +149,9 @@ export class FactureComponent implements OnInit {
     };
 
     this.api.Receipts.post(opt).subscribe(d => {
-      console.log(d);
+      console.log('post receipt ok');
+      Metro.notify.create('Encaissement validé', 'Succès', {cls: 'success', timeout: 3000});
       if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
-        Metro.notify.create('Encaissement validé', 'Succès', {cls: 'success', timeout: 3000});
         // modification du statut de la facture
         this.api.Bills.get(this.facture.id).subscribe(data => {
           data.status = 'paid';
@@ -144,16 +159,22 @@ export class FactureComponent implements OnInit {
           data.put().subscribe(datap => {
             console.log('ok');
             this.state = false;
-            this.getBills()
+            this.getBills();
           }, q => {
-            console.log(q);
+            Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            this.state = false;
           });
         }, q => {
-          console.log(q);
+          Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          this.state = false;
         });
+      } else {
+        this.state = false;
+        this.getBills();
       }
     }, q => {
-      console.log(q);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      this.state = false;
     });
   }
 }

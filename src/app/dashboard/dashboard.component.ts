@@ -19,13 +19,21 @@ export class DashboardComponent implements OnInit {
   best_seller;
   sum_receipt;
   sellers;
+  load;
   today;
   from;
+  now = new Date();
   to;
   public barChartLabels;
   public barChartType = 'bar';
   public barChartData = [
-    {data: [], label: 'Montant recouvré'}
+    {
+      data: [],
+      label: 'Montant recouvré',
+      borderColor: '#000',
+      hoverBackgroundColor: '#c29d3d',
+      backgroundColor: '#888888',
+    }
   ];
 
   constructor(private api: ApiProvider) {
@@ -47,24 +55,37 @@ export class DashboardComponent implements OnInit {
   }
 
   init(deb, fin) {
+    this.load = Metro.activity.open({
+      type: 'metro',
+      overlayColor: '#fff',
+      overlayAlpha: 1,
+      text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
+      overlayClickClose: true
+    });
+
     this.deb = moment(deb);
     this.fin = moment(fin);
     this.getBestSeller();
     this.getReceipts();
     this.getCustomersCount();
     this.getUsersCount();
+
   }
   getUsersCount() {
     this.api.Users.getList({should_paginate: false}).subscribe(d => {
-      // console.log(d);
       this.users_count = d.length;
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
   getCustomersCount() {
     this.api.Customers.getList({should_paginate: false}).subscribe(d => {
-      // console.log(d);
       this.customers_count = d.length;
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -75,13 +96,14 @@ export class DashboardComponent implements OnInit {
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
-      // console.log(d);
       this.sum_receipt = this.api.formarPrice( _.reduce(d, (memo, num) => {
         return memo + num.amount;
       }, 0));
       this.receipts_count = d.length;
-
       // somme du recouvrement du mois
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -95,9 +117,7 @@ export class DashboardComponent implements OnInit {
       _includes: 'user',
       should_paginate: false
     };
-    console.log(opt);
     this.api.Receipts.getList(opt).subscribe(d => {
-      console.log(d);
       this.sellers = d;
       if (d.length > 0) {
         this.best_seller = d[0].user.username;
@@ -108,11 +128,14 @@ export class DashboardComponent implements OnInit {
           vente.push(v.total_amount);
           vendeur.push(v.user.name);
         });
-        this.barChartData = [
-          {data: vente, label: 'Montant recouvré'}
-        ];
+        this.barChartData[0].data = vente;
+        this.barChartData[0].label = 'Montant recouvré';
         this.barChartLabels = vendeur;
+        Metro.activity.close(this.load);
       }
+    }, q => {
+      Metro.activity.close(this.load);
+      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -121,11 +144,9 @@ export class DashboardComponent implements OnInit {
   }
 
   validate() {
-    // console.log(document.getElementById('from').value);
     this.from = (document.getElementById('from') as HTMLInputElement).value;
     this.to = (document.getElementById('to') as HTMLInputElement).value;
     this.today = 'du ' + this.from + ' au ' + this.to;
-    console.log(this.today);
     this.init(this.from, this.to);
   }
 }
