@@ -10,8 +10,10 @@ export class EncaissementComponent implements OnInit {
 
   encaissements;
   user;
+  search
 
   constructor( private api: ApiProvider) {
+    this.search = '';
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
     this.getReceipts();

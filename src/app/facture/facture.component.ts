@@ -18,6 +18,7 @@ export class FactureComponent implements OnInit {
   commentaire;
   montant_avance;
   constructor(private api: ApiProvider) {
+    this.search = '';
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
     this.getBills();

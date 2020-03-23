@@ -16,6 +16,8 @@ export class RolesComponent implements OnInit {
   searchR: any;
   searchP: any;
   constructor(private api: ApiProvider) {
+    this.searchR = '';
+    this.searchP = '';
     this.refresh();
     this.update = {
       name: '',

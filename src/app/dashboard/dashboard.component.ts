@@ -55,13 +55,13 @@ export class DashboardComponent implements OnInit {
   }
 
   init(deb, fin) {
-    this.load = Metro.activity.open({
+    /*this.load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
       overlayAlpha: 1,
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
-    });
+    });*/
 
     this.deb = moment(deb);
     this.fin = moment(fin);
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
     this.api.Users.getList({should_paginate: false}).subscribe(d => {
       this.users_count = d.length;
     }, q => {
-      Metro.activity.close(this.load);
+      // Metro.activity.close(this.load);
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit {
     this.api.Customers.getList({should_paginate: false}).subscribe(d => {
       this.customers_count = d.length;
     }, q => {
-      Metro.activity.close(this.load);
+      // Metro.activity.close(this.load);
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
@@ -102,7 +102,7 @@ export class DashboardComponent implements OnInit {
       this.receipts_count = d.length;
       // somme du recouvrement du mois
     }, q => {
-      Metro.activity.close(this.load);
+      // Metro.activity.close(this.load);
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
@@ -131,10 +131,10 @@ export class DashboardComponent implements OnInit {
         this.barChartData[0].data = vente;
         this.barChartData[0].label = 'Montant recouvré';
         this.barChartLabels = vendeur;
-        Metro.activity.close(this.load);
+        // Metro.activity.close(this.load);
       }
     }, q => {
-      Metro.activity.close(this.load);
+      // Metro.activity.close(this.load);
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }

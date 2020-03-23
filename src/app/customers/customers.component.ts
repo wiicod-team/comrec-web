@@ -10,10 +10,12 @@ declare var Metro;
 export class CustomersComponent implements OnInit {
   customers;
   users;
+  search;
   load;
   user_id;
   customer;
   constructor(private api: ApiProvider) {
+    this.search = '';
     this.init();
   }
 
@@ -67,6 +69,7 @@ export class CustomersComponent implements OnInit {
     });
   }
 
+  unLink(e) {}
   getUsers() {
     this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       this.users = data;

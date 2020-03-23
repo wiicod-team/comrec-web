@@ -11,6 +11,7 @@ export class UsersComponent implements OnInit {
   users;
   search;
   constructor(private api: ApiProvider, private router: Router) {
+    this.search = '';
     this.getUsers();
   }
 

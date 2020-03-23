@@ -31,7 +31,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of customers |filter:{ id: search, name: search, username: search, status: search, sale_network: search }" [ngClass]="{'dark':i.check==true}">
+      <tr *ngFor="let i of customers |filter:{ id: search, name: search, username: search, status: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.name}}</td>
         <td>{{i.sale_network}}</td>

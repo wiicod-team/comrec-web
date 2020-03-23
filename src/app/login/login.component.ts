@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   }
 
   loginUser() {
-    if (this.username === '' && this.password === ''){
+    if (this.username === '' && this.password === '') {
       Metro.notify.create('Identifiant et mot de passe absents', 'Erreur de connexion', {cls: 'alert'});
     } else if (this.username === '' ) {
       Metro.notify.create('Identifiant absent', 'Erreur de connexion', {cls: 'warning'});

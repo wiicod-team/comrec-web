@@ -28,7 +28,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of encaissements |filter:{ bvs_id: search, name: search, created_at: search, amount: search, vendeur: search }" [ngClass]="{'dark':i.check==true}">
+      <tr *ngFor="let i of encaissements |filter:{ bvs_id: search, name: search, created_at: search, amount: search, vendeur: search } : false" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.bill.id}}</td>
         <td>{{i.created_at}}</td>

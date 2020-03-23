@@ -49,7 +49,8 @@ data-role="table"
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of factures |filter:{ id: search, name: search, creation_date: search, amount: search, status: search }"
+      <!--tr *ngFor="let i of factures"-->
+      <tr *ngFor="let i of factures |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
           [ngClass]="{'bg-or':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.creation_date}}</td>
