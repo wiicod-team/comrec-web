@@ -11,6 +11,7 @@ import {Page404Component} from './page404/page404.component';
 import {SidemenuComponent} from './sidemenu/sidemenu.component';
 import {NgxPermissionsGuard} from 'ngx-permissions';
 import {Page403Component} from './page403/page403.component';
+import {ResetComponent} from './reset/reset.component';
 
 
 
@@ -44,6 +45,7 @@ const routes: Routes = [
       {path : 'customers', component : CustomersComponent},
     ]
   },
+  {path : 'reset/:i', component : ResetComponent},
   {path : 'login', component : LoginComponent},
   { path: '',
     redirectTo: '/login',

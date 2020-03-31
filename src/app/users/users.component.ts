@@ -38,6 +38,8 @@ export class UsersComponent implements OnInit {
 
   resetPassword(u) {
     u.has_reset_password = false;
+    u.password = 'password';
+    u.setting = [];
     u.put().subscribe(p => {
       console.log(p);
       this.getUsers();

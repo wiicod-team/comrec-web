@@ -7,22 +7,22 @@
           data-clear-invalid="2000"
     ><!--data-on-error-form="invalidForm"-->
       <img src="../../assets/images/BVS.png" class="place-right mt-4-minus mr-6-minus" style="width: 30%">
-      <h1 class="mb-0">Connexion</h1>
+      <h2 class="mb-0">Mot de passe</h2>
 
-      <div class="form-group">
-        <input type="text" [(ngModel)]="username" name="username" data-role="input" placeholder="Identifiant" data-append="<span class='mif-envelop'>" data-validate="required">
-        <span class="invalid_feedback">Identifiant absent</span>
-      </div>
       <div class="form-group">
         <input type="password" [(ngModel)]="password" [ngModelOptions]="{standalone: true}" data-role="input" placeholder="Mot de passe" data-append="<span class='mif-key'>" data-validate="required">
         <span class="invalid_feedback">Mot de passe absent</span>
       </div>
+      <div class="form-group">
+        <input type="password" [(ngModel)]="confirmation_password" [ngModelOptions]="{standalone: true}" data-role="input" placeholder="Confirmer mot de passe" data-append="<span class='mif-key'>" data-validate="required">
+        <span class="invalid_feedback">Mot de passe absent</span>
+      </div>
       <div class="form-group d-flex flex-align-center flex-justify-between">
-        <button class="button bg-or" (click)="loginUser()">Connexion</button>
+        <button class="button bg-or" (click)="validatePassword()">Valider</button>
       </div>
 
       <div class="form-group border-top bd-default pt-2">
-        <a href="/forgot" class="d-block fg-black">Mot de passe oublié?</a>
+        <a href="/login" class="d-block fg-black">Retour</a>
       </div>
     </form>
   </div>

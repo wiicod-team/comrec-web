@@ -46,6 +46,7 @@ export class RolesComponent implements OnInit {
     this.api.Roles.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       console.log(data);
       this.roles = data;
+      Metro.activity.close(this.load);
     }, q => {
       Metro.activity.close(this.load);
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

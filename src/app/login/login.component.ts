@@ -31,8 +31,14 @@ export class LoginComponent implements OnInit {
     } else {
       this.auth.login({username: this.username, password: this.password}).then(rep => {
         console.log(rep);
-        // redirection vers side-menu
-        this.router.navigate(['/s/dashboard']);
+
+        if (!rep.user.has_reset_password) {
+          this.router.navigate(['/reset', rep.user.id]);
+        } else {
+          // redirection vers side-menu
+          this.router.navigate(['/s/dashboard']);
+        }
+
 
       }).catch((err) => {
         console.log(err);

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
+import * as jsPDF from 'jspdf';
 declare var Metro;
 @Component({
   selector: 'app-facture',
@@ -178,4 +179,19 @@ export class FactureComponent implements OnInit {
       this.state = false;
     });
   }
+
+  printPDF() {
+    let doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'in',
+      format: [400, 500]
+    });
+
+    // doc = new jsPDF();
+    // doc.setCreationDate(new Date());
+    doc.text('Hello world!', 10, 5);
+    doc.text('This is client-side Javascript, pumping out a PDF.', 20, 30);
+    doc.save('two-by-four.pdf');
+  }
+
 }
