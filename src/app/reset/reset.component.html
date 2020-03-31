@@ -1,24 +1,52 @@
 <div class="h-vh-100 d-flex flex-justify-center flex-align-center">
 
-  <div class="login-box">
-    <form class="bg-white p-4"
-          action="javascript:"
-          data-role="validator"
-          data-clear-invalid="2000"
-    ><!--data-on-error-form="invalidForm"-->
-      <img src="../../assets/images/BVS.png" class="place-right mt-4-minus mr-6-minus" style="width: 30%">
-      <h2 class="mb-0">Mot de passe</h2>
+  <div class="login-box" style="width: 400px">
+    <img src="../../assets/images/BVS.png" class="place-right mt-4-minus mr-6-minus" style="width: 30%">
+    <h2 class="mb-0">Mot de passe</h2>
+    <form [formGroup]="frmSignup" (submit)="submit()">
+      <div class="form-group">
+        <input id="password" placeholder="Nouveau mot de passe" formControlName="password" type="password" class="form-control" [ngClass]="frmSignup.controls['password'].invalid ? 'is-invalid' : ''">
+        <!-- <label class="text-danger col" *ngIf="frmSignup.controls['password'].hasError('required')">
+          Password is Required!
+        </label> -->
+        <label class="col" [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('minlength')  ? 'text-danger' : 'text-success'">
+          <span [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('minlength')  ? 'mif-cross' : 'mif-checkmark fg-or'"></span>
+          Doit avoir 8 caractères!
+        </label>
+        <br>
+        <label class="col" [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasNumber')  ? 'text-danger' : 'text-success'">
+          <span [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasNumber')  ? 'mif-cross' : 'mif-checkmark  fg-or'"></span>
+          Doit contenir au moins 1 chiffre!
+        </label>
+        <br>
+        <label class="col" [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasCapitalCase')  ? 'text-danger' : 'text-success'">
+          <span [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasCapitalCase')  ? 'mif-cross' : 'mif-checkmark  fg-or'"></span>
+          Doit contenir au moins 1 en majuscule!
+        </label>
+        <br>
+        <label class="col" [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasSmallCase')  ? 'text-danger' : 'text-success'">
+          <span [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasSmallCase')  ? 'mif-cross' : 'mif-checkmark  fg-or'"></span>
+          Doit contenir au moins 1 lettre en minuscule!
+        </label>
+        <br>
+        <label class="col" [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasSpecialCharacters') ? 'text-danger' : 'text-success'">
+          <span [ngClass]="frmSignup.controls['password'].hasError('required') || frmSignup.controls['password'].hasError('hasSpecialCharacters')  ? 'mif-cross' : 'mif-checkmark  fg-or'"></span>
+          Doit contenir au moins 1 caractère spécial!
+        </label>
 
-      <div class="form-group">
-        <input type="password" [(ngModel)]="password" [ngModelOptions]="{standalone: true}" data-role="input" placeholder="Mot de passe" data-append="<span class='mif-key'>" data-validate="required">
-        <span class="invalid_feedback">Mot de passe absent</span>
       </div>
       <div class="form-group">
-        <input type="password" [(ngModel)]="confirmation_password" [ngModelOptions]="{standalone: true}" data-role="input" placeholder="Confirmer mot de passe" data-append="<span class='mif-key'>" data-validate="required">
-        <span class="invalid_feedback">Mot de passe absent</span>
+        <input id="confirmPassword" placeholder="Confirmer mot de passe" formControlName="confirmPassword" type="password" class="form-control"
+               [ngClass]="frmSignup.controls['confirmPassword'].invalid ? 'is-invalid' : ''">
+        <label class="text-danger" *ngIf="frmSignup.controls['confirmPassword'].hasError('required')">
+          Mot de passe requis!
+        </label>
+        <label class="text-danger" *ngIf="frmSignup.controls['confirmPassword'].hasError('NoPassswordMatch')">
+          Le mot de passe ne correspond pas
+        </label>
       </div>
-      <div class="form-group d-flex flex-align-center flex-justify-between">
-        <button class="button bg-or" (click)="validatePassword()">Valider</button>
+      <div class="form-group">
+        <button [disabled]="frmSignup.invalid" type="submit" class="button bg-or">Valider</button>
       </div>
 
       <div class="form-group border-top bd-default pt-2">
