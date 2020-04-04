@@ -25,6 +25,7 @@
         <th data-sortable="true" data-name="client">Client</th>
         <th data-sortable="true">Montant</th>
         <th data-sortable="true">Vendeur</th>
+        <th data-sortable="true">Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -35,6 +36,7 @@
         <td>{{i.bill.customer.name}}</td>
         <td>{{i.amount}}</td>
         <td>{{i.vendeur}}</td>
+        <td><button class="button mini" (click)="print(i)"><span class="mif-print"></span></button></td>
       </tr>
 
       </tbody>

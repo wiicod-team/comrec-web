@@ -19,6 +19,7 @@ export class ApiProvider {
   public Receipts: any = this.restangular.service('receipts');
   public Roles: any = this.restangular.service('roles');
   public Users: any = this.restangular.service('users');
+  public RoleUsers: any = this.restangular.service('role_users');
   public me: any = this.restangular.one('auth/me');
 
   public date_format = 'Y-M-D';
@@ -53,6 +54,10 @@ export class ApiProvider {
       this.router.navigate(['/login']);
     } else {
       // rien
+      // verification si le mot de passe a été reset
+      if (!JSON.parse(localStorage.getItem('user')).has_reset_password) {
+        this.router.navigate(['/reset',JSON.parse(localStorage.getItem('user')).id]);
+      }
     }
   }
 }

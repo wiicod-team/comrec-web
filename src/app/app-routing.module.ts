@@ -12,6 +12,7 @@ import {SidemenuComponent} from './sidemenu/sidemenu.component';
 import {NgxPermissionsGuard} from 'ngx-permissions';
 import {Page403Component} from './page403/page403.component';
 import {ResetComponent} from './reset/reset.component';
+import {ForgotComponent} from './forgot/forgot.component';
 
 
 
@@ -33,12 +34,12 @@ const routes: Routes = [
     path : 'admin',
     component : SidemenuComponent,
     canActivate: [NgxPermissionsGuard],
-    data: {
+    /*data: {
       permissions: {
         only: ['manage.admin'],
         redirectTo: '/403'
       }
-    },
+    },*/
     children : [
       {path : 'users', component : UsersComponent},
       {path : 'roles', component : RolesComponent},
@@ -46,6 +47,7 @@ const routes: Routes = [
     ]
   },
   {path : 'reset/:i', component : ResetComponent},
+  {path : 'forgot', component : ForgotComponent},
   {path : 'login', component : LoginComponent},
   { path: '',
     redirectTo: '/login',

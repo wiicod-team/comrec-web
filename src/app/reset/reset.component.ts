@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-import {ActivatedRoute, Route, Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {$} from 'protractor';
 import {CustomValidators} from '../custom-validators';
 declare var Metro;
 @Component({

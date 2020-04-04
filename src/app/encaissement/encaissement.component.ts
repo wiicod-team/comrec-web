@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
+import * as jsPDF from 'jspdf';
+import * as moment from 'moment';
 declare var Metro;
+
 @Component({
   selector: 'app-encaissement',
   templateUrl: './encaissement.component.html',
@@ -10,8 +13,8 @@ export class EncaissementComponent implements OnInit {
 
   encaissements;
   user;
-  search
-
+  search;
+  @ViewChild('pdfTable', {static: false}) pdfTable: ElementRef;
   constructor( private api: ApiProvider) {
     this.search = '';
     this.api.checkUser();
@@ -20,6 +23,7 @@ export class EncaissementComponent implements OnInit {
   }
 
   ngOnInit() {
+    moment.locale('fr');
   }
 
   getReceipts() {
@@ -44,5 +48,27 @@ export class EncaissementComponent implements OnInit {
       Metro.activity.close(load);
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
+  }
+
+  print(e) {
+    let doc = new jsPDF('P', 'mm', [130, 200]);
+    doc.setFontSize(6);
+    doc.setFontStyle('bold');
+    // doc.setCreationDate(new Date());
+    doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
+    doc.text('BP: 1352 Douala', 6, 8);
+    doc.text('Montée BBR - BASSA', 6, 11);
+    doc.text('Tél.: 690 404 180/89', 6, 14);
+    // info sur le vendeur
+    doc.text('Encaissé le : ' + e.created_at, 6, 17);
+    doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD hh:mm:ss'), 6, 20);
+    // Client vendeur
+    doc.text('ENC-: ' + e.id, 6, 23);
+    doc.text('Client: ' + e.bill.customer.name, 6, 26);
+    doc.text('Vendeur: ' + e.vendeur, 6, 29);
+    doc.text('N° Facture: ' + e.bill.id, 6, 32);
+    doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 35);
+    doc.text('Reste: ' + this.api.formarPrice((e.bill.amount - e.amount)) + 'FCFA', 6, 37);
+    doc.save('two-by-four.pdf');
   }
 }

@@ -26,6 +26,7 @@
         <th data-sortable="true">Identifiant</th>
         <th data-sortable="true" data-name="client">Nom</th>
         <th data-sortable="true" data-name="client">Rôles</th>
+        <th data-sortable="true" data-name="client">Statut</th>
         <th data-sortable="true">Statut mot de passe</th>
         <th *ngxPermissionsOnly="['reset.password']">Actions</th>
       </tr>
@@ -38,9 +39,9 @@
         <td>
           <span *ngFor="let r of i.roles">{{r.name}},</span>
         </td>
-        <td>{{i.has_reset_password}}</td>
+        <td>{{i.has_reset_password}} {{i.settings}}</td>
         <td *ngxPermissionsOnly="['reset.password']">
-          <button class="button mini" (click)="resetPassword(i)">Reinitialiser mot de passe</button>
+          <button class="button mini" (click)="editUser(i)"><span class="mif-pencil"></span></button>
         </td>
       </tr>
 
@@ -48,4 +49,33 @@
     </table>
   </div>
 
+</div>
+
+<div class="dialog" data-role="dialog" id="userDialog1">
+  <div class="dialog-title"></div>
+  <div class="dialog-content" >
+    <div class="form-group">
+      <div>{{user.username}}</div>
+      <div>{{user.name}}</div>
+      <div>{{user.status}}</div>
+    </div>
+    <div class="form-group">
+      <label>Rôles</label>
+      <select [(ngModel)]="user_roles" [ngModelOptions]="{standalone: true}"multiple style="height: 90px">
+        <option *ngFor="let r of roles" value="{{r.id}}">{{r.name}}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <input type="checkbox" [(ngModel)]="reset" data-role="checkbox" data-caption="Reinitialiser le mot de passe">
+    </div>
+    <div class="form-group">
+      <input type="checkbox" [(ngModel)]="active" data-role="checkbox" data-caption="Activer le compte">
+    </div>
+  </div>
+
+  <div class="dialog-actions text-right">
+    <button class="button js-dialog-close bg-or fg-white" (click)="updateUser()">Enregistrer</button>
+    <button class="button primary js-dialog-close bg-noir">Fermer</button>
+  </div>
 </div>

@@ -99,7 +99,7 @@ data-role="table"
       Aucune facture selectionnée.
     </div>
     <div class="dialog-actions text-right">
-      <button class="button js-dialog-close bg-or" (click)="validerEncaissement()" *ngIf="selected_bill.length>0">Oui</button>
+      <button class="button js-dialog-close bg-or fg-white" (click)="validerEncaissement()" *ngIf="selected_bill.length>0">Oui</button>
       <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0">Non</button>
       <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length<=0">Fermer</button>
     </div>
@@ -121,7 +121,7 @@ data-role="table"
     </div>
 
     <div class="dialog-actions text-right">
-      <button class="button js-dialog-close bg-or" (click)="validerAvance()">Valider</button>
+      <button class="button js-dialog-close bg-or fg-white" (click)="validerAvance()">Valider</button>
       <button class="button primary js-dialog-close bg-noir">Fermer</button>
     </div>
   </div>

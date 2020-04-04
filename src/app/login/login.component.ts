@@ -12,7 +12,10 @@ export class LoginComponent implements OnInit {
 
   username: string;
   password: string;
-
+  public user: {
+    id: number,
+    has_reset_password: boolean
+  };
   constructor(private auth: AuthProvider, private route: ActivatedRoute, private router: Router) {
     this.username = '';
     this.password = '';
@@ -31,9 +34,11 @@ export class LoginComponent implements OnInit {
     } else {
       this.auth.login({username: this.username, password: this.password}).then(rep => {
         console.log(rep);
+        // @ts-ignore
+        this.user = rep.user;
 
-        if (!rep.user.has_reset_password) {
-          this.router.navigate(['/reset', rep.user.id]);
+        if (!this.user.has_reset_password) {
+          this.router.navigate(['/reset', this.user.id]);
         } else {
           // redirection vers side-menu
           this.router.navigate(['/s/dashboard']);
