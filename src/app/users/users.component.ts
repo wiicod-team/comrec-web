@@ -18,15 +18,15 @@ export class UsersComponent implements OnInit {
     id: number,
     name: string,
     username: string
-    status: boolean,
+    status: string,
     has_reset_password: boolean,
-    setting: any[],
+    settings: any[],
     password: string
     put(): any;
   };
   constructor(private api: ApiProvider, private router: Router) {
     this.search = '';
-    this.user = {id: 0, name: '', username: '', status: false, has_reset_password: false, password: '', setting: [], put: () => {}};
+    this.user = {id: 0, name: '', username: '', status: '', has_reset_password: false, password: '', settings: [], put: () => {}};
     this.getUsers();
     this.getRoles();
   }
@@ -84,17 +84,17 @@ export class UsersComponent implements OnInit {
     if (this.reset) {
       u.has_reset_password = false;
       u.password = 'password';
-      u.setting = [];
+      u.settings = [];
       text += '-Mot de passe reinitialisé-';
     }
     if (this.active) {
-      u.status = true;
+      u.status = 'enable';
       text += '-Compte activé-';
     }
     if (this.user_roles !== undefined && this.user_roles.length > 0) {
       this.user_roles.forEach((v, k) => {
         // @ts-ignore
-        this.api.RoleUsers.post({user_id: u.id, role_id: v}).subscribe(d => {
+        this.api.RoleUsers.post({user_id: u.id, role_id: v, user_type: 'App\User'}).subscribe(d => {
           console.log('ok', d);
         }, q => {
           Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

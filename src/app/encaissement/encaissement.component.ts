@@ -50,7 +50,7 @@ export class EncaissementComponent implements OnInit {
     });
   }
 
-  print(e) {
+  printReceipt(e) {
     let doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
