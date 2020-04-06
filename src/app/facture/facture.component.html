@@ -15,25 +15,16 @@
     <div class="cell-3">
       <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
     </div>
-    <div class="cell-2" *ngIf="state">
-      <div data-role="activity" data-type="metro" data-style="dark"></div>
+    <div class="cell-4" *ngIf="state">
+      Chargement des données ...
+      <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
     </div>
     <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2" (click)="avancer()">Avancer</button>
     <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 " (click)="openBillModal()">Encaisser</button>
 
   </div>
-<!--
-data-role="table"
-           data-rownum="true"
-           data-table-search-title="Recherche"
-           data-table-rows-count-title="Afficher"
-           data-pagination-prev-title="Préc"
-           data-pagination-next-title="Suiv"
-           data-table-info-title="$1 à $2 sur $3 éléments"
-           data-search-min-length="3"
-           data-search-fields="client,facture"
--->
-  <div class="row mt-2">
+
+  <div class="row mt-2" style="max-height: 700px; overflow-y: scroll">
     <table class="table cell-border compact table-border"
            >
       <thead>
@@ -41,7 +32,7 @@ data-role="table"
         <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
         <th data-sortable="true">Date</th>
         <th data-sortable="true" data-name="client">Client</th>
-        <th data-sortable="true" (click)="printPDF()">Montant</th>
+        <th data-sortable="true">Montant</th>
         <th data-sortable="true">Avance</th>
         <th data-sortable="true">Reste</th>
         <th data-sortable="true">Statut</th>
@@ -52,7 +43,7 @@ data-role="table"
       <!--tr *ngFor="let i of factures"-->
       <tr *ngFor="let i of factures |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
           [ngClass]="{'bg-or':i.check==true}">
-        <td>{{i.id}}</td>
+        <td>{{i.bvs_id}}</td>
         <td>{{i.creation_date}}</td>
         <td>{{i.name}}</td>
         <td>{{i.amount}}</td>
@@ -60,7 +51,7 @@ data-role="table"
         <td>{{i.amount-i.avance}}</td>
         <td>{{i.statut}}</td>
         <td>
-          <button class="button mini" (click)="checkFacture(i)" *ngIf="!i.check">Sélectionner</button>
+          <button class="button mini bg-noir fg-white" (click)="checkFacture(i)" *ngIf="!i.check">Sélectionner</button>
           <button class="button mini" (click)="uncheckFacture(i)" *ngIf="i.check">Désélectionner</button>
         </td>
       </tr>
@@ -85,7 +76,7 @@ data-role="table"
         </thead>
         <tbody>
         <tr *ngFor="let i of selected_bill">
-          <td>{{i.id}}</td>
+          <td>{{i.bvs_id}}</td>
           <td>{{i.creation_date}}</td>
           <td>{{i.amount}}</td>
           <td>{{i.avance}}</td>

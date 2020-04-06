@@ -60,15 +60,15 @@ export class EncaissementComponent implements OnInit {
     doc.text('Montée BBR - BASSA', 6, 11);
     doc.text('Tél.: 690 404 180/89', 6, 14);
     // info sur le vendeur
-    doc.text('Encaissé le : ' + e.created_at, 6, 17);
-    doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD hh:mm:ss'), 6, 20);
+    doc.text('Encaissé le : ' + e.created_at, 6, 20);
+    doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
     // Client vendeur
-    doc.text('ENC-: ' + e.id, 6, 23);
-    doc.text('Client: ' + e.bill.customer.name, 6, 26);
-    doc.text('Vendeur: ' + e.vendeur, 6, 29);
-    doc.text('N° Facture: ' + e.bill.id, 6, 32);
-    doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 35);
-    doc.text('Reste: ' + this.api.formarPrice((e.bill.amount - e.amount)) + 'FCFA', 6, 37);
-    doc.save('two-by-four.pdf');
+    doc.text('ENC-: ' + e.id, 6, 29);
+    doc.text('Client: ' + e.bill.customer.name, 6, 32);
+    doc.text('Vendeur: ' + e.vendeur, 6, 35);
+    doc.text('N° Facture: ' + e.bill.bvs_id, 6, 38);
+    doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 41);
+    doc.text('Reste: ' + this.api.formarPrice((e.bill.amount - e.amount)) + 'FCFA', 6, 44);
+    doc.save( 'bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
   }
 }
