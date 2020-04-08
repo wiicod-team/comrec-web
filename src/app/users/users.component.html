@@ -37,11 +37,11 @@
         <td>{{i.username}}</td>
         <td>{{i.name}}</td>
         <td>
-          <span *ngFor="let r of i.roles">{{r.name}},</span>
+          <span *ngFor="let r of i.roles">{{r.display_name}},</span>
         </td>
-        <td>{{i.status}}</td>
-        <td>{{i.has_reset_password}} {{i.settings}}</td>
-        <td *ngxPermissionsOnly="['reset.password']">
+        <td>{{i.status |status}}</td>
+        <td>{{i.pass}}</td>
+        <td *ngxPermissionsOnly="['manage.admin']">
           <button class="button mini" (click)="editUser(i)"><span class="mif-pencil"></span></button>
         </td>
       </tr>
@@ -53,34 +53,49 @@
 </div>
 
 <div class="dialog" data-role="dialog" id="userDialog1">
-  <div class="dialog-title"></div>
+  <div class="dialog-title">
+    Details compte utilisateur
+  </div>
   <div class="dialog-content" >
-    <div class="form-group">
-      <div>{{user.username}}</div>
-      <div>{{user.name}}</div>
-      <div>{{user.status}}</div>
+    <table class="table cell-border compact table-border"
+    >
+      <thead>
+      <tr>
+        <th data-sortable="true">Identifiant</th>
+        <th data-sortable="true" data-name="client">Nom</th>
+        <th data-sortable="true" data-name="client">Rôles</th>
+        <th data-sortable="true" data-name="client">Statut</th>
+        <th data-sortable="true">Statut mot de passe</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{user.username}}</td>
+        <td>{{user.name}}</td>
+        <td>
+          <span *ngFor="let r of user.roles">{{r.display_name}},</span>
+        </td>
+        <td>{{user.status |status}}</td>
+        <td>{{user.pass}}</td>
+      </tr>
+
+      </tbody>
+    </table>
+    <div class="form-group" *ngxPermissionsOnly="['edit.role']">
+      <label>Definir nouveaux rôles</label>
+      <m4-switch [(ngModel)]="user.compte_statut" caption="Statut du compte" caption-position="left"></m4-switch>
     </div>
-    <div class="form-group">
-      <label>Rôles</label>
-      <select [(ngModel)]="user_roles" [ngModelOptions]="{standalone: true}"multiple style="height: 90px">
-        <option *ngFor="let r of roles" value="{{r.id}}">{{r.name}}</option>
-      </select>
-    </div>{{user.has_reset_password}}
-    <m4-switch [(ngModel)]="user.has_reset_password" caption="Activer le compte" caption-position="left"></m4-switch>
-    <div class="form-group">
-      <input type="checkbox" *ngIf="!user.has_reset_password" [(ngModel)]="user.has_reset_password" data-role="checkbox" data-caption="Reinitialiser le mot de passe">
-      <input type="checkbox" *ngIf="user.has_reset_password" [(ngModel)]="user.has_reset_password" data-role="checkbox" data-caption="Reinitialiser le mot de passe">
+
+    <div class="form-group" *ngxPermissionsOnly="['active.account']">
+      <m4-switch [(ngModel)]="user.compte_statut" caption="Statut du compte" caption-position="left"></m4-switch>
     </div>
-    <div class="form-group">
-      <input type="checkbox" *ngIf="user.status=='enable'" [(ngModel)]="user.status" (click)="user.status='disabled'" data-caption="Desactiver le compte">
-    </div>
-    <div class="form-group">{{user.status}}
-      <input type="checkbox" *ngIf="user.status!='enable'" [(ngModel)]="user.status" (click)="user.status='enable'" data-caption="Activer le compte">
+    <div class="form-group" *ngxPermissionsOnly="['reset.password']">
+      <m4-switch [(ngModel)]="user.reset_password" caption="Reinitialiser le mot de passe" caption-position="left"></m4-switch>
     </div>
   </div>
 
   <div class="dialog-actions text-right">
-    <button class="button js-dialog-close bg-or fg-white" (click)="updateUser()">Enregistrer</button>
+    <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['manage.admin']" (click)="updateUser()">Enregistrer</button>
     <button class="button primary js-dialog-close bg-noir">Fermer</button>
   </div>
 </div>

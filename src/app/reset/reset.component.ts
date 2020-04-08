@@ -13,11 +13,12 @@ export class ResetComponent implements OnInit {
   password: string;
   id: string;
   user: {
-    setting: any[];
+    settings: any[];
     has_reset_password: boolean;
     password: string;
     body: {
       id: number;
+      status: string;
     };
     id: number;
     put(): any;
@@ -31,7 +32,6 @@ export class ResetComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('i');
-    console.log(this.id);
     // recuperation du user
     this.api.Users.get(this.id).subscribe(d => {
       this.user = d;
@@ -40,13 +40,13 @@ export class ResetComponent implements OnInit {
 
   validatePassword(pwd) {
     this.user.id = this.user.body.id;
+    this.user.status = this.user.body.status;
     this.user.has_reset_password = true;
     this.user.password = pwd;
-    this.user.setting = [];
+    this.user.settings = [];
     this.user.put().subscribe(a => {
-      console.log(a);
-      Metro.notify.create('Mot de passe modifié.', 'Succes', {cls: 'bg-or', timeout: 3000});
       this.router.navigate(['/s/dashboard']);
+      Metro.notify.create('Mot de passe modifié.', 'Succès', {cls: 'bg-or', timeout: 3000});
     }, q => {
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
@@ -96,7 +96,6 @@ export class ResetComponent implements OnInit {
 
   submit() {
     // do signup or something
-    console.log(this.frmSignup.value);
     this.validatePassword(this.frmSignup.value.password);
   }
 }

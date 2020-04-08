@@ -43,23 +43,27 @@ export class UsersComponent implements OnInit {
       overlayClickClose: true
     });
     this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles'}).subscribe(data => {
+      data.forEach(v => {
+        if (v.status === 'enable') {
+          v.compte_statut = true;
+        } else if (v.status === 'disable') {
+          v.compte_statut = false;
+        }
+        if (v.has_reset_password) {
+          v.pass = 'Modifié';
+          v.reset_password = false;
+        } else {
+          v.pass = 'A modifier';
+          v.reset_password = false;
+        }
+        if (v.settings.length > 0 && v.settings[0].ask_for_reset) {
+          v.pass = 'A initialiser';
+        }
+      });
       this.users = data;
-      console.log(data);
       Metro.activity.close(load);
     }, q => {
       Metro.activity.close(load);
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-    });
-  }
-
-  resetPassword(u) {
-    u.has_reset_password = false;
-    u.password = 'password';
-    u.setting = [];
-    u.put().subscribe(p => {
-      console.log(p);
-      this.getUsers();
-    }, q => {
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
@@ -71,7 +75,6 @@ export class UsersComponent implements OnInit {
 
   getRoles() {
     this.api.Roles.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
-      console.log(data);
       this.roles = data;
     }, q => {
       Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -81,28 +84,33 @@ export class UsersComponent implements OnInit {
   updateUser() {
     const u = this.user;
     let text = '';
-    if (this.reset) {
+    let bool = false;
+    if (u.reset_password) {
       u.has_reset_password = false;
       u.password = 'password';
       u.settings = [];
       text += '-Mot de passe reinitialisé-';
+      bool = true;
     }
-    if (this.active) {
+    if (u.compte_statut && u.status === 'disable') {
       u.status = 'enable';
       text += '-Compte activé-';
+      bool = true;
+    } else if (!u.compte_statut && u.status === 'enable') {
+      u.status = 'disable';
+      text += '-Compte Désactivé-';
+      bool = true;
     }
     if (this.user_roles !== undefined && this.user_roles.length > 0) {
       this.user_roles.forEach((v, k) => {
-        // @ts-ignore
-        this.api.RoleUsers.post({user_id: u.id, role_id: v, user_type: 'App\User'}).subscribe(d => {
+        this.api.RoleUsers.post({user_id: u.id, role_id: v, user_type: 'App\\User'}).subscribe(d => {
           console.log('ok', d);
         }, q => {
           Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
         });
       });
     }
-    if (this.active || this.reset) {
-      console.log('ici');
+    if (bool) {
       u.put().subscribe(p => {
         this.getUsers();
         Metro.notify.create(text, 'Succes', {cls: 'bg-or'});
@@ -113,6 +121,6 @@ export class UsersComponent implements OnInit {
       });
     }
 
-
+    this.user_roles = [];
   }
 }

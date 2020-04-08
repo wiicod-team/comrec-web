@@ -136,14 +136,6 @@ export class FactureComponent implements OnInit {
     });
   }
 
-  checkFacture(f) {
-    f.check = true;
-  }
-
-  uncheckFacture(f) {
-    f.check = false;
-  }
-
   avancer() {
     const f = [];
     this.factures.forEach((v, k) => {
@@ -281,5 +273,10 @@ export class FactureComponent implements OnInit {
     doc.text('Montant versé: ' + this.api.formarPrice(a) + ' FCFA', 6, x);
     doc.save( 'bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
   }
+
+  onScroll() {
+
+  }
+
 
 }

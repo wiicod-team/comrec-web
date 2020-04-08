@@ -25,6 +25,9 @@ import {NgxPermissionsModule, NgxPermissionsService, NgxRolesService} from 'ngx-
 import { Page403Component } from './page403/page403.component';
 import { ResetComponent } from './reset/reset.component';
 import { ForgotComponent } from './forgot/forgot.component';
+import {InfiniteScrollModule} from 'ngx-infinite-scroll';
+import {StatutPipe} from './pipe/status';
+import {PriceFormatPipe} from './pipe/price-format';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -81,6 +84,8 @@ export function RestangularConfigFactory(RestangularProvider) {
     RolesComponent,
     CustomersComponent,
     FilterPipe,
+    StatutPipe,
+    PriceFormatPipe,
     Page404Component,
     Page403Component,
     ResetComponent,
@@ -88,6 +93,7 @@ export function RestangularConfigFactory(RestangularProvider) {
   ],
   imports: [
     BrowserModule,
+    InfiniteScrollModule,
     RestangularModule.forRoot(RestangularConfigFactory),
     NgxPermissionsModule.forRoot(),
     AppRoutingModule,

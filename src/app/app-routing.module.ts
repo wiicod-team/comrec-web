@@ -34,12 +34,12 @@ const routes: Routes = [
     path : 'admin',
     component : SidemenuComponent,
     canActivate: [NgxPermissionsGuard],
-    data: {
+    /*data: {
       permissions: {
         only: ['manage.admin'],
         redirectTo: '/403'
       }
-    },
+    },*/
     children : [
       {path : 'users', component : UsersComponent},
       {path : 'roles', component : RolesComponent},

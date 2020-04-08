@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor(private api: ApiProvider, private router: Router){
+  constructor(private api: ApiProvider, private router: Router) {
 
     const date = new Date();
     const j = date.getDay();
