@@ -27,10 +27,10 @@ export class ForgotComponent implements OnInit {
         this.username = '';
         this.router.navigate(['/login']);
       }, q => {
-        Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        Metro.notify.create('askReset ' + JSON.stringify(q.data.error.errors), 'Erreur forgot ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       });
     }, q => {
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('askReset ' + JSON.stringify(q.data.error.errors), 'Erreur forgot ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 }

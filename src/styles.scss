@@ -44,3 +44,6 @@ $noir : #282725;
   color: $noir !important;
 }
 
+.progress.line::before{
+  background: $or !important;
+}

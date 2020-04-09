@@ -77,7 +77,7 @@ export class DashboardComponent implements OnInit {
       Metro.activity.close(this.load);
     }, q => {
       Metro.activity.close(this.load);
-      Metro.notify.create('getUsersCount ' + q.data.error.message, 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getUsersCount ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       if (q.data.error.status_code === 401) {
         // token expiré
         this.router.navigate(['/login']);
@@ -90,7 +90,7 @@ export class DashboardComponent implements OnInit {
       this.customers_count = d.length;
     }, q => {
       // Metro.activity.close(this.load);
-      Metro.notify.create('getCustomersCount ' + q.data.error.message, 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getCustomersCount ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       if (q.data.error.status_code === 401) {
         // token expiré
         this.router.navigate(['/login']);
@@ -112,7 +112,7 @@ export class DashboardComponent implements OnInit {
       // somme du recouvrement du mois
     }, q => {
       // Metro.activity.close(this.load);
-      Metro.notify.create('getReceipts ' + q.data.error.message, 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       if (q.data.error.status_code === 401) {
         // token expiré
         this.router.navigate(['/login']);
@@ -148,7 +148,7 @@ export class DashboardComponent implements OnInit {
       }
     }, q => {
       // Metro.activity.close(this.load);
-      Metro.notify.create('getBestSeller ' + q.data.error.message, 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getBestSeller ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       if (q.data.error.status_code === 401) {
         // token expiré
         this.router.navigate(['/login']);

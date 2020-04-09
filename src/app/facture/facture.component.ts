@@ -77,7 +77,7 @@ export class FactureComponent implements OnInit {
         this.state = false;
       }
     }, q => {
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       if (s) {
         Metro.activity.close(load);
       } else {
@@ -110,7 +110,7 @@ export class FactureComponent implements OnInit {
           this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
             console.log('ok', f.id);
             i++;
-            Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-or', timeout: 3000});
+            Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 3000});
             if (i === this.selected_bill.length) {
               // arret du loading
               this.getBills(false);
@@ -126,11 +126,11 @@ export class FactureComponent implements OnInit {
             }
           });
         }, q => {
-          Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
           this.state = false;
         });
       }, q => {
-        Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
         this.state = false;
       });
     });
@@ -189,11 +189,11 @@ export class FactureComponent implements OnInit {
             };
             this.printAvance(e);
           }, q => {
-            Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
             this.state = false;
           });
         }, q => {
-          Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
           this.state = false;
         });
       } else {
@@ -213,7 +213,7 @@ export class FactureComponent implements OnInit {
         this.printAvance(e);
       }
     }, q => {
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       this.state = false;
     });
   }

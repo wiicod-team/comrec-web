@@ -49,7 +49,7 @@ export class RolesComponent implements OnInit {
       Metro.activity.close(this.load);
     }, q => {
       Metro.activity.close(this.load);
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.errors), 'Erreur role ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -59,7 +59,7 @@ export class RolesComponent implements OnInit {
       this.permissions = data;
     }, q => {
       Metro.activity.close(this.load);
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getPermissions ' + JSON.stringify(q.data.error.errors), 'Erreur role ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -75,7 +75,7 @@ export class RolesComponent implements OnInit {
       actions: [
         {
           caption: 'Oui',
-          cls: 'js-dialog-close alert',
+          cls: 'js-dialog-close bg-or fg-white',
           onclick: () => {
             i.remove().subscribe(d => {
               Metro.notify.create(i.display_name + 'supprimé', 'info', {});
@@ -84,7 +84,7 @@ export class RolesComponent implements OnInit {
         },
         {
           caption: 'Non',
-          cls: 'js-dialog-close',
+          cls: 'js-dialog-close bg-noir',
           onclick: () => {
 
           }
@@ -98,7 +98,7 @@ export class RolesComponent implements OnInit {
       Metro.notify.create(this.update.display_name + 'mis à jour', 'Info', {});
     }, q => {
       Metro.activity.close(this.load);
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('edit ' + JSON.stringify(q.data.error.errors), 'Erreur role ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 }

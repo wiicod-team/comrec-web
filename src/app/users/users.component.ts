@@ -20,13 +20,26 @@ export class UsersComponent implements OnInit {
     username: string
     status: string,
     has_reset_password: boolean,
+    reset_password: boolean,
+    compte_statut: boolean,
     settings: any[],
     password: string
     put(): any;
   };
   constructor(private api: ApiProvider, private router: Router) {
     this.search = '';
-    this.user = {id: 0, name: '', username: '', status: '', has_reset_password: false, password: '', settings: [], put: () => {}};
+    this.user = {
+      id: 0,
+      name: '',
+      username: '',
+      status: '',
+      has_reset_password: false,
+      compte_statut: false,
+      reset_password: false,
+      password: '',
+      settings: [],
+      put: () => {}
+    };
     this.getUsers();
     this.getRoles();
   }
@@ -77,7 +90,7 @@ export class UsersComponent implements OnInit {
     this.api.Roles.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       this.roles = data;
     }, q => {
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 
@@ -106,7 +119,7 @@ export class UsersComponent implements OnInit {
         this.api.RoleUsers.post({user_id: u.id, role_id: v, user_type: 'App\\User'}).subscribe(d => {
           console.log('ok', d);
         }, q => {
-          Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
         });
       });
     }
@@ -117,7 +130,7 @@ export class UsersComponent implements OnInit {
         this.active = false;
         this.reset = false;
       }, q => {
-        Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       });
     }
 

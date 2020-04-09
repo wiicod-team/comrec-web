@@ -5,7 +5,7 @@
 
   <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
     <ul class="breadcrumbs bg-transparent">
-      <li class="page-item"><a (click)="getCustomers()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+      <li class="page-item"><a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
     </ul>
   </div>
 </div>
@@ -14,6 +14,10 @@
   <div class="row mt-2">
     <div class="cell-3">
       <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+    </div>
+    <div class="cell-4" *ngIf="state">
+      Chargement des données ...
+      <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
     </div>
   </div>
 
@@ -31,15 +35,15 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of customers |filter:{ id: search, name: search, username: search, status: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
+      <tr *ngFor="let i of customers |filter:{ id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.name}}</td>
         <td>{{i.sale_network}}</td>
         <td>{{i.username}}</td>
-        <td>{{i.status}}</td>
+        <td>{{i.status |status}}</td>
         <td *ngxPermissionsOnly="['link.customer']">
-          <button class="button mini" (click)="oepnLink(i)" *ngIf="!i.check">Lier</button>
-          <button class="button mini" (click)="unLink(i)" *ngIf="i.check">Délier</button>
+          <button class="button mini" *ngIf="!i.link" (click)="oepnLink(i)">Lier</button>
+          <button class="button mini" *ngIf="i.link" (click)="unLink(i)">Délier</button>
         </td>
       </tr>
 

@@ -46,7 +46,7 @@ export class EncaissementComponent implements OnInit {
       Metro.activity.close(load);
     }, q => {
       Metro.activity.close(load);
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.errors), 'Erreur Receipts ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 

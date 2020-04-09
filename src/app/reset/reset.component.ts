@@ -20,6 +20,7 @@ export class ResetComponent implements OnInit {
       id: number;
       status: string;
     };
+    status: string,
     id: number;
     put(): any;
   };
@@ -48,7 +49,7 @@ export class ResetComponent implements OnInit {
       this.router.navigate(['/s/dashboard']);
       Metro.notify.create('Mot de passe modifié.', 'Succès', {cls: 'bg-or', timeout: 3000});
     }, q => {
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('validatePassword ' + JSON.stringify(q.data.error.errors), 'Erreur reset ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });
   }
 

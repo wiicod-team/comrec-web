@@ -9,10 +9,10 @@ import {Injectable, Pipe, PipeTransform} from '@angular/core';
 export class StatutPipe implements PipeTransform{
 
   transform(value: any, ...args: any[]): any {
-    if (value === 'expired') {
-      return 'Echue';
-    } else if (value === 'pending_payment') {
-      return 'En attente de confirmation du paiement';
+    if (value === 'solvent') {
+      return 'Crédible';
+    } else if (value === 'insolvent') {
+      return 'Incrédible';
     } else if (value === 'pending_delivery') {
       return 'En attente de livraison';
     } else if (value === 'delivered') {

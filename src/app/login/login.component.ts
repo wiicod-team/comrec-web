@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
         if (err.data.status_code === 401) {
           Metro.notify.create('Email ou mot de passe incorrect', 'Echec de connexion', {cls: 'alert'});
         } else {
-          Metro.notify.create('Erreur ' + err.data.error.status_code + ' : Service temporairement indisponible, Merci de réessayer dans quelques minutes.', 'Echec de connexion', {cls: 'alert', timeout: 3000});
+          Metro.notify.create('login : Service temporairement indisponible, Merci de réessayer dans quelques minutes.', 'Erreur Login ' + err.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
         }
       });
     }
