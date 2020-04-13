@@ -82,8 +82,28 @@
       </tbody>
     </table>
     <div class="form-group" *ngxPermissionsOnly="['edit.role']">
-      <label>Definir nouveaux rôles</label>
-      <m4-switch [(ngModel)]="user.compte_statut" caption="Statut du compte" caption-position="left"></m4-switch>
+      <h5>Rôles</h5>
+      <div style="max-height: 150px; overflow-y: scroll">
+        <table class="table cell-border compact table-border"
+        >
+          <thead>
+          <tr>
+            <th data-sortable="true">Nom</th>
+            <th data-sortable="true" data-name="client">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of roles">
+            <td>{{item.display_name}}</td>
+            <td>
+              <button class="button mini bg-noir fg-white" (click)="addRole(item.id)" *ngIf="!item.check">Ajouter</button>
+              <button class="button mini" (click)="removeRole(item.id)" *ngIf="item.check">Supprimer</button>
+            </td>
+          </tr>
+
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="form-group" *ngxPermissionsOnly="['active.account']">

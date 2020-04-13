@@ -23,7 +23,9 @@ export class UsersComponent implements OnInit {
     reset_password: boolean,
     compte_statut: boolean,
     settings: any[],
+    roles: any[],
     password: string
+    pass: string
     put(): any;
   };
   constructor(private api: ApiProvider, private router: Router) {
@@ -37,7 +39,9 @@ export class UsersComponent implements OnInit {
       compte_statut: false,
       reset_password: false,
       password: '',
+      pass: '',
       settings: [],
+      roles: [],
       put: () => {}
     };
     this.getUsers();
@@ -83,6 +87,16 @@ export class UsersComponent implements OnInit {
 
   editUser(u) {
     this.user = u;
+    // verification des roles
+    u.roles.forEach(v => {
+      this.roles.forEach(r => {
+        if (v.id === r.id) {
+          v.check = true;
+          r.check = true;
+          console.log(u.id);
+        }
+      });
+    });
     Metro.dialog.open('#userDialog1');
   }
 
@@ -135,5 +149,17 @@ export class UsersComponent implements OnInit {
     }
 
     this.user_roles = [];
+  }
+
+  addRole(id) {
+    this.api.RoleUsers.post({user_id: this.user.id, role_id: id, user_type: 'App\\User'}).subscribe(data => {
+      console.log(data);
+    });
+  }
+
+  removeRole(id) {
+    this.api.restangular.all('role_users/' + id + '/' + this.user.id).remove().subscribe( d=> {
+      console.log(d);
+    });
   }
 }
