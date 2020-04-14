@@ -96,8 +96,8 @@
           <tr *ngFor="let item of roles">
             <td>{{item.display_name}}</td>
             <td>
-              <button class="button mini bg-noir fg-white" (click)="addRole(item.id)" *ngIf="!item.check">Ajouter</button>
-              <button class="button mini" (click)="removeRole(item.id)" *ngIf="item.check">Supprimer</button>
+              <button class="button mini bg-noir fg-white" (click)="setRole(item)" *ngIf="!item.check">Ajouter</button>
+              <button class="button mini" (click)="setRole(item)" *ngIf="item.check">Supprimer</button>
             </td>
           </tr>
 

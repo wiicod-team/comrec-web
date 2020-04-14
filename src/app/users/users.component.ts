@@ -10,6 +10,7 @@ declare var Metro;
 export class UsersComponent implements OnInit {
   users;
   user_roles: any[];
+  edit_role: boolean;
   search;
   reset: boolean;
   active: boolean;
@@ -101,7 +102,7 @@ export class UsersComponent implements OnInit {
   }
 
   getRoles() {
-    this.api.Roles.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
+    this.api.Roles.getList({should_paginate: false, _sort: 'display_name', _sortDir: 'asc'}).subscribe(data => {
       this.roles = data;
     }, q => {
       Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -109,6 +110,7 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser() {
+    console.log(this.roles);
     const u = this.user;
     let text = '';
     let bool = false;
@@ -128,13 +130,22 @@ export class UsersComponent implements OnInit {
       text += '-Compte Désactivé-';
       bool = true;
     }
-    if (this.user_roles !== undefined && this.user_roles.length > 0) {
-      this.user_roles.forEach((v, k) => {
-        this.api.RoleUsers.post({user_id: u.id, role_id: v, user_type: 'App\\User'}).subscribe(d => {
-          console.log('ok', d);
-        }, q => {
-          Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        });
+    if (this.edit_role) {
+      this.roles.forEach((v, k) => {
+        if (v.action === 'ajouter') {
+          this.api.RoleUsers.post({user_id: u.id, role_id: v.id, user_type: 'App\\User'}).subscribe(d => {
+            console.log('ok', d);
+            Metro.notify.create(v.display_name + ' attribué à l\'utilisateur', 'Succes', {cls: 'bg-or fd-white'});
+          }, q => {
+            Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          });
+        } else if (v.action === 'supprimer') {
+          this.api.restangular.all('role_users/' + v.id + '/' + this.user.id).remove().subscribe( d => {
+            console.log(d);
+          }, q => {
+            Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          });
+        }
       });
     }
     if (bool) {
@@ -158,8 +169,20 @@ export class UsersComponent implements OnInit {
   }
 
   removeRole(id) {
-    this.api.restangular.all('role_users/' + id + '/' + this.user.id).remove().subscribe( d=> {
+    this.api.restangular.all('role_users/' + id + '/' + this.user.id).remove().subscribe( d => {
       console.log(d);
     });
+  }
+
+  setRole(r) {
+    if (r.check) {
+      r.action = 'supprimer';
+      r.check = false;
+    } else {
+      r.action = 'ajouter';
+      r.check = true;
+    }
+
+    this.edit_role = true;
   }
 }
