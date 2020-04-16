@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="cell-6">
+  <div class="cell-12">
     <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
       <div class="cell-md-4 d-flex flex-align-center">
         <h3 class="dashboard-section-title  text-center text-left-md w-100">Rôles</h3>
@@ -7,7 +7,7 @@
 
       <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
         <ul class="breadcrumbs bg-transparent">
-          <li class="page-item"><a (click)="getRoles()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+          <li class="page-item"><a (click)="refresh()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
         </ul>
       </div>
     </div>
@@ -17,6 +17,8 @@
         <div class="cell-4">
           <input type="text" [(ngModel)]="searchR" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
         </div>
+
+        <button *ngxPermissionsOnly="['edit.role']" class="button ml-auto mr-2" (click)="openNewRole()">Ajouter</button>
       </div>
 
       <table class="table cell-border compact table-border"
@@ -26,6 +28,7 @@
           <th data-sortable="true">Code</th>
           <th data-sortable="true">Nom</th>
           <th data-sortable="true">Description</th>
+          <th data-sortable="true">Permissions</th>
           <th>Actions</th>
         </tr>
         </thead>
@@ -34,6 +37,9 @@
           <td>{{i.name}}</td>
           <td>{{i.display_name}}</td>
           <td>{{i.description}}</td>
+          <td>
+            <span *ngFor="let p of i.permissions">{{p.display_name}}, </span>
+          </td>
           <td>
             <button *ngxPermissionsOnly="['edit.role']" class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
             <button *ngxPermissionsOnly="['delete.role']" class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button>
@@ -45,71 +51,109 @@
     </div>
 
   </div>
-
-  <div class="cell-6">
-    <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
-      <div class="cell-md-4 d-flex flex-align-center">
-        <h3 class="dashboard-section-title  text-center text-left-md w-100">Permissions</h3>
-      </div>
-
-      <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-        <ul class="breadcrumbs bg-transparent">
-          <li class="page-item"><a (click)="getPermissions()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="m-3">
-      <div class="row mt-2">
-        <div class="cell-4">
-          <input type="text" [(ngModel)]="searchP" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
-        </div>
-      </div>
-
-      <table class="table cell-border compact table-border"
-      >
-        <thead>
-        <tr>
-          <th data-sortable="true">Code</th>
-          <th data-sortable="true">Nom</th>
-          <th data-sortable="true">Description</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let i of permissions | filter:{ id: searchP, name: searchP, seller: searchP, status: searchP } : false"
-            [ngClass]="{'dark':i.check==true}">
-          <td>{{i.name}}</td>
-          <td>{{i.display_name}}</td>
-          <td>{{i.description}}</td>
-        </tr>
-
-        </tbody>
-      </table>
-    </div>
-  </div>
 </div>
 
-<div class="dialog" data-role="dialog" id="editDialog">
-  <div class="dialog-title">Edition</div>
-  <div class="dialog-content">
-    <form>
-      <div class="form-group">
-        <label>Code</label>
-        <input type="text" placeholder="Code" name="update.name" [(ngModel)]="update.name"/>
+<div class="dialog" data-role="dialog" id="roleDialog1">
+  <div class="dialog-title">
+    Details
+  </div>
+  <div class="dialog-content" >
+    <table class="table cell-border compact table-border">
+      <thead>
+      <tr>
+        <th data-sortable="true">id</th>
+        <th data-sortable="true" data-name="client">Nom</th>
+        <th data-sortable="true" data-name="client">Code</th>
+        <th data-sortable="true" data-name="client">Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{role.id}}</td>
+        <td>{{role.display_name}}</td>
+        <td>{{role.name}}</td>
+        <td>{{role.description}}</td>
+      </tr>
+
+      </tbody>
+    </table>
+    <div class="form-group" *ngxPermissionsOnly="['edit.role']">
+      <h5>Permissions</h5>
+      <div style="max-height: 150px; overflow-y: scroll">
+        <table class="table cell-border compact table-border"
+        >
+          <thead>
+          <tr>
+            <th data-sortable="true">Nom</th>
+            <th data-sortable="true" data-name="client">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of permissions">
+            <td>{{item.display_name}}</td>
+            <td>
+              <button class="button mini bg-noir fg-white" (click)="setPermission(item)" *ngIf="!item.check">Ajouter</button>
+              <button class="button mini" (click)="setPermission(item)" *ngIf="item.check">Supprimer</button>
+            </td>
+          </tr>
+
+          </tbody>
+        </table>
       </div>
-      <div class="form-group">
-        <label>Nom</label>
-        <input type="text" placeholder="Nom" name="update.display_name" [(ngModel)]="update.display_name"/>
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <input type="text" placeholder="Description" name="update.description" [(ngModel)]="update.description"/>
-      </div>
-    </form>
+    </div>
   </div>
 
   <div class="dialog-actions text-right">
-    <button class="button js-dialog-close" (click)="edit()">Enregistrer</button>
-    <button class="button primary js-dialog-close">Annuler</button>
+    <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['manage.admin']" (click)="updatePermission()">Enregistrer</button>
+    <button class="button primary js-dialog-close bg-noir">Fermer</button>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="newRoleDialog1">
+  <div class="dialog-title">
+    Nouveau rôle
+  </div>
+  <div class="dialog-content" >
+    <div class="form-group">
+      <label>Nom</label>
+      <input type="text" [(ngModel)]="new.display_name" placeholder="Nom"/>
+    </div>
+    <div class="form-group">
+      <label>Code</label>
+      <input type="text" [(ngModel)]="new.name" placeholder="Code"/>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea data-role="textarea" [(ngModel)]="new.description" ></textarea>
+    </div>
+    <div class="form-group" *ngxPermissionsOnly="['edit.role']">
+      <h5>Permissions</h5>
+      <div style="max-height: 150px; overflow-y: scroll">
+        <table class="table cell-border compact table-border"
+        >
+          <thead>
+          <tr>
+            <th data-sortable="true">Nom</th>
+            <th data-sortable="true" data-name="client">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of new.permissions">
+            <td>{{item.display_name}}</td>
+            <td>
+              <button class="button mini bg-noir fg-white" (click)="item.check=true" *ngIf="!item.check">Ajouter</button>
+              <button class="button mini" (click)="item.check=false" *ngIf="item.check">Supprimer</button>
+            </td>
+          </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-actions text-right">
+    <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['edit.role']" (click)="newRole()">Enregistrer</button>
+    <button class="button primary js-dialog-close bg-noir">Fermer</button>
   </div>
 </div>

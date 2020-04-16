@@ -76,11 +76,13 @@ export class DashboardComponent implements OnInit {
       this.users_count = d.length;
       Metro.activity.close(this.load);
     }, q => {
-      Metro.activity.close(this.load);
-      Metro.notify.create('getUsersCount ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      if (q.data.error.status_code === 401) {
-        // token expiré
-        this.router.navigate(['/login']);
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getUsersCount ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.activity.close(this.load);
+        Metro.notify.create('getUsersCount ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
   }
@@ -89,11 +91,12 @@ export class DashboardComponent implements OnInit {
     this.api.Customers.getList({should_paginate: false}).subscribe(d => {
       this.customers_count = d.length;
     }, q => {
-      // Metro.activity.close(this.load);
-      Metro.notify.create('getCustomersCount ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      if (q.data.error.status_code === 401) {
-        // token expiré
-        this.router.navigate(['/login']);
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getCustomersCount ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getCustomersCount ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
   }
@@ -111,11 +114,12 @@ export class DashboardComponent implements OnInit {
       this.receipts_count = d.length;
       // somme du recouvrement du mois
     }, q => {
-      // Metro.activity.close(this.load);
-      Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      if (q.data.error.status_code === 401) {
-        // token expiré
-        this.router.navigate(['/login']);
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
   }
@@ -147,11 +151,12 @@ export class DashboardComponent implements OnInit {
         // Metro.activity.close(this.load);
       }
     }, q => {
-      // Metro.activity.close(this.load);
-      Metro.notify.create('getBestSeller ' + JSON.stringify(q.data.error.errors), 'Erreur dashboard ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      if (q.data.error.status_code === 401) {
-        // token expiré
-        this.router.navigate(['/login']);
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getBestSeller ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getBestSeller ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
   }

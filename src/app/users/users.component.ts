@@ -81,8 +81,14 @@ export class UsersComponent implements OnInit {
       this.users = data;
       Metro.activity.close(load);
     }, q => {
-      Metro.activity.close(load);
-      Metro.notify.create(q.data.error.message, 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getUsers ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.activity.close(load);
+        Metro.notify.create('getUsers ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
     });
   }
 
@@ -105,7 +111,15 @@ export class UsersComponent implements OnInit {
     this.api.Roles.getList({should_paginate: false, _sort: 'display_name', _sortDir: 'asc'}).subscribe(data => {
       this.roles = data;
     }, q => {
-      Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+    }, q => {
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
     });
   }
 
@@ -134,19 +148,35 @@ export class UsersComponent implements OnInit {
       this.roles.forEach((v, k) => {
         if (v.action === 'ajouter') {
           this.api.RoleUsers.post({user_id: u.id, role_id: v.id, user_type: 'App\\User'}).subscribe(d => {
-            console.log('ok', d);
-            Metro.notify.create(v.display_name + ' attribué à l\'utilisateur', 'Succes', {cls: 'bg-or fd-white'});
+            v.action = '';
+            v.check = false;
+            Metro.notify.create(v.display_name + ' attribué à l\'utilisateur', 'Succes', {cls: 'bg-or fd-white', timeout: 5000});
           }, q => {
-            Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            if (q.data.error.status_code === 500) {
+              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            } else if (q.data.error.status_code === 401) {
+              Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+            } else {
+              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            }
           });
         } else if (v.action === 'supprimer') {
           this.api.restangular.all('role_users/' + v.id + '/' + this.user.id).remove().subscribe( d => {
-            console.log(d);
+            v.action = '';
+            v.check = false;
+            Metro.notify.create(v.display_name + ' supprimé chez l\'utilisateur', 'Succes', {cls: 'bg-or fd-white', timeout: 5000});
           }, q => {
-            Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            if (q.data.error.status_code === 500) {
+              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            } else if (q.data.error.status_code === 401) {
+              Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+            } else {
+              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            }
           });
         }
       });
+      this.getUsers();
     }
     if (bool) {
       u.put().subscribe(p => {
@@ -155,23 +185,17 @@ export class UsersComponent implements OnInit {
         this.active = false;
         this.reset = false;
       }, q => {
-        Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur user ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        if (q.data.error.status_code === 500) {
+          Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        } else if (q.data.error.status_code === 401) {
+          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+        } else {
+          Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        }
       });
     }
 
     this.user_roles = [];
-  }
-
-  addRole(id) {
-    this.api.RoleUsers.post({user_id: this.user.id, role_id: id, user_type: 'App\\User'}).subscribe(data => {
-      console.log(data);
-    });
-  }
-
-  removeRole(id) {
-    this.api.restangular.all('role_users/' + id + '/' + this.user.id).remove().subscribe( d => {
-      console.log(d);
-    });
   }
 
   setRole(r) {
@@ -182,7 +206,6 @@ export class UsersComponent implements OnInit {
       r.action = 'ajouter';
       r.check = true;
     }
-
     this.edit_role = true;
   }
 }

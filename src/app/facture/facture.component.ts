@@ -77,11 +77,17 @@ export class FactureComponent implements OnInit {
         this.state = false;
       }
     }, q => {
-      Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      if (s) {
-        Metro.activity.close(load);
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getBills ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
       } else {
-        this.state = false;
+        Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        if (s) {
+          Metro.activity.close(load);
+        } else {
+          this.state = false;
+        }
       }
     });
   }
@@ -110,7 +116,7 @@ export class FactureComponent implements OnInit {
           this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
             console.log('ok', f.id);
             i++;
-            Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 3000});
+            Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
             if (i === this.selected_bill.length) {
               // arret du loading
               this.getBills(false);
@@ -126,12 +132,24 @@ export class FactureComponent implements OnInit {
             }
           });
         }, q => {
-          Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-          this.state = false;
+          if (q.data.error.status_code === 500) {
+            Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          } else if (q.data.error.status_code === 401) {
+            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+          } else {
+            Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            this.state = false;
+          }
         });
       }, q => {
-        Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        this.state = false;
+        if (q.data.error.status_code === 500) {
+          Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        } else if (q.data.error.status_code === 401) {
+          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+        } else {
+          Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          this.state = false;
+        }
       });
     });
   }
@@ -147,7 +165,6 @@ export class FactureComponent implements OnInit {
       // ok
       Metro.dialog.open('#avanceDialog1');
       this.facture = f[0];
-      console.log(f);
     } else if (f.length === 0) {
       // pas de factures selectionnées
       Metro.notify.create('Pas de facture selectionnée', 'Absence de facture', {cls: 'bg-gris'});
@@ -167,7 +184,7 @@ export class FactureComponent implements OnInit {
     };
 
     this.api.Receipts.post(opt).subscribe(d => {
-      Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or', timeout: 3000});
+      Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
       if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
         // modification du statut de la facture
         this.api.Bills.get(this.facture.id).subscribe(data => {
@@ -189,12 +206,24 @@ export class FactureComponent implements OnInit {
             };
             this.printAvance(e);
           }, q => {
-            Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-            this.state = false;
+            if (q.data.error.status_code === 500) {
+              Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            } else if (q.data.error.status_code === 401) {
+              Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+            } else {
+              Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              this.state = false;
+            }
           });
         }, q => {
-          Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-          this.state = false;
+          if (q.data.error.status_code === 500) {
+            Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          } else if (q.data.error.status_code === 401) {
+            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+          } else {
+            Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            this.state = false;
+          }
         });
       } else {
         this.state = false;
@@ -213,8 +242,14 @@ export class FactureComponent implements OnInit {
         this.printAvance(e);
       }
     }, q => {
-      Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur bills ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      this.state = false;
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        this.state = false;
+      }
     });
   }
 
@@ -230,7 +265,7 @@ export class FactureComponent implements OnInit {
     doc.text('Montée BBR - BASSA', 6, 11);
     doc.text('Tél.: 690 404 180/89', 6, 14);
     // info sur le vendeur
-    doc.text('Le : ' + e.created_at, 6, 17);
+    doc.text('Avancé le : ' + e.created_at, 6, 17);
     doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 20);
     // Client vendeur
     doc.text('A-' + e.vendeur_id + '-' + e.id, 6, 23);
@@ -254,7 +289,7 @@ export class FactureComponent implements OnInit {
     doc.text('Montée BBR - BASSA', 6, 11);
     doc.text('Tél.: 690 404 180/89', 6, 14);
     // info sur le vendeur
-    doc.text('Le : ' + e.created_at, 6, 20);
+    doc.text('Encaissé le : ' + e.created_at, 6, 20);
     doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
     // Client vendeur
     doc.text('E-' + e.vendeur_id + '-' + moment(new Date()).format('YYMMDDHHmmss'), 6, 29);
