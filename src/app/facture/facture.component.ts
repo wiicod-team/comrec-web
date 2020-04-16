@@ -113,13 +113,14 @@ export class FactureComponent implements OnInit {
   trackByIndex(index: number, obj: any): any {
     return index;
   }
+
   async getUserCustomerIds(userId) {
     const params = {
       should_paginate: false,
       user_id: userId
     };
-    const ucustomers = await this.api.CustomerUsers.getList(params).toPromise();
-    if (Array.isArray(ucustomers)) {
+    const ucustomers: any =  await this.api.CustomerUsers.getList(params).toPromise();
+    if (ucustomers) {
       return ucustomers.plain().reduce((res, item) => {
         if (res !== '') {
           return `${res},${item.customer_id}`;
