@@ -3,14 +3,28 @@
     <h3 class="dashboard-section-title  text-center text-left-md w-100">Factures</h3>
   </div>
 
-  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+  <div class="cell-md-2 d-flex flex-align-center">
+    <h6 class="dashboard-section-title  text-center text-left-md w-100">{{factures.length}} sur {{max_length}}</h6>
+  </div>
+
+  <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
     <ul class="breadcrumbs bg-transparent">
-      <li class="page-item"><a (click)="getBills(true)" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+      <li class="page-item"><a (click)="getBills(true)" class="page-link">Actualiser <span class="icon"><span
+        class="mif-refresh"></span></span></a></li>
     </ul>
   </div>
 </div>
 
-<div class="m-3">
+<div class="m-3"
+     infinite-scroll
+     [infiniteScrollDistance]="scrollDistance"
+     [infiniteScrollUpDistance]="scrollUpDistance"
+     [infiniteScrollThrottle]="throttle"
+     (scrolled)="onScrollDown($event)"
+     (scrolledUp)="onUp($event)"
+     [infiniteScrollContainer]="'.main-panel'"
+     [alwaysCallback]="true"
+>
   <div class="row mt-2">
     <div class="cell-3">
       <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
@@ -24,9 +38,13 @@
 
   </div>
 
-  <div class="row mt-2" style="max-height: 700px; overflow-y: scroll">
+  <div
+        class="row mt-2 main-panel"
+        style="max-height: 700px; overflow-y: scroll"
+
+  >
     <table class="table cell-border compact table-border"
-           >
+    >
       <thead>
       <tr>
         <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
@@ -41,14 +59,15 @@
       </thead>
       <tbody>
       <!--tr *ngFor="let i of factures"-->
-      <tr *ngFor="let i of factures |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
-          [ngClass]="{'bg-or':i.check==true}">
+      <tr
+        *ngFor="let i of factures;trackBy:trackByIndex |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
+        [ngClass]="{'bg-or':i.check==true}">
         <td>{{i.bvs_id}}</td>
         <td>{{i.creation_date}}</td>
         <td>{{i.name}}</td>
         <td>{{i.amount}}</td>
         <td>{{i.avance}}</td>
-        <td>{{i.amount-i.avance}}</td>
+        <td>{{i.amount - i.avance}}</td>
         <td>{{i.statut}}</td>
         <td>
           <button class="button mini bg-noir fg-white" (click)="i.check=true" *ngIf="!i.check">Sélectionner</button>
@@ -80,17 +99,19 @@
           <td>{{i.creation_date}}</td>
           <td>{{i.amount}}</td>
           <td>{{i.avance}}</td>
-          <td>{{i.amount-i.avance}}</td>
+          <td>{{i.amount - i.avance}}</td>
         </tr>
 
         </tbody>
       </table>
     </div>
-    <div class="dialog-content"  *ngIf="selected_bill.length<=0">
+    <div class="dialog-content" *ngIf="selected_bill.length<=0">
       Aucune facture selectionnée.
     </div>
     <div class="dialog-actions text-right">
-      <button class="button js-dialog-close bg-or fg-white" (click)="validerEncaissement()" *ngIf="selected_bill.length>0">Oui</button>
+      <button class="button js-dialog-close bg-or fg-white" (click)="validerEncaissement()"
+              *ngIf="selected_bill.length>0">Oui
+      </button>
       <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0">Non</button>
       <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length<=0">Fermer</button>
     </div>
@@ -98,12 +119,13 @@
 
   <div class="dialog" data-role="dialog" id="avanceDialog1">
     <div class="dialog-title">Avance de paiement</div>
-    <div class="dialog-content" >
+    <div class="dialog-content">
       Combien souhaitez-vous avancer ?
       <div class="form-group">
         <label>Montant</label>
-        <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}" placeholder="Montant de l'avance"/>
-        <small class="text-muted">Reste à payer : {{facture.amount-facture.avance}} FCFA</small>
+        <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}"
+               placeholder="Montant de l'avance"/>
+        <small class="text-muted">Reste à payer : {{facture.amount - facture.avance}} FCFA</small>
       </div>
       <div class="form-group">
         <label>Commentaire</label>
