@@ -138,16 +138,11 @@ export class FactureComponent implements OnInit {
   onScrollDown(ev) {
     console.log('scrolled down!!', ev);
 
-    this.getBills(true);
+    this.getBills(false);
   }
 
   onUp(ev) {
     console.log('scrolled up!', ev);
-    /* const start = this.sum;
-     this.sum += 20;
-     this.prependItems(start, this.sum);
-
-     this.direction = 'up';*/
   }
 
   openBillModal() {
