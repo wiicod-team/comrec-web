@@ -159,7 +159,6 @@ export class FactureComponent implements OnInit {
 
   validerEncaissement() {
     this.state = true;
-    console.log('Validation de l\'encaissement');
     // actualisation
     let i = 0;
     this.selected_bill.forEach(f => {

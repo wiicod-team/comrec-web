@@ -3,11 +3,7 @@
     <h3 class="dashboard-section-title  text-center text-left-md w-100">Factures</h3>
   </div>
 
-  <div class="cell-md-2 d-flex flex-align-center">
-    <h6 class="dashboard-section-title  text-center text-left-md w-100">{{factures.length}} sur {{max_length}}</h6>
-  </div>
-
-  <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
     <ul class="breadcrumbs bg-transparent">
       <li class="page-item"><a (click)="getBills(true)" class="page-link">Actualiser <span class="icon"><span
         class="mif-refresh"></span></span></a></li>
@@ -33,6 +29,9 @@
       Chargement des données ...
       <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
     </div>
+    <div class="cell-2">
+      {{factures.length}} sur {{max_length}} Factures
+    </div>
     <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2" (click)="avancer()">Avancer</button>
     <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 " (click)="openBillModal()">Encaisser</button>
 
@@ -40,7 +39,7 @@
 
   <div
         class="row mt-2 main-panel"
-        style="max-height: 700px; overflow-y: scroll"
+        style="max-height: 500px; overflow-y: scroll"
 
   >
     <table class="table cell-border compact table-border"

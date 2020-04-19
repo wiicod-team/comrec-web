@@ -73,6 +73,7 @@ export class DashboardComponent implements OnInit {
   }
   getUsersCount() {
     this.api.Users.getList({should_paginate: false}).subscribe(d => {
+      console.log('azert', d);
       this.users_count = d.length;
       Metro.activity.close(this.load);
     }, q => {
