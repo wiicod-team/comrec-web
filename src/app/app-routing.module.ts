@@ -21,9 +21,39 @@ const routes: Routes = [
     path : 's',
     component : SidemenuComponent,
     children : [
-      {path : 'dashboard', component : DashboardComponent},
-      {path : 'facture', component : FactureComponent},
-      {path : 'encaissement', component : EncaissementComponent}
+      {
+        path : 'dashboard',
+        component : DashboardComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.dashboard'],
+            redirectTo: '/403'
+          }
+        }
+      },
+      {
+        path : 'facture',
+        component : FactureComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.bill'],
+            redirectTo: '/403'
+          }
+        }
+       },
+      {
+        path : 'encaissement',
+        component : EncaissementComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.receipt'],
+            redirectTo: '/403'
+          }
+        }
+      }
     ]
   },
   {
@@ -34,15 +64,35 @@ const routes: Routes = [
     path : 'admin',
     component : SidemenuComponent,
     canActivate: [NgxPermissionsGuard],
-    data: {
+    /*data: {
       permissions: {
         only: ['manage.admin'],
         redirectTo: '/403'
       }
-    },
+    },*/
     children : [
-      {path : 'users', component : UsersComponent},
-      {path : 'roles', component : RolesComponent},
+      {
+        path : 'users',
+        component : UsersComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.user'],
+            redirectTo: '/403'
+          }
+        }
+      },
+      {
+        path : 'roles',
+        component : RolesComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.role'],
+            redirectTo: '/403'
+          }
+        }
+      },
       {path : 'customers', component : CustomersComponent},
     ]
   },

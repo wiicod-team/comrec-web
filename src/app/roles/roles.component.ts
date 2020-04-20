@@ -69,7 +69,7 @@ export class RolesComponent implements OnInit {
   }
 
   getPermissions() {
-    this.api.Permissions.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
+    this.api.Permissions.getList({should_paginate: false, _sort: 'display_name', _sortDir: 'asc'}).subscribe(data => {
       this.permissions = data;
     }, q => {
       if (q.data.error.status_code === 500) {
@@ -85,6 +85,7 @@ export class RolesComponent implements OnInit {
 
   openEdit(r) {
     this.role = r;
+    console.log(r);
     r.permissions.forEach(v => {
       this.permissions.forEach(p => {
         if (v.id === p.id) {
@@ -197,7 +198,7 @@ export class RolesComponent implements OnInit {
           this.api.PermissionRoles.post({role_id: r.id, permission_id: v.id}).subscribe(d => {
             v.action = '';
             v.check = false;
-            Metro.notify.create(v.display_name + ' attribué au rôle ' + r.display_name, 'Succes', {cls: 'bg-or fd-white', timeout: 5000});
+            Metro.notify.create(v.display_name + ' attribué au rôle ' + r.display_name, 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
               Metro.notify.create('updatePermission ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

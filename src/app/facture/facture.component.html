@@ -25,13 +25,23 @@
     <div class="cell-3">
       <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
     </div>
+    <div class="cell-2">
+      Afficher
+      <div class="form-group">
+        <select [(ngModel)]="per_page">
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="500">500</option>
+        </select>
+      </div>
+    </div>
     <div class="cell-4" *ngIf="state">
       Chargement des données ...
       <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
     </div>
-    <div class="cell-2">
-      {{factures.length}} sur {{max_length}} Factures
-    </div>
+
     <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2" (click)="avancer()">Avancer</button>
     <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 " (click)="openBillModal()">Encaisser</button>
 
@@ -76,6 +86,10 @@
 
       </tbody>
     </table>
+  </div>
+
+  <div class="cell-2">
+    <small>{{factures.length}} sur {{max_length}} Factures</small>
   </div>
 
   <div class="dialog" data-role="dialog" id="demoDialog1">

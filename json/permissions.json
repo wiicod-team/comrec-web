@@ -1,0 +1,116 @@
+[
+  {
+    "display_name" : "Administrer",
+    "name" :  "manage.admin",
+    "description" : "Administrer"
+  },
+  {
+    "display_name" : "Constuler encaissement",
+    "name" : "consult.receipt",
+    "description" : "Constuler encaissement"
+  },
+  {
+    "display_name" : "Consulter clients",
+    "name" : "consult.customer",
+    "description" : "Consulter clients"
+  },
+
+  {
+    "display_name" : "Avancer facture",
+    "name" : "advance.bill",
+    "description" : "Avancer facture"
+  },
+  {
+    "display_name" : "Encaisser facture",
+    "name" : "cash.bill",
+    "description" : "Encaisser facture"
+  },
+  {
+    "display_name" : "Constulter facture",
+    "name" : "consult.bill",
+    "description" : "Constulter facture"
+  },
+
+  {
+    "display_name" : "Ajouter Utilisateur",
+    "name" : "add.user",
+    "description" : "Ajouter Utilisateur"
+  },
+  {
+    "display_name" : "Editer Utilisateur",
+    "name" : "edit.user",
+    "description" : "Editer Utilisateur"
+  },
+  {
+    "display_name" : "Supprimer Utilisateur",
+    "name" : "delete.user",
+    "description" : "Supprimer Utilisateur"
+  },
+  {
+    "display_name" : "Consulter Utilisateur",
+    "name" : "consult.user",
+    "description" : "Consulter utilisateur"
+  },
+  {
+    "display_name" : "Activer compte",
+    "name" : "active.account",
+    "description" : "Activer compte"
+  },
+
+  {
+    "display_name" : "Ajouter Role",
+    "name" : "add.role",
+    "description" : "Ajouter Role"
+  },
+  {
+    "display_name" : "Editer Role",
+    "name" : "edit.role",
+    "description" : "Editer Role"
+  },
+  {
+    "display_name" : "Supprimer Role",
+    "name" : "delete.role",
+    "description" : "Supprimer Role"
+  },
+  {
+    "display_name" : "Consult Role",
+    "name" : "consult.role",
+    "description" : "Consult Role"
+  },
+
+  {
+    "display_name" : "Ajouter Permission",
+    "name" : "add.permission",
+    "description" : "Ajouter Permission"
+  },
+  {
+    "display_name" : "Editer Permission",
+    "name" : "edit.permission",
+    "description" : "Editer Permission"
+  },
+  {
+    "display_name" : "Supprimer Permission",
+    "name" : "delete.permission",
+    "description" : "Supprimer Permission"
+  },
+  {
+    "display_name" : "Consulter Permission",
+    "name" : "consult.permission",
+    "description" : "Consulter Permission"
+  },
+  {
+    "display_name" : "Consulter dashboard",
+    "name" : "consult.dashboard",
+    "description" : "Consulter dashboard"
+  },
+  {
+    "display_name" : "Reinitialiser mot de passe",
+    "name" : "reset.password",
+    "description" : "Reinitialiser mot de passe"
+  },
+  {
+    "display_name" : "Lier client",
+    "name" : "link.customer",
+    "description" : "Lier client"
+  }
+]

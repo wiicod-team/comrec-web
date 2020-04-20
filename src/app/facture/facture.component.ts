@@ -29,6 +29,7 @@ export class FactureComponent implements OnInit {
   facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number } = {id: 0};
   commentaire;
   montant_avance;
+  per_page = 25;
 
   constructor(private api: ApiProvider) {
     // this.search = '';
@@ -37,6 +38,7 @@ export class FactureComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.selected_bill = [];
     this.userCustomerIds = await this.getUserCustomerIds(this.user.id);
     this.getBills(true);
     console.log(moment(new Date()).format('YYYY-MM-DD HH:mm'));
@@ -60,13 +62,15 @@ export class FactureComponent implements OnInit {
 
       const opt = {
         _includes: 'customer,receipts',
-        'cusomter_id-in': this.userCustomerIds,
+        'customer_id-in': this.userCustomerIds,
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
-        per_page: 25,
+        per_page: this.per_page,
         page: this.page
       };
+
+      console.log('option ', opt);
 
       this.api.Bills.getList(opt).subscribe(
         d => {
@@ -137,14 +141,10 @@ export class FactureComponent implements OnInit {
   }
 
   onScrollDown(ev) {
-    console.log('scrolled down!!', ev);
-
     this.getBills(false);
   }
 
-  onUp(ev) {
-    console.log('scrolled up!', ev);
-  }
+  onUp(ev) {}
 
   openBillModal() {
     const tmp = [];
@@ -362,9 +362,6 @@ export class FactureComponent implements OnInit {
     doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
   }
 
-  onScroll() {
-
-  }
 
 
 }
