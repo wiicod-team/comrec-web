@@ -62,6 +62,7 @@ export class FactureComponent implements OnInit {
         _includes: 'customer,receipts',
         'cusomter_id-in': this.userCustomerIds,
         should_paginate: true,
+        'status-ne': 'paid',
         _sort: 'created_at',
         _sortDir: 'desc',
         per_page: 25,
@@ -88,7 +89,7 @@ export class FactureComponent implements OnInit {
             }
           });
           // this.old_facture = this.factures;
-          console.log(this.factures);
+          // console.log(this.factures);
           if (s) {
             Metro.activity.close(load);
           } else {
@@ -123,7 +124,7 @@ export class FactureComponent implements OnInit {
       should_paginate: false,
       user_id: userId
     };
-    const ucustomers: any =  await this.api.CustomerUsers.getList(params).toPromise();
+    const ucustomers: any = await this.api.CustomerUsers.getList(params).toPromise();
     if (ucustomers) {
       return ucustomers.plain().reduce((res, item) => {
         if (res !== '') {
@@ -147,14 +148,16 @@ export class FactureComponent implements OnInit {
   }
 
   openBillModal() {
-    const tmp = [];
-    this.factures.forEach((v, k) => {
-      if (v.check) {
-        tmp.push(v);
-      }
-    });
-    this.selected_bill = tmp;
     Metro.dialog.open('#demoDialog1');
+  }
+
+  billChecked(bill, val) {
+    bill.check = val;
+    if (val) {
+      this.selected_bill.push(bill);
+    } else {
+      this.selected_bill.splice(this.selected_bill.indexOf(bill), 1);
+    }
   }
 
   validerEncaissement() {
@@ -162,36 +165,25 @@ export class FactureComponent implements OnInit {
     // actualisation
     let i = 0;
     this.selected_bill.forEach(f => {
-      this.api.Bills.get(f.id).subscribe(fa => {
-        fa.status = 'paid';
-        fa.id = f.id;
-        fa.put().subscribe(d => {
-          this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
-            console.log('ok', f.id);
-            i++;
-            Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
-            if (i === this.selected_bill.length) {
-              // arret du loading
-              this.getBills(false);
-              this.state = false;
-
-              // impression
-              const e = {
-                created_at: da.body.created_at,
-                vendeur_id: this.user.id,
-                client: f.name
-              };
-              this.printEncaissement(e, this.selected_bill);
-            }
-          });
-        }, q => {
-          if (q.data.error.status_code === 500) {
-            Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-          } else if (q.data.error.status_code === 401) {
-            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-          } else {
-            Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      console.log(f);
+      f.status = 'paid';
+      f.put().subscribe(d => {
+        this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
+          console.log('ok', f.id);
+          i++;
+          Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+          if (i === this.selected_bill.length) {
+            // arret du loading
+            this.getBills(false);
             this.state = false;
+
+            // impression
+            const e = {
+              created_at: da.body.created_at,
+              vendeur_id: this.user.id,
+              client: f.name
+            };
+            this.printEncaissement(e, this.selected_bill);
           }
         });
       }, q => {
@@ -204,6 +196,7 @@ export class FactureComponent implements OnInit {
           this.state = false;
         }
       });
+
     });
   }
 

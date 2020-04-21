@@ -38,8 +38,8 @@
   </div>
 
   <div
-        class="row mt-2 main-panel"
-        style="max-height: 500px; overflow-y: scroll"
+    class="row mt-2 main-panel"
+    style="max-height: 600px; overflow-y: scroll"
 
   >
     <table class="table cell-border compact table-border"
@@ -69,8 +69,10 @@
         <td>{{i.amount - i.avance}}</td>
         <td>{{i.statut}}</td>
         <td>
-          <button class="button mini bg-noir fg-white" (click)="i.check=true" *ngIf="!i.check">Sélectionner</button>
-          <button class="button mini" (click)="i.check=false" *ngIf="i.check">Désélectionner</button>
+          <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
+            Sélectionner
+          </button>
+          <button class="button mini" (click)="billChecked(i,false)" *ngIf="i.check">Désélectionner</button>
         </td>
       </tr>
 
@@ -78,7 +80,7 @@
     </table>
   </div>
 
-  <div class="dialog" data-role="dialog" id="demoDialog1">
+  <div class="dialog encaissementDialog" data-role="dialog" id="demoDialog1">
     <div class="dialog-title">Encaissement</div>
     <div class="dialog-content" *ngIf="selected_bill.length>0">
       Souhaitez-vous encaisser les factures ci-dessous ?
