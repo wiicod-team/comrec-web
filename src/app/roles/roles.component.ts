@@ -28,7 +28,7 @@ export class RolesComponent implements OnInit {
       name: '',
       display_name: '',
       description: '',
-      permissions:[]
+      permissions: []
     };
     this.new = this.role;
     this.searchR = '';
@@ -69,7 +69,7 @@ export class RolesComponent implements OnInit {
   }
 
   getPermissions() {
-    this.api.Permissions.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
+    this.api.Permissions.getList({should_paginate: false, _sort: 'display_name', _sortDir: 'asc'}).subscribe(data => {
       this.permissions = data;
     }, q => {
       if (q.data.error.status_code === 500) {
@@ -85,12 +85,13 @@ export class RolesComponent implements OnInit {
 
   openEdit(r) {
     this.role = r;
+    // console(r);
     r.permissions.forEach(v => {
       this.permissions.forEach(p => {
         if (v.id === p.id) {
           v.check = true;
           p.check = true;
-          console.log(r.id);
+          // console(r.id);
         }
       });
     });
@@ -106,7 +107,7 @@ export class RolesComponent implements OnInit {
   }
 
   newRole() {
-    console.log(this.new);
+    // console(this.new);
     this.api.Roles.post(this.new).subscribe(d => {
       Metro.notify.create(this.new.display_name + ' créé ', 'Rôle créé', {cls: 'bg-or fd-white', timeout: 5000});
       let i = 0;
@@ -128,6 +129,11 @@ export class RolesComponent implements OnInit {
         }
         if (i === this.new.permissions.length) {
           this.getRoles();
+          this.new = {id: 0,
+            name: '',
+            display_name: '',
+            description: '',
+            permissions: []};
         }
       });
     }, q => {
@@ -197,7 +203,7 @@ export class RolesComponent implements OnInit {
           this.api.PermissionRoles.post({role_id: r.id, permission_id: v.id}).subscribe(d => {
             v.action = '';
             v.check = false;
-            Metro.notify.create(v.display_name + ' attribué au rôle ' + r.display_name, 'Succes', {cls: 'bg-or fd-white', timeout: 5000});
+            Metro.notify.create(v.display_name + ' attribué au rôle ' + r.display_name, 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
               Metro.notify.create('updatePermission ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

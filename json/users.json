@@ -1,0 +1,48 @@
+[
+  {
+    "username" : "root",
+    "bvs_id": 1,
+    "settings":[],
+    "password":"root123",
+    "roles" : [
+      "super.administrator"
+    ]
+  },
+  {
+    "username" : "admin",
+    "bvs_id": 2,
+    "settings":[],
+    "password":"admin123",
+    "roles" : [
+      "administrator"
+    ]
+  },
+  {
+    "username" : "consolidator",
+    "bvs_id": 3,
+    "settings":[],
+    "password":"consolidator123",
+    "roles" : [
+
+    ]
+  },
+  {
+    "username" : "client",
+    "bvs_id": 4,
+    "settings":[],
+    "password":"client123",
+    "roles" : [
+
+    ]
+  },
+  {
+    "username" : "enterprise",
+    "bvs_id": 5,
+    "settings":[],
+    "password":"enterprise123",
+    "roles" : [
+
+    ]
+  }
+
+]

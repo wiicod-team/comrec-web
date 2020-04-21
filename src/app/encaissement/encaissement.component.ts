@@ -42,7 +42,7 @@ export class EncaissementComponent implements OnInit {
         v.vendeur = v.user.name;
       });
       this.encaissements = b;
-      console.log('b', b);
+      // console('b', b);
       Metro.activity.close(load);
     }, q => {
       if (q.data.error.status_code === 500) {

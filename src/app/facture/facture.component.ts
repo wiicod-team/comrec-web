@@ -25,10 +25,12 @@ export class FactureComponent implements OnInit {
   scrollUpDistance = 2;
   page = 1;
   max_length = 0;
+  old_max_length = 0;
   last_page = 10000000;
   facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number } = {id: 0};
   commentaire;
   montant_avance;
+  per_page = 25;
 
   constructor(private api: ApiProvider) {
     // this.search = '';
@@ -37,40 +39,44 @@ export class FactureComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.state = true;
+    this.selected_bill = [];
     this.userCustomerIds = await this.getUserCustomerIds(this.user.id);
-    this.getBills(true);
-    console.log(moment(new Date()).format('YYYY-MM-DD HH:mm'));
+    this.getBills(false);
+    // console.log(moment(new Date()).format('YYYY-MM-DD HH:mm'));
   }
 
-  getBills(s) {
-    let load;
-    if (!this.isLoadingBills && this.page <= this.last_page) {
-      this.isLoadingBills = true;
-      if (s) {
-        load = Metro.activity.open({
-          type: 'metro',
-          overlayColor: '#fff',
-          overlayAlpha: 1,
-          text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
-          overlayClickClose: true
-        });
-      } else {
-        this.state = true;
-      }
+  vide() {
+    if (this.search === '' || this.search === undefined) {
+      this.factures = this.old_facture;
+      this.max_length = this.old_max_length;
+    }
+  }
 
+  rechercher() {
+    if (this.search === '' || this.search === undefined) {
+      this.factures = this.old_facture;
+      this.max_length = this.old_max_length;
+    } else {
+      console.log(this.search);
+      this.page = 1;
+      this.state = true;
+      this.factures = [];
       const opt = {
         _includes: 'customer,receipts',
-        'cusomter_id-in': this.userCustomerIds,
+        'customer_id-in': this.userCustomerIds,
         should_paginate: true,
-        'status-ne': 'paid',
         _sort: 'created_at',
         _sortDir: 'desc',
-        per_page: 25,
+        'bvs_id-lk': this.search,
+        'status-in': ['pending', 'new'],
+        per_page: this.per_page,
         page: this.page
       };
 
       this.api.Bills.getList(opt).subscribe(
         d => {
+          console.log(d);
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           d.forEach((vv, kk) => {
@@ -88,10 +94,78 @@ export class FactureComponent implements OnInit {
               this.factures.push(vv);
             }
           });
-          // this.old_facture = this.factures;
+          this.isLoadingBills = false;
+          this.page++;
+          this.state = false;
+        }, q => {
+          if (q.data.error.status_code === 500) {
+            Metro.notify.create('getBills ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          } else if (q.data.error.status_code === 401) {
+            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+          } else {
+            Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          }
+        }
+      );
+    }
+  }
+
+  getBills(s) {
+    let load;
+    this.selected_bill = [];
+    if (!this.isLoadingBills && this.page <= this.last_page) {
+      this.isLoadingBills = true;
+      if (s) {
+        load = Metro.activity.open({
+          type: 'metro',
+          overlayColor: '#fff',
+          overlayAlpha: 1,
+          text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
+          overlayClickClose: true
+        });
+      } else {
+        this.state = true;
+      }
+
+      const opt = {
+        _includes: 'customer,receipts',
+        'customer_id-in': this.userCustomerIds,
+        should_paginate: true,
+        'status-ne': 'paid',
+        _sort: 'created_at',
+        _sortDir: 'desc',
+        'status-in': ['pending', 'new'],
+        per_page: this.per_page,
+        page: this.page
+      };
+
+      // console.log('option ', opt);
+
+      this.api.Bills.getList(opt).subscribe(
+        d => {
+          this.last_page = d.metadata.last_page;
+          this.max_length = d.metadata.total;
+          this.old_max_length = this.max_length;
+          d.forEach((vv, kk) => {
+            let avance = 0;
+            vv.name = vv.customer.name;
+            vv.receipts.forEach((vvv, kkk) => {
+              avance += vvv.amount;
+            });
+            vv.avance = avance;
+            if (vv.status === 'pending') {
+              vv.statut = 'Echue';
+              this.factures.push(vv);
+            } else if (vv.status === 'new') {
+              vv.statut = 'Non echue';
+              this.factures.push(vv);
+            }
+          });
+          this.old_facture = this.factures;
           // console.log(this.factures);
           if (s) {
             Metro.activity.close(load);
+            this.state = false;
           } else {
             this.state = false;
           }
@@ -128,24 +202,23 @@ export class FactureComponent implements OnInit {
     if (ucustomers) {
       return ucustomers.plain().reduce((res, item) => {
         if (res !== '') {
+          this.state = false;
           return `${res},${item.customer_id}`;
         }
+        this.state = false;
         return item.customer_id;
       }, '');
     }
+    this.state = false;
     return null;
 
   }
 
   onScrollDown(ev) {
-    console.log('scrolled down!!', ev);
-
     this.getBills(false);
   }
 
-  onUp(ev) {
-    console.log('scrolled up!', ev);
-  }
+  onUp(ev) {}
 
   openBillModal() {
     Metro.dialog.open('#demoDialog1');
@@ -165,11 +238,10 @@ export class FactureComponent implements OnInit {
     // actualisation
     let i = 0;
     this.selected_bill.forEach(f => {
-      console.log(f);
       f.status = 'paid';
       f.put().subscribe(d => {
         this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
-          console.log('ok', f.id);
+          // console.log('ok', f.id);
           i++;
           Metro.notify.create('Facture ' + f.id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
           if (i === this.selected_bill.length) {
@@ -237,7 +309,7 @@ export class FactureComponent implements OnInit {
           data.status = 'paid';
           data.id = data.body.id;
           data.put().subscribe(datap => {
-            console.log('ok');
+            //console.log('ok');
             this.state = false;
             this.getBills(false);
             const e = {
@@ -274,7 +346,7 @@ export class FactureComponent implements OnInit {
       } else {
         this.state = false;
         this.getBills(false);
-        console.log(this.facture);
+        //console.log(this.facture);
         const e = {
           id: d.body.id,
           note: this.commentaire,
@@ -301,7 +373,7 @@ export class FactureComponent implements OnInit {
 
 
   printAvance(e) {
-    console.log(e);
+    //console.log(e);
     let doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
@@ -325,7 +397,7 @@ export class FactureComponent implements OnInit {
   }
 
   printEncaissement(e, bills) {
-    console.log(e);
+    //console.log(e);
     let doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
@@ -355,9 +427,6 @@ export class FactureComponent implements OnInit {
     doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
   }
 
-  onScroll() {
-
-  }
 
 
 }

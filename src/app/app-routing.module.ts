@@ -21,9 +21,18 @@ const routes: Routes = [
     path : 's',
     component : SidemenuComponent,
     children : [
-      {path : 'dashboard', component : DashboardComponent},
-      {path : 'facture', component : FactureComponent},
-      {path : 'encaissement', component : EncaissementComponent}
+      {
+        path : 'dashboard',
+        component : DashboardComponent,
+      },
+      {
+        path : 'facture',
+        component : FactureComponent,
+       },
+      {
+        path : 'encaissement',
+        component : EncaissementComponent,
+      }
     ]
   },
   {
@@ -41,9 +50,32 @@ const routes: Routes = [
       }
     },
     children : [
-      {path : 'users', component : UsersComponent},
-      {path : 'roles', component : RolesComponent},
-      {path : 'customers', component : CustomersComponent},
+      {
+        path : 'users',
+        component : UsersComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.user'],
+            redirectTo: '/403'
+          }
+        }
+      },
+      {
+        path : 'roles',
+        component : RolesComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.role'],
+            redirectTo: '/403'
+          }
+        }
+      },
+      {
+        path : 'customers',
+        component : CustomersComponent,
+      },
     ]
   },
   {path : 'reset/:i', component : ResetComponent},

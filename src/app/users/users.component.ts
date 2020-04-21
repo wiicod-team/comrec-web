@@ -74,7 +74,7 @@ export class UsersComponent implements OnInit {
           v.pass = 'A modifier';
           v.reset_password = false;
         }
-        if (v.settings.length > 0 && v.settings[0].ask_for_reset) {
+        if (v.settings !== null && v.settings.length > 0 && v.settings[0].ask_for_reset) {
           v.pass = 'A initialiser';
         }
       });
@@ -100,7 +100,6 @@ export class UsersComponent implements OnInit {
         if (v.id === r.id) {
           v.check = true;
           r.check = true;
-          console.log(u.id);
         }
       });
     });
@@ -110,8 +109,6 @@ export class UsersComponent implements OnInit {
   getRoles() {
     this.api.Roles.getList({should_paginate: false, _sort: 'display_name', _sortDir: 'asc'}).subscribe(data => {
       this.roles = data;
-    }, q => {
-      Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -124,7 +121,7 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser() {
-    console.log(this.roles);
+    // // console(this.roles);
     const u = this.user;
     let text = '';
     let bool = false;
@@ -150,7 +147,8 @@ export class UsersComponent implements OnInit {
           this.api.RoleUsers.post({user_id: u.id, role_id: v.id, user_type: 'App\\User'}).subscribe(d => {
             v.action = '';
             v.check = false;
-            Metro.notify.create(v.display_name + ' attribué à l\'utilisateur', 'Succes', {cls: 'bg-or fd-white', timeout: 5000});
+            this.getUsers();
+            Metro.notify.create(v.display_name + ' attribué à l\'utilisateur', 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
               Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -164,7 +162,8 @@ export class UsersComponent implements OnInit {
           this.api.restangular.all('role_users/' + v.id + '/' + this.user.id).remove().subscribe( d => {
             v.action = '';
             v.check = false;
-            Metro.notify.create(v.display_name + ' supprimé chez l\'utilisateur', 'Succes', {cls: 'bg-or fd-white', timeout: 5000});
+            this.getUsers();
+            Metro.notify.create(v.display_name + ' supprimé chez l\'utilisateur', 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
               Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

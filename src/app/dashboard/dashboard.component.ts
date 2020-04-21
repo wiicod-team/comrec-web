@@ -73,7 +73,7 @@ export class DashboardComponent implements OnInit {
   }
   getUsersCount() {
     this.api.Users.getList({should_paginate: false}).subscribe(d => {
-      console.log('azert', d);
+      // console('azert', d);
       this.users_count = d.length;
       Metro.activity.close(this.load);
     }, q => {
@@ -89,6 +89,11 @@ export class DashboardComponent implements OnInit {
   }
 
   getCustomersCount() {
+    /*
+    * this.api.Customers.getList({_agg: 'count'}).subscribe(d => {
+      console.log('aze', d);
+      this.customers_count = d.length;*/
+
     this.api.Customers.getList({should_paginate: false}).subscribe(d => {
       this.customers_count = d.length;
     }, q => {
@@ -138,7 +143,7 @@ export class DashboardComponent implements OnInit {
     this.api.Receipts.getList(opt).subscribe(d => {
       this.sellers = d;
       if (d.length > 0) {
-        this.best_seller = d[0].user.username;
+        this.best_seller = d[0].user.name;
         // creation des données du chart couple (vendeur, montant)
         const vente = [];
         const vendeur = [];
