@@ -28,7 +28,7 @@ export class RolesComponent implements OnInit {
       name: '',
       display_name: '',
       description: '',
-      permissions:[]
+      permissions: []
     };
     this.new = this.role;
     this.searchR = '';
@@ -85,13 +85,13 @@ export class RolesComponent implements OnInit {
 
   openEdit(r) {
     this.role = r;
-    console.log(r);
+    // console(r);
     r.permissions.forEach(v => {
       this.permissions.forEach(p => {
         if (v.id === p.id) {
           v.check = true;
           p.check = true;
-          console.log(r.id);
+          // console(r.id);
         }
       });
     });
@@ -107,7 +107,7 @@ export class RolesComponent implements OnInit {
   }
 
   newRole() {
-    console.log(this.new);
+    // console(this.new);
     this.api.Roles.post(this.new).subscribe(d => {
       Metro.notify.create(this.new.display_name + ' créé ', 'Rôle créé', {cls: 'bg-or fd-white', timeout: 5000});
       let i = 0;
@@ -129,6 +129,11 @@ export class RolesComponent implements OnInit {
         }
         if (i === this.new.permissions.length) {
           this.getRoles();
+          this.new = {id: 0,
+            name: '',
+            display_name: '',
+            description: '',
+            permissions: []};
         }
       });
     }, q => {

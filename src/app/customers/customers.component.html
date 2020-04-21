@@ -10,10 +10,23 @@
   </div>
 </div>
 
-<div class="m-3">
+<div class="m-3"
+     infinite-scroll
+     [infiniteScrollDistance]="scrollDistance"
+     [infiniteScrollUpDistance]="scrollUpDistance"
+     [infiniteScrollThrottle]="throttle"
+     (scrolled)="onScrollDown($event)"
+     (scrolledUp)="onUp($event)"
+     [infiniteScrollContainer]="'.main-panel'"
+     [alwaysCallback]="true">
   <div class="row mt-2">
     <div class="cell-3">
-      <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+      <m4-input [(ngModel)]="search"
+                placeholder="Client"
+                (ngModelChange)="vide()"
+                (focusout)="rechercher()"
+                [ngModelOptions]="{standalone: true}"
+                [search-button]="true" (search-button-click)="rechercher()"></m4-input>
     </div>
     <div class="cell-4" *ngIf="state">
       Chargement des données ...
@@ -21,7 +34,7 @@
     </div>
   </div>
 
-  <div class="row mt-2">
+  <div class="row mt-2 main-panel" style="max-height: 500px; overflow-y: scroll">
     <table class="table cell-border compact table-border"
     >
       <thead>
@@ -35,7 +48,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let i of customers |filter:{ id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
+      <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
         <td>{{i.id}}</td>
         <td>{{i.name}}</td>
         <td>{{i.sale_network}}</td>
@@ -49,6 +62,10 @@
 
       </tbody>
     </table>
+  </div>
+
+  <div class="cell-2">
+    <small>{{customers.length}} sur {{max_length}} Factures</small>
   </div>
 
 

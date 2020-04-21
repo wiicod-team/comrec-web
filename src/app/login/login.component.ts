@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
       Metro.notify.create('Mot de passe absent', 'Erreur de connexion', {cls: 'warning'});
     } else {
       this.auth.login({username: this.username, password: this.password}).then(rep => {
-        console.log(rep);
+        // console(rep);
         // @ts-ignore
         this.user = rep.user;
 
@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
 
 
       }).catch((err) => {
-        console.log(err);
+        // console(err);
         if (err.data.status_code === 401) {
           Metro.notify.create('Email ou mot de passe incorrect', 'Echec de connexion', {cls: 'alert'});
         } else {

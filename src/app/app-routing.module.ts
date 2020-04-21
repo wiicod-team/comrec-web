@@ -24,35 +24,14 @@ const routes: Routes = [
       {
         path : 'dashboard',
         component : DashboardComponent,
-        canActivate: [NgxPermissionsGuard],
-        data: {
-          permissions: {
-            only: ['consult.dashboard'],
-            redirectTo: '/403'
-          }
-        }
       },
       {
         path : 'facture',
         component : FactureComponent,
-        canActivate: [NgxPermissionsGuard],
-        data: {
-          permissions: {
-            only: ['consult.bill'],
-            redirectTo: '/403'
-          }
-        }
        },
       {
         path : 'encaissement',
         component : EncaissementComponent,
-        canActivate: [NgxPermissionsGuard],
-        data: {
-          permissions: {
-            only: ['consult.receipt'],
-            redirectTo: '/403'
-          }
-        }
       }
     ]
   },
@@ -63,8 +42,8 @@ const routes: Routes = [
   {
     path : 'admin',
     component : SidemenuComponent,
-    canActivate: [NgxPermissionsGuard],
-    /*data: {
+    /*canActivate: [NgxPermissionsGuard],
+    data: {
       permissions: {
         only: ['manage.admin'],
         redirectTo: '/403'
@@ -93,7 +72,10 @@ const routes: Routes = [
           }
         }
       },
-      {path : 'customers', component : CustomersComponent},
+      {
+        path : 'customers',
+        component : CustomersComponent,
+      },
     ]
   },
   {path : 'reset/:i', component : ResetComponent},
