@@ -19,7 +19,7 @@
         <div class="icon bg-noir fg-white"><span class="mif-user"></span></div>
         <div class="content p-4">
           <div class="text-upper">Vendeurs</div>
-          <div class="text-upper text-bold text-lead">{{users_count}}</div>
+          <div class="text-upper text-bold text-lead">{{users_count |priceFormat}}</div>
         </div>
       </div>
     </div>
@@ -28,7 +28,7 @@
         <div class="icon bg-noir fg-white"><span class="mif-user-secret"></span></div>
         <div class="content p-4">
           <div class="text-upper">Clients</div>
-          <div class="text-upper text-bold text-lead">{{customers_count}}</div>
+          <div class="text-upper text-bold text-lead">{{customers_count |priceFormat}}</div>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
         <div class="icon bg-noir fg-white"><span class="mif-money"></span></div>
         <div class="content p-4">
           <div class="text-upper">Encaissements</div>
-          <div class="text-upper text-bold text-lead">{{receipts_count}}</div>
+          <div class="text-upper text-bold text-lead">{{receipts_count |priceFormat}}</div>
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@
     <div class="cell-lg-6 cell-md-6 mt-2">
       <div class="more-info-box bg-or fg-noir">
         <div class="content">
-          <h2 class="text-bold mb-0">{{sum_receipt}} FCFA</h2>
+          <h2 class="text-bold mb-0">{{sum_receipt |priceFormat}} FCFA</h2>
           <div class="text-upper">Recouvré</div>
         </div>
         <div class="icon">

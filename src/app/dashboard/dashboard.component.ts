@@ -89,6 +89,11 @@ export class DashboardComponent implements OnInit {
   }
 
   getCustomersCount() {
+    /*
+    * this.api.Customers.getList({_agg: 'count'}).subscribe(d => {
+      console.log('aze', d);
+      this.customers_count = d.length;*/
+
     this.api.Customers.getList({should_paginate: false}).subscribe(d => {
       this.customers_count = d.length;
     }, q => {
