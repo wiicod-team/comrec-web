@@ -16,8 +16,10 @@ export class RolesComponent implements OnInit {
     display_name: string,
     description: string,
     permissions: any[]
+    put(): any;
   };
   load;
+  edit_state = false;
   permissions;
   edit_permission: boolean;
   searchR: any;
@@ -28,7 +30,8 @@ export class RolesComponent implements OnInit {
       name: '',
       display_name: '',
       description: '',
-      permissions: []
+      permissions: [],
+      put: () => {}
     };
     this.new = this.role;
     this.searchR = '';
@@ -103,20 +106,21 @@ export class RolesComponent implements OnInit {
     this.new.permissions.forEach(v => {
       v.check = false;
     });
+    this.edit_state = false;
     Metro.dialog.open('#newRoleDialog1');
   }
 
   newRole() {
     // console(this.new);
     this.api.Roles.post(this.new).subscribe(d => {
-      Metro.notify.create(this.new.display_name + ' créé ', 'Rôle créé', {cls: 'bg-or fd-white', timeout: 5000});
+      Metro.notify.create(this.new.display_name + ' créé ', 'Rôle créé', {cls: 'bg-or fg-white', timeout: 5000});
       let i = 0;
       // enregistrement des peromission
       this.new.permissions.forEach(v => {
         i++;
         if (v.check) {
           this.api.PermissionRoles.post({role_id: d.body.id, permission_id: v.id}).subscribe(da => {
-            Metro.notify.create(v.display_name + ' associé au rôle ' + this.new.display_name, 'Rôle créé', {cls: 'bg-or fd-white', timeout: 5000});
+            Metro.notify.create(v.display_name + ' associé au rôle ' + this.new.display_name, 'Rôle créé', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
               Metro.notify.create('newRole ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -196,6 +200,21 @@ export class RolesComponent implements OnInit {
   updatePermission() {
     const r = this.role;
     let index = 0;
+    if (this.edit_state) {
+      this.role.put().subscribe(d => {
+        Metro.notify.create('Rôle mis à jour', 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
+        this.edit_state = false;
+        this.getRoles();
+      }, q => {
+        if (q.data.error.status_code === 500) {
+          Metro.notify.create('updatePermission ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        } else if (q.data.error.status_code === 401) {
+          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+        } else {
+          Metro.notify.create('updatePermission ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        }
+      });
+    }
     if (this.edit_permission) {
       this.permissions.forEach((v, k) => {
         index += 1;
@@ -217,7 +236,7 @@ export class RolesComponent implements OnInit {
           this.api.restangular.all('permission_roles/' + v.id + '/' + r.id).remove().subscribe( d => {
             v.action = '';
             v.check = false;
-            Metro.notify.create(v.display_name + ' supprimé du rôle ' + r.display_name, 'Succes', {cls: 'bg-or fd-white', timeout: 5000});
+            Metro.notify.create(v.display_name + ' supprimé du rôle ' + r.display_name, 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
               Metro.notify.create('updatePermission ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

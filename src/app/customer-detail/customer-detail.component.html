@@ -17,8 +17,17 @@
     <div class="cell-4">
 
 
+      <div class="icon-box border bd-default spec">
+        <div class="content p-4">
+          <div class="text-upper">#{{customer.id}}</div>
+          <div class="text-upper">{{customer.name}}</div>
+          <div>{{customer.email}}</div>
+          <div>{{customer.sale_network}}</div>
+          <div class="text-upper text-bold text-lead">{{customer.status |status}}</div>
+        </div>
+      </div>
       <div class="icon-box border bd-default">
-        <div class="icon bg-cyan fg-white"><span class="mif-cog"></span></div>
+        <div class="icon bg-or fg-black"><span class="mif-dollars"></span></div>
         <div class="content p-4">
           <div class="text-upper">{{dette | priceFormat}} FCFA</div>
           <div class="text-upper text-bold text-lead">Situation du compte</div>
@@ -26,23 +35,23 @@
       </div>
 
       <div class="icon-box border bd-default">
-        <div class="icon bg-cyan fg-white"><span class="mif-cog"></span></div>
+        <div class="icon bg-gris fg-noir"><span class="mif-thumbs-up"></span></div>
         <div class="content p-4">
-          <div class="text-upper">{{customer.echue | priceFormat}} FCFA</div>
+          <div class="text-upper">{{customer.echue | priceFormat}}</div>
           <div class="text-upper text-bold text-lead">Factures echues</div>
         </div>
       </div>
 
       <div class="icon-box border bd-default">
-        <div class="icon bg-cyan fg-white"><span class="mif-cog"></span></div>
+        <div class="icon bg-gris fg-noir"><span class="mif-thumbs-down"></span></div>
         <div class="content p-4">
-          <div class="text-upper">{{customer.non_echue | priceFormat}} FCFA</div>
+          <div class="text-upper">{{customer.non_echue | priceFormat}} </div>
           <div class="text-upper text-bold text-lead">Factures non echues</div>
         </div>
       </div>
     </div>
-    <div class="cell-8">
-      <div class="m-3"
+    <div class="cell-8 pt-0 mt-0">
+      <div class="mr-3 ml-3 pt-0 mt-0"
            infinite-scroll
            [infiniteScrollDistance]="scrollDistance"
            [infiniteScrollUpDistance]="scrollUpDistance"
@@ -52,8 +61,8 @@
            [infiniteScrollContainer]="'.main-panel'"
            [alwaysCallback]="true">
 
-        <div class="row mt-2">
-          <div class="cell-4">
+        <div class="row pt-0 mt-0">
+          <div class="cell-4 pl-0 mt-0">
             <m4-input [(ngModel)]="search"
                       placeholder="N° Facture"
                       (ngModelChange)="vide()"
@@ -79,8 +88,8 @@
             <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
           </div>
 
-          <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2" (click)="avancer()">Avancer</button>
-          <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 " (click)="openBillModal()">Encaisser</button>
+          <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2 pt-0 mt-0" (click)="avancer()">Avancer</button>
+          <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 pt-0 mt-0" (click)="openBillModal()">Encaisser</button>
 
         </div>
 
@@ -120,7 +129,7 @@
           </table>
         </div>
 
-        <div class="cell-2">
+        <div class="cell-5">
           <small>{{factures.length}} sur {{max_length}} Factures</small>
         </div>
 

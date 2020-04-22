@@ -16,6 +16,12 @@
             <span class="caption">Dashboard</span>
           </a>
         </li>
+        <li *ngxPermissionsOnly="['consult.customer-universe']">
+          <a routerLink="/s/univers-client">
+            <span class="icon"><span class="mif-users"></span></span>
+            <span class="caption">Univers clients</span>
+          </a>
+        </li>
         <li *ngxPermissionsOnly="['consult.bill']">
           <a routerLink="/s/facture">
             <span class="icon"><span class="mif-file-pdf"></span></span>
@@ -26,12 +32,6 @@
           <a routerLink="/s/encaissement">
             <span class="icon"><span class="mif-money"></span></span>
             <span class="caption">Encaissements</span>
-          </a>
-        </li>
-        <li *ngxPermissionsOnly="['consult.customer']">
-          <a routerLink="/s/univers-client">
-            <span class="icon"><span class="mif-users"></span></span>
-            <span class="caption">Univers clients</span>
           </a>
         </li>
 

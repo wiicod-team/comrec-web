@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import {ActivatedRoute} from '@angular/router';
-import * as jsPDF from "jspdf";
+import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
 declare var Metro;
 @Component({
@@ -32,6 +32,7 @@ export class CustomerDetailComponent implements OnInit {
   customer = {
     id: 0,
     name: '',
+    email: 'x@x.a',
     status: '',
     echue: 0,
     non_echue: 0,
@@ -60,6 +61,9 @@ export class CustomerDetailComponent implements OnInit {
     });
     this.api.Customers.get(id).subscribe(d => {
       this.customer = d.body;
+      this.getEchues(id);
+      this.getNonEchues(id);
+      this.customer.email = 'ghost@rider.com';
       this.getBills(false, d.body.id);
       Metro.activity.close(load);
     });
@@ -84,11 +88,11 @@ export class CustomerDetailComponent implements OnInit {
 
       const opt = {
         _includes: 'customer,receipts',
-        'customer_id': id,
+        customer_id: id,
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
-        'status-in': ['pending', 'new'],
+        'status-in': ['new', 'pending'],
         per_page: this.per_page,
         page: this.page
       };
@@ -97,8 +101,6 @@ export class CustomerDetailComponent implements OnInit {
 
       this.api.Bills.getList(opt).subscribe(
         d => {
-          this.customer.echue = 0;
-          this.customer.non_echue = 0;
           let av = 0;
           let am = 0;
           this.last_page = d.metadata.last_page;
@@ -113,6 +115,7 @@ export class CustomerDetailComponent implements OnInit {
             });
             vv.avance = avance;
             av += vv.avance;
+            console.log('vv.status');
             if (vv.status === 'pending') {
               vv.statut = 'Echue';
               this.factures.push(vv);
@@ -150,7 +153,17 @@ export class CustomerDetailComponent implements OnInit {
 
   }
 
+  getEchues(id) {
+    this.api.Bills.getList({should_paginate: false, _agg: 'count', customer_id: id, status: 'pending'}).subscribe(d => {
+      this.customer.echue = d[0].value;
+    });
+  }
 
+  getNonEchues(id) {
+    this.api.Bills.getList({should_paginate: false, _agg: 'count', customer_id: id, status: 'new'}).subscribe(d => {
+      this.customer.non_echue = d[0].value;
+    });
+  }
 
   onScrollDown(ev) {
     this.getBills(false, this.customer.id);
@@ -158,6 +171,9 @@ export class CustomerDetailComponent implements OnInit {
 
   onUp(ev) {}
 
+  trackByIndex(index: number, obj: any): any {
+    return index;
+  }
 
   openBillModal() {
     const tmp = [];
@@ -311,7 +327,7 @@ export class CustomerDetailComponent implements OnInit {
 
 
   printAvance(e) {
-    let doc = new jsPDF('P', 'mm', [130, 200]);
+    const doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
     // doc.setCreationDate(new Date());
@@ -341,7 +357,7 @@ export class CustomerDetailComponent implements OnInit {
   }
 
   printEncaissement(e, bills) {
-    let doc = new jsPDF('P', 'mm', [130, 200]);
+    const doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
     // doc.setCreationDate(new Date());

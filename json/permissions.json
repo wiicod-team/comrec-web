@@ -14,6 +14,11 @@
     "name" : "consult.customer",
     "description" : "Consulter clients"
   },
+  {
+    "display_name" : "Consulter univers clients",
+    "name" : "consult.customer-universe",
+    "description" : "Consulter univers clients"
+  },
 
   {
     "display_name" : "Avancer facture",
@@ -73,9 +78,9 @@
     "description" : "Supprimer Role"
   },
   {
-    "display_name" : "Consult Role",
+    "display_name" : "Consulter Role",
     "name" : "consult.role",
-    "description" : "Consult Role"
+    "description" : "Consulter Role"
   },
 
   {

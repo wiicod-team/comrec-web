@@ -59,7 +59,7 @@ const routes: Routes = [
         component : CustomerUniverseComponent,
         data: {
           permissions: {
-            only: ['consult.customer'],
+            only: ['consult.customer-universe'],
             redirectTo: '/403'
           }
         }
@@ -69,7 +69,7 @@ const routes: Routes = [
         component : CustomerDetailComponent,
         data: {
           permissions: {
-            only: ['consult.customer'],
+            only: ['consult.customer-universe'],
             redirectTo: '/403'
           }
         }
@@ -83,13 +83,13 @@ const routes: Routes = [
   {
     path : 'admin',
     component : SidemenuComponent,
-    canActivate: [NgxPermissionsGuard],
+    /*canActivate: [NgxPermissionsGuard],
     data: {
       permissions: {
         only: ['manage.admin'],
         redirectTo: '/403'
       }
-    },
+    },*/
     children : [
       {
         path : 'users',
@@ -105,13 +105,13 @@ const routes: Routes = [
       {
         path : 'roles',
         component : RolesComponent,
-        canActivate: [NgxPermissionsGuard],
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.role'],
             redirectTo: '/403'
           }
-        }
+        }*/
       },
       {
         path : 'customers',

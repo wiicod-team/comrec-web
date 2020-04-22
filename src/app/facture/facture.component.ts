@@ -441,7 +441,4 @@ export class FactureComponent implements OnInit {
     doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
   }
-
-
-
 }
