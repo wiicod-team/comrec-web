@@ -135,6 +135,7 @@ export class FactureComponent implements OnInit {
         _includes: 'customer,receipts',
         'customer_id-in': this.userCustomerIds,
         should_paginate: true,
+        'status-ne': 'paid',
         _sort: 'created_at',
         _sortDir: 'desc',
         'status-in': ['pending', 'new'],
@@ -201,7 +202,7 @@ export class FactureComponent implements OnInit {
       should_paginate: false,
       user_id: userId
     };
-    const ucustomers: any =  await this.api.CustomerUsers.getList(params).toPromise();
+    const ucustomers: any = await this.api.CustomerUsers.getList(params).toPromise();
     if (ucustomers) {
       return ucustomers.plain().reduce((res, item) => {
         if (res !== '') {
@@ -224,15 +225,16 @@ export class FactureComponent implements OnInit {
   onUp(ev) {}
 
   openBillModal() {
-    const tmp = [];
-    this.factures.forEach((v, k) => {
-      if (v.check) {
-        tmp.push(v);
-      }
-    });
-    this.selected_bill = tmp;
-    console.log(tmp);
     Metro.dialog.open('#demoDialog1');
+  }
+
+  billChecked(bill, val) {
+    bill.check = val;
+    if (val) {
+      this.selected_bill.push(bill);
+    } else {
+      this.selected_bill.splice(this.selected_bill.indexOf(bill), 1);
+    }
   }
 
   validerEncaissement() {
@@ -270,6 +272,7 @@ export class FactureComponent implements OnInit {
           this.state = false;
         }
       });
+
     });
   }
 

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import {Router} from '@angular/router';
+
 declare var Metro;
 
 @Component({
@@ -71,10 +72,12 @@ export class DashboardComponent implements OnInit {
     this.getCustomersCount();
     this.getUsersCount();
   }
+
   getUsersCount() {
-    this.api.Users.getList({should_paginate: false}).subscribe(d => {
-      // console('azert', d);
-      this.users_count = d.length;
+
+    this.api.Users.getList({should_paginate: false, _agg: 'count'}).subscribe(d => {
+      // console.log('mmm', d);
+      this.users_count = d[0].value;
       Metro.activity.close(this.load);
     }, q => {
       if (q.data.error.status_code === 500) {
@@ -94,8 +97,8 @@ export class DashboardComponent implements OnInit {
       console.log('aze', d);
       this.customers_count = d.length;*/
 
-    this.api.Customers.getList({should_paginate: false}).subscribe(d => {
-      this.customers_count = d.length;
+    this.api.Customers.getList({should_paginate: false, _agg: 'count'}).subscribe(d => {
+      this.customers_count = d[0].value;
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getCustomersCount ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -114,7 +117,7 @@ export class DashboardComponent implements OnInit {
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
-      this.sum_receipt = this.api.formarPrice( _.reduce(d, (memo, num) => {
+      this.sum_receipt = this.api.formarPrice(_.reduce(d, (memo, num) => {
         return memo + num.amount;
       }, 0));
       this.receipts_count = d.length;
@@ -132,7 +135,7 @@ export class DashboardComponent implements OnInit {
 
   getBestSeller() {
     const opt = {
-      'user_id-gb' : 'sum(amount) as total_amount',
+      'user_id-gb': 'sum(amount) as total_amount',
       _sortDir: 'desc',
       _sort: ' total_amount',
       'created_at-get': this.deb.format(this.date_format),
