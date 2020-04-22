@@ -120,8 +120,10 @@
               <td>{{i.amount - i.avance}}</td>
               <td>{{i.statut}}</td>
               <td>
-                <button class="button mini bg-noir fg-white" (click)="i.check=true" *ngIf="!i.check">Sélectionner</button>
-                <button class="button mini" (click)="i.check=false" *ngIf="i.check">Désélectionner</button>
+                <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
+                  Sélectionner
+                </button>
+                <button class="button mini" (click)="billChecked(i,false)" *ngIf="i.check">Désélectionner</button>
               </td>
             </tr>
 

@@ -175,6 +175,15 @@ export class CustomerDetailComponent implements OnInit {
     return index;
   }
 
+  billChecked(bill, val) {
+    bill.check = val;
+    if (val) {
+      this.selected_bill.push(bill);
+    } else {
+      this.selected_bill.splice(this.selected_bill.indexOf(bill), 1);
+    }
+  }
+
   openBillModal() {
     const tmp = [];
     this.factures.forEach((v, k) => {
