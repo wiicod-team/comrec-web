@@ -10,9 +10,9 @@ export class StatutPipe implements PipeTransform{
 
   transform(value: any, ...args: any[]): any {
     if (value === 'solvent') {
-      return 'Crédible';
+      return 'Solvable';
     } else if (value === 'insolvent') {
-      return 'Incrédible';
+      return 'Créance';
     } else if (value === 'pending_delivery') {
       return 'En attente de livraison';
     } else if (value === 'delivered') {

@@ -57,24 +57,41 @@ export class EncaissementComponent implements OnInit {
   }
 
   printReceipt(e) {
-    let doc = new jsPDF('P', 'mm', [130, 200]);
-    doc.setFontSize(6);
-    doc.setFontStyle('bold');
-    // doc.setCreationDate(new Date());
-    doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
-    doc.text('BP: 1352 Douala', 6, 8);
-    doc.text('Montée BBR - BASSA', 6, 11);
-    doc.text('Tél.: 690 404 180/89', 6, 14);
-    // info sur le vendeur
-    doc.text('Encaissé le : ' + e.created_at, 6, 20);
-    doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
-    // Client vendeur
-    doc.text('ENC-: ' + e.id, 6, 29);
-    doc.text('Client: ' + e.bill.customer.name, 6, 32);
-    doc.text('Vendeur: ' + e.vendeur, 6, 35);
-    doc.text('N° Facture: ' + e.bill.bvs_id, 6, 38);
-    doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 41);
-    doc.text('Reste: ' + this.api.formarPrice((e.bill.amount - e.amount)) + 'FCFA', 6, 44);
-    doc.save( 'bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
+    const opt = {
+      bill_id: e.bill.id,
+      should_paginate: false,
+      'bill_id-gb': 'sum(amount) as total_amount'
+    };
+    this.api.Receipts.getList(opt).subscribe(d => {
+      //console.log(d);
+      let doc = new jsPDF('P', 'mm', [130, 200]);
+      doc.setFontSize(6);
+      doc.setFontStyle('bold');
+      // doc.setCreationDate(new Date());
+      doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
+      doc.text('BP: 1352 Douala', 6, 8);
+      doc.text('Montée BBR - BASSA', 6, 11);
+      doc.text('Tél.: 690 404 180/89', 6, 14);
+      // info sur le vendeur
+      doc.text('Encaissé le : ' + e.created_at, 6, 20);
+      doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
+      // Client vendeur
+      doc.text('ENC-: ' + e.id, 6, 29);
+      doc.text('Client: ' + e.bill.customer.name, 6, 32);
+      doc.text('Vendeur: ' + e.vendeur, 6, 35);
+      doc.text('N° Facture: ' + e.bill.bvs_id, 6, 38);
+      doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 41);
+      doc.text('Total des encaissements: ' + this.api.formarPrice(d[0].total_amount) + 'FCFA', 6, 44);
+      doc.text('Reste à payer: ' + this.api.formarPrice((e.bill.amount - d[0].total_amount)) + 'FCFA', 6, 47);
+      doc.save( 'bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
+    }, q => {
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
+    });
   }
 }

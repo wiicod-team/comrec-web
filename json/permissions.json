@@ -112,5 +112,10 @@
     "display_name" : "Lier client",
     "name" : "link.customer",
     "description" : "Lier client"
+  },
+  {
+    "display_name" : "Notifier client",
+    "name" : "can.notify",
+    "description" : "Notifier client par mail"
   }
 ]

@@ -28,6 +28,8 @@ import { ForgotComponent } from './forgot/forgot.component';
 import {InfiniteScrollModule} from 'ngx-infinite-scroll';
 import {StatutPipe} from './pipe/status';
 import {PriceFormatPipe} from './pipe/price-format';
+import { CustomerUniverseComponent } from './customer-universe/customer-universe.component';
+import { CustomerDetailComponent } from './customer-detail/customer-detail.component';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -89,7 +91,9 @@ export function RestangularConfigFactory(RestangularProvider) {
     Page404Component,
     Page403Component,
     ResetComponent,
-    ForgotComponent
+    ForgotComponent,
+    CustomerUniverseComponent,
+    CustomerDetailComponent
   ],
   imports: [
     BrowserModule,

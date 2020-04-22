@@ -13,6 +13,8 @@ import {NgxPermissionsGuard} from 'ngx-permissions';
 import {Page403Component} from './page403/page403.component';
 import {ResetComponent} from './reset/reset.component';
 import {ForgotComponent} from './forgot/forgot.component';
+import {CustomerUniverseComponent} from './customer-universe/customer-universe.component';
+import {CustomerDetailComponent} from './customer-detail/customer-detail.component';
 
 
 
@@ -24,14 +26,53 @@ const routes: Routes = [
       {
         path : 'dashboard',
         component : DashboardComponent,
+        canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.dashboard'],
+            redirectTo: '/s/facture'
+          }
+        }
       },
       {
         path : 'facture',
         component : FactureComponent,
+        data: {
+          permissions: {
+            only: ['consult.dashboard'],
+            redirectTo: '/403'
+          }
+        }
        },
       {
         path : 'encaissement',
         component : EncaissementComponent,
+        data: {
+          permissions: {
+            only: ['consult.dashboard'],
+            redirectTo: '/403'
+          }
+        }
+      },
+      {
+        path : 'univers-client',
+        component : CustomerUniverseComponent,
+        data: {
+          permissions: {
+            only: ['consult.customer'],
+            redirectTo: '/403'
+          }
+        }
+      },
+      {
+        path : 'detail-client/:i',
+        component : CustomerDetailComponent,
+        data: {
+          permissions: {
+            only: ['consult.customer'],
+            redirectTo: '/403'
+          }
+        }
       }
     ]
   },

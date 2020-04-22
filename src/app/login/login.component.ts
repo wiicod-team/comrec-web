@@ -40,8 +40,8 @@ export class LoginComponent implements OnInit {
         if (!this.user.has_reset_password) {
           this.router.navigate(['/reset', this.user.id]);
         } else {
-          // redirection vers side-menu
-          this.router.navigate(['/s/dashboard']);
+          // redirection vers facture
+          this.router.navigate(['/s/facture']);
         }
 
 

@@ -28,6 +28,12 @@
             <span class="caption">Encaissements</span>
           </a>
         </li>
+        <li *ngxPermissionsOnly="['consult.customer']">
+          <a routerLink="/s/univers-client">
+            <span class="icon"><span class="mif-users"></span></span>
+            <span class="caption">Univers clients</span>
+          </a>
+        </li>
 
         <div *ngxPermissionsOnly="['manage.admin']">
           <li class="item-header">Administration</li>

@@ -1,24 +1,23 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-import * as jsPDF from 'jspdf';
+import {ActivatedRoute} from '@angular/router';
+import * as jsPDF from "jspdf";
 import * as moment from 'moment';
-
 declare var Metro;
-
 @Component({
-  selector: 'app-facture',
-  templateUrl: './facture.component.html',
-  styleUrls: ['./facture.component.scss']
+  selector: 'app-customer-detail',
+  templateUrl: './customer-detail.component.html',
+  styleUrls: ['./customer-detail.component.scss']
 })
-export class FactureComponent implements OnInit {
+export class CustomerDetailComponent implements OnInit {
   search = '';
   factures = [];
-  userCustomerIds: string;
   old_facture = [];
   selected_bill = [];
   display = 'none';
   user;
   state = false;
+  dette = 0;
   isLoadingBills = false;
   throttle = 30;
   scrollDistance = 1;
@@ -30,92 +29,44 @@ export class FactureComponent implements OnInit {
   facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number } = {id: 0};
   commentaire;
   montant_avance;
+  customer = {
+    id: 0,
+    name: '',
+    status: '',
+    echue: 0,
+    non_echue: 0,
+    sale_network: ''
+  };
   per_page = 25;
-
-  constructor(private api: ApiProvider) {
-    // this.search = '';
+  constructor(private api: ApiProvider, private route: ActivatedRoute) {
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
+    const id = this.route.snapshot.paramMap.get('i');
+    this.getCustomer(id);
   }
 
-  async ngOnInit() {
-    this.state = true;
-    this.selected_bill = [];
-    this.userCustomerIds = await this.getUserCustomerIds(this.user.id);
-    this.getBills(false);
-    // console.log(moment(new Date()).format('YYYY-MM-DD HH:mm'));
+  ngOnInit(): void {
   }
 
-  vide() {
-    if (this.search === '' || this.search === undefined) {
-      this.factures = this.old_facture;
-      this.max_length = this.old_max_length;
-    }
+  getCustomer(id) {
+    this.factures = [];
+    this.page = 1;
+    const load = Metro.activity.open({
+      type: 'metro',
+      overlayColor: '#fff',
+      overlayAlpha: 1,
+      text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
+      overlayClickClose: true
+    });
+    this.api.Customers.get(id).subscribe(d => {
+      this.customer = d.body;
+      this.getBills(false, d.body.id);
+      Metro.activity.close(load);
+    });
   }
 
-  rechercher() {
-    if (this.search === '' || this.search === undefined) {
-      this.factures = this.old_facture;
-      this.max_length = this.old_max_length;
-    } else {
-      console.log(this.search);
-      this.page = 1;
-      this.state = true;
-      this.factures = [];
-      const opt = {
-        _includes: 'customer,receipts',
-        'customer_id-in': this.userCustomerIds,
-        should_paginate: true,
-        _sort: 'created_at',
-        _sortDir: 'desc',
-        'bvs_id-lk': this.search,
-        'status-in': ['pending', 'new'],
-        per_page: this.per_page,
-        page: this.page
-      };
-
-      this.api.Bills.getList(opt).subscribe(
-        d => {
-          console.log(d);
-          this.last_page = d.metadata.last_page;
-          this.max_length = d.metadata.total;
-          d.forEach((vv, kk) => {
-            let avance = 0;
-            vv.name = vv.customer.name;
-            vv.receipts.forEach((vvv, kkk) => {
-              avance += vvv.amount;
-            });
-            vv.avance = avance;
-            if (vv.status === 'pending') {
-              vv.statut = 'Echue';
-              this.factures.push(vv);
-            } else if (vv.status === 'new') {
-              vv.statut = 'Non echue';
-              this.factures.push(vv);
-            }
-          });
-          this.isLoadingBills = false;
-          this.page++;
-          this.state = false;
-        }, q => {
-          if (q.data.error.status_code === 500) {
-            Metro.notify.create('getBills ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-          } else if (q.data.error.status_code === 401) {
-            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-          } else {
-            Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-          }
-        }
-      );
-    }
-  }
-
-  getBills(s) {
+  getBills(s, id) {
     let load;
-    if (s) {
-      this.factures = [];
-      this.page = 1;
-    }
     this.selected_bill = [];
     if (!this.isLoadingBills && this.page <= this.last_page) {
       this.isLoadingBills = true;
@@ -133,7 +84,7 @@ export class FactureComponent implements OnInit {
 
       const opt = {
         _includes: 'customer,receipts',
-        'customer_id-in': this.userCustomerIds,
+        'customer_id': id,
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
@@ -146,16 +97,22 @@ export class FactureComponent implements OnInit {
 
       this.api.Bills.getList(opt).subscribe(
         d => {
+          this.customer.echue = 0;
+          this.customer.non_echue = 0;
+          let av = 0;
+          let am = 0;
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           this.old_max_length = this.max_length;
           d.forEach((vv, kk) => {
+            am += vv.amount;
             let avance = 0;
             vv.name = vv.customer.name;
             vv.receipts.forEach((vvv, kkk) => {
               avance += vvv.amount;
             });
             vv.avance = avance;
+            av += vv.avance;
             if (vv.status === 'pending') {
               vv.statut = 'Echue';
               this.factures.push(vv);
@@ -164,6 +121,7 @@ export class FactureComponent implements OnInit {
               this.factures.push(vv);
             }
           });
+          this.dette = am - av;
           this.old_facture = this.factures;
           // console.log(this.factures);
           if (s) {
@@ -192,36 +150,14 @@ export class FactureComponent implements OnInit {
 
   }
 
-  trackByIndex(index: number, obj: any): any {
-    return index;
-  }
 
-  async getUserCustomerIds(userId) {
-    const params = {
-      should_paginate: false,
-      user_id: userId
-    };
-    const ucustomers: any =  await this.api.CustomerUsers.getList(params).toPromise();
-    if (ucustomers) {
-      return ucustomers.plain().reduce((res, item) => {
-        if (res !== '') {
-          this.state = false;
-          return `${res},${item.customer_id}`;
-        }
-        this.state = false;
-        return item.customer_id;
-      }, '');
-    }
-    this.state = false;
-    return null;
-
-  }
 
   onScrollDown(ev) {
-    this.getBills(false);
+    this.getBills(false, this.customer.id);
   }
 
   onUp(ev) {}
+
 
   openBillModal() {
     const tmp = [];
@@ -311,9 +247,7 @@ export class FactureComponent implements OnInit {
           data.status = 'paid';
           data.id = data.body.id;
           data.put().subscribe(datap => {
-            //console.log('ok');
             this.state = false;
-            //this.getBills(false);
             const e = {
               id: datap.body.id,
               note: this.commentaire,
@@ -349,7 +283,6 @@ export class FactureComponent implements OnInit {
         });
       } else {
         this.state = false;
-        //console.log(this.facture);
         const e = {
           id: d.body.id,
           note: this.commentaire,
@@ -402,11 +335,12 @@ export class FactureComponent implements OnInit {
     doc.text('Reste: ' + this.api.formarPrice((e.amount - e.avance - this.facture.avance)) + ' FCFA', 6, 37);
     doc.text('Commentaire: ' + e.note, 6, 40);
     doc.save('bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
-    this.getBills(true);
+    this.factures = [];
+    this.page = 1;
+    this.getBills(false, this.customer.id);
   }
 
   printEncaissement(e, bills) {
-    //console.log(e);
     let doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
@@ -436,9 +370,72 @@ export class FactureComponent implements OnInit {
 
     doc.text('Montant versé: ' + this.api.formarPrice(a) + ' FCFA', 6, x);
     doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
-    this.getBills(true);
+    this.factures = [];
+    this.page = 1;
+    this.getBills(false, this.customer.id);
   }
 
+  vide() {
+    if (this.search === '' || this.search === undefined) {
+      this.factures = this.old_facture;
+      this.max_length = this.old_max_length;
+    }
+  }
 
+  rechercher() {
+    if (this.search === '' || this.search === undefined) {
+      this.factures = this.old_facture;
+      this.max_length = this.old_max_length;
+    } else {
+      console.log(this.search);
+      this.page = 1;
+      this.state = true;
+      this.factures = [];
+      const opt = {
+        _includes: 'customer,receipts',
+        'customer_id-in': this.customer.id,
+        should_paginate: true,
+        _sort: 'created_at',
+        _sortDir: 'desc',
+        'bvs_id-lk': this.search,
+        'status-in': ['pending', 'new'],
+        per_page: this.per_page,
+        page: this.page
+      };
 
+      this.api.Bills.getList(opt).subscribe(
+        d => {
+          console.log(d);
+          this.last_page = d.metadata.last_page;
+          this.max_length = d.metadata.total;
+          d.forEach((vv, kk) => {
+            let avance = 0;
+            vv.name = vv.customer.name;
+            vv.receipts.forEach((vvv, kkk) => {
+              avance += vvv.amount;
+            });
+            vv.avance = avance;
+            if (vv.status === 'pending') {
+              vv.statut = 'Echue';
+              this.factures.push(vv);
+            } else if (vv.status === 'new') {
+              vv.statut = 'Non echue';
+              this.factures.push(vv);
+            }
+          });
+          this.isLoadingBills = false;
+          this.page++;
+          this.state = false;
+        }, q => {
+          if (q.data.error.status_code === 500) {
+            Metro.notify.create('getBills ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          } else if (q.data.error.status_code === 401) {
+            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+          } else {
+            Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          }
+        }
+      );
+    }
+  }
 }
