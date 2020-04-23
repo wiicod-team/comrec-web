@@ -44,6 +44,7 @@ export class CustomerDetailComponent implements OnInit {
     this.user = JSON.parse(localStorage.getItem('user'));
     const id = this.route.snapshot.paramMap.get('i');
     this.getCustomer(id);
+    this.getDebt(id);
   }
 
   ngOnInit(): void {
@@ -92,30 +93,23 @@ export class CustomerDetailComponent implements OnInit {
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
-        'status-in': ['new', 'pending'],
+        'status-in': 'new,pending',
         per_page: this.per_page,
         page: this.page
       };
 
-      // console.log('option ', opt);
-
       this.api.Bills.getList(opt).subscribe(
         d => {
-          let av = 0;
-          let am = 0;
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           this.old_max_length = this.max_length;
           d.forEach((vv, kk) => {
-            am += vv.amount;
             let avance = 0;
             vv.name = vv.customer.name;
             vv.receipts.forEach((vvv, kkk) => {
               avance += vvv.amount;
             });
             vv.avance = avance;
-            av += vv.avance;
-            console.log('vv.status');
             if (vv.status === 'pending') {
               vv.statut = 'Echue';
               this.factures.push(vv);
@@ -124,7 +118,6 @@ export class CustomerDetailComponent implements OnInit {
               this.factures.push(vv);
             }
           });
-          this.dette = am - av;
           this.old_facture = this.factures;
           // console.log(this.factures);
           if (s) {
@@ -151,6 +144,20 @@ export class CustomerDetailComponent implements OnInit {
         });
     }
 
+  }
+
+  getDebt(id) {
+    this.api.Bills.getList({_agg: 'sum|amount', should_paginate: false, customer_id: id}).subscribe(d => {
+      console.log(d);
+    }, q => {
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getDebt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getDebt ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
+    });
   }
 
   getEchues(id) {

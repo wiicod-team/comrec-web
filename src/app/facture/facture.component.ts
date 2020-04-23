@@ -135,10 +135,9 @@ export class FactureComponent implements OnInit {
         _includes: 'customer,receipts',
         'customer_id-in': this.userCustomerIds,
         should_paginate: true,
-        'status-ne': 'paid',
         _sort: 'created_at',
         _sortDir: 'desc',
-        'status-in': ['pending', 'new'],
+        'status-in': 'new,pending',
         per_page: this.per_page,
         page: this.page
       };

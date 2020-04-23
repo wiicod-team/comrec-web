@@ -26,53 +26,57 @@ const routes: Routes = [
       {
         path : 'dashboard',
         component : DashboardComponent,
-        canActivate: [NgxPermissionsGuard],
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.dashboard'],
             redirectTo: '/s/facture'
           }
-        }
+        }*/
       },
       {
         path : 'facture',
         component : FactureComponent,
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.dashboard'],
             redirectTo: '/403'
           }
-        }
+        }*/
        },
       {
         path : 'encaissement',
         component : EncaissementComponent,
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.dashboard'],
             redirectTo: '/403'
           }
-        }
+        }*/
       },
       {
         path : 'univers-client',
         component : CustomerUniverseComponent,
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.customer-universe'],
             redirectTo: '/403'
           }
-        }
+        }*/
       },
       {
         path : 'detail-client/:i',
         component : CustomerDetailComponent,
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.customer-universe'],
             redirectTo: '/403'
           }
-        }
+        }*/
       }
     ]
   },
@@ -83,35 +87,35 @@ const routes: Routes = [
   {
     path : 'admin',
     component : SidemenuComponent,
-    canActivate: [NgxPermissionsGuard],
+    /*canActivate: [NgxPermissionsGuard],
     data: {
       permissions: {
         only: ['manage.admin'],
         redirectTo: '/403'
       }
-    },
+    },*/
     children : [
       {
         path : 'users',
         component : UsersComponent,
-        canActivate: [NgxPermissionsGuard],
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.user'],
             redirectTo: '/403'
           }
-        }
+        }*/
       },
       {
         path : 'roles',
         component : RolesComponent,
-        canActivate: [NgxPermissionsGuard],
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.role'],
             redirectTo: '/403'
           }
-        }
+        }*/
       },
       {
         path : 'customers',
