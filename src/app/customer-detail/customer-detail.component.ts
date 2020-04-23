@@ -91,7 +91,7 @@ export class CustomerDetailComponent implements OnInit {
         _includes: 'customer,receipts',
         customer_id: id,
         should_paginate: true,
-        _sort: 'created_at',
+        _sort: 'creation_date',
         _sortDir: 'desc',
         'status-in': 'new,pending',
         per_page: this.per_page,

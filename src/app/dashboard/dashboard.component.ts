@@ -40,7 +40,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(private api: ApiProvider, private router: Router) {
     this.api.checkUser();
-    this.user = JSON.parse(localStorage.getItem('user'));
     const date = new Date();
     const j = date.getDay();
     let d = j % 7;
@@ -77,7 +76,6 @@ export class DashboardComponent implements OnInit {
   getUsersCount() {
 
     this.api.Users.getList({should_paginate: false, _agg: 'count'}).subscribe(d => {
-      // console.log('mmm', d);
       this.users_count = d[0].value;
       Metro.activity.close(this.load);
     }, q => {
@@ -93,11 +91,6 @@ export class DashboardComponent implements OnInit {
   }
 
   getCustomersCount() {
-    /*
-    * this.api.Customers.getList({_agg: 'count'}).subscribe(d => {
-      console.log('aze', d);
-      this.customers_count = d.length;*/
-
     this.api.Customers.getList({should_paginate: false, _agg: 'count'}).subscribe(d => {
       this.customers_count = d[0].value;
     }, q => {
@@ -118,9 +111,9 @@ export class DashboardComponent implements OnInit {
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
-      this.sum_receipt = this.api.formarPrice(_.reduce(d, (memo, num) => {
+      this.sum_receipt = _.reduce(d, (memo, num) => {
         return memo + num.amount;
-      }, 0));
+      }, 0);
       this.receipts_count = d.length;
       // somme du recouvrement du mois
     }, q => {
@@ -145,9 +138,10 @@ export class DashboardComponent implements OnInit {
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
+      d = _.sortBy(d, 'total_amount');
       this.sellers = d;
       if (d.length > 0) {
-        this.best_seller = d[0].user.name;
+        this.best_seller = d[d.length - 1].user.name;
         // creation des données du chart couple (vendeur, montant)
         const vente = [];
         const vendeur = [];
