@@ -46,8 +46,8 @@ export class ResetComponent implements OnInit {
     this.user.password = pwd;
     this.user.settings = [];
     this.user.put().subscribe(a => {
-      Metro.notify.create('Mot de passe modifié.', 'Succès', {cls: 'bg-or', timeout: 3000});
-      this.router.navigate(['/s/dashboard']);
+      Metro.notify.create('Mot de passe modifié.', 'Succès', {cls: 'bg-or fg-white', timeout: 3000});
+      this.router.navigate(['/login']);
     }, q => {
       Metro.notify.create('validatePassword ' + JSON.stringify(q.data.error.errors), 'Erreur reset ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
     });

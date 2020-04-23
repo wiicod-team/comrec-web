@@ -149,6 +149,10 @@ export class CustomerDetailComponent implements OnInit {
   getDebt(id) {
     this.api.Bills.getList({_agg: 'sum|amount', should_paginate: false, customer_id: id}).subscribe(d => {
       console.log(d);
+      this.api.Receipts.getList({_agg: 'sum|amount', _includes: 'bill', 'bill-fk': 'customer_id=' + id, should_paginate: false}).subscribe(da => {
+        console.log(d[0].value);
+        this.dette = d[0].value - da[0].value;
+      });
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getDebt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

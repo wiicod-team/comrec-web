@@ -65,7 +65,7 @@
   </div>
 
   <div class="cell-2">
-    <small>{{customers.length}} sur {{max_length}} Factures</small>
+    <small>{{customers.length}} sur {{max_length}} Clients</small>
   </div>
 
 
@@ -73,10 +73,10 @@
 <div class="dialog" data-role="dialog" id="linkDialog1">
   <div class="dialog-title">Lier un client à un vendeur</div>
   <div class="dialog-content" >
-    Choix du vendeur {{user_id}}
+    Choix du vendeur
     <div class="form-group">
       <select [(ngModel)]="user_id">
-        <option *ngFor="let i of users" value="{{i.id}}">{{i.id}}-{{i.name}}</option>
+        <option *ngFor="let i of users" value="{{i.id}}">{{i.name}}</option>
       </select>
     </div>
   </div>

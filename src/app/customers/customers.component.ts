@@ -18,7 +18,7 @@ export class CustomersComponent implements OnInit {
   user_id;
   customer;
   page = 1;
-  per_page = 20;
+  per_page = 25;
   max_length = 0;
   old_max_length = 0;
   last_page = 10000000;
@@ -26,6 +26,7 @@ export class CustomersComponent implements OnInit {
   scrollDistance = 1;
   scrollUpDistance = 2;
   constructor(private api: ApiProvider) {
+    this.api.checkUser();
     this.search = '';
     this.init();
   }
@@ -107,6 +108,10 @@ export class CustomersComponent implements OnInit {
   }
 
   getCustomers(s) {
+    if (s) {
+      this.customers = [];
+      this.page = 1;
+    }
     if (!this.isLoadingBills && this.page <= this.last_page) {
       this.isLoadingBills = true;
       if (!s) {
@@ -182,10 +187,9 @@ export class CustomersComponent implements OnInit {
   }
 
   link() {
-    //console.log(this.user_id);
     this.api.CustomerUsers.post({user_id: this.user_id, customer_id: this.customer.id}).subscribe(d => {
-      Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-or fg-white', timeout: 3000});
-      this.getCustomers(false);
+      Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+      this.getCustomers(true);
       this.user_id = 0;
     }, q => {
       if (q.data.error.status_code === 500) {
@@ -195,16 +199,18 @@ export class CustomersComponent implements OnInit {
       } else {
         Metro.activity.close(this.load);
         Metro.notify.create('link ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        this.getCustomers(false);
+        this.getCustomers(true);
         this.user_id = 0;
       }
     });
   }
 
   unLink(e) {
+    console.log(e);
     this.api.CustomerUsers.getList({customer_id: e.id, user_id: e.users[0].id}).subscribe(d => {
       d[0].remove().subscribe(data => {
-        this.getCustomers(false);
+        Metro.notify.create('Client ' + e.name + ' délié du vendeur', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+        this.getCustomers(true);
       }, q => {
         if (q.data.error.status_code === 500) {
           Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

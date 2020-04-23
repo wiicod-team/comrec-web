@@ -29,7 +29,10 @@ export class UsersComponent implements OnInit {
     pass: string
     put(): any;
   };
+  private current_user: any;
   constructor(private api: ApiProvider, private router: Router) {
+    this.api.checkUser();
+    this.current_user = JSON.parse(localStorage.getItem('user'));
     this.search = '';
     this.user = {
       id: 0,
@@ -180,7 +183,7 @@ export class UsersComponent implements OnInit {
     if (bool) {
       u.put().subscribe(p => {
         this.getUsers();
-        Metro.notify.create(text, 'Succes', {cls: 'bg-or'});
+        Metro.notify.create(text, 'Succes', {cls: 'bg-or fg-white'});
         this.active = false;
         this.reset = false;
       }, q => {

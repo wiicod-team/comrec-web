@@ -24,7 +24,10 @@ export class CustomerUniverseComponent implements OnInit {
   throttle = 30;
   scrollDistance = 1;
   scrollUpDistance = 2;
+  private user: any;
   constructor(private api: ApiProvider) {
+    this.api.checkUser();
+    this.user = JSON.parse(localStorage.getItem('user'));
     this.search = '';
     this.init();
   }
@@ -117,7 +120,7 @@ export class CustomerUniverseComponent implements OnInit {
         should_paginate: true,
         _sort: 'name',
         _sortDir: 'asc',
-        'users-fk': 'user_id=' + 1,
+        'users-fk': 'user_id=' + this.user.id,
         per_page: this.per_page,
         page: this.page
       };

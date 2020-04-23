@@ -25,6 +25,8 @@ export class RolesComponent implements OnInit {
   searchR: any;
   searchP: any;
   constructor(private api: ApiProvider) {
+    this.api.checkUser();
+    this.user = JSON.parse(localStorage.getItem('user'));
     this.role = {
       id: 0,
       name: '',

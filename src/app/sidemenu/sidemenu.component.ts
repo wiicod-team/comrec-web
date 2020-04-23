@@ -12,7 +12,6 @@ export class SidemenuComponent implements OnInit {
   constructor(private router: Router, private api: ApiProvider) {
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
-    console.log(this.user);
   }
 
   ngOnInit() {

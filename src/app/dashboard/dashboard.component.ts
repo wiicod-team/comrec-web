@@ -39,7 +39,8 @@ export class DashboardComponent implements OnInit {
   ];
 
   constructor(private api: ApiProvider, private router: Router) {
-
+    this.api.checkUser();
+    this.user = JSON.parse(localStorage.getItem('user'));
     const date = new Date();
     const j = date.getDay();
     let d = j % 7;
