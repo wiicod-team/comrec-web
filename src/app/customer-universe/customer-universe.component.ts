@@ -44,7 +44,6 @@ export class CustomerUniverseComponent implements OnInit {
       overlayClickClose: true
     });
     this.getCustomers(true);
-    this.getUsers();
   }
 
 
@@ -178,67 +177,5 @@ export class CustomerUniverseComponent implements OnInit {
   }
 
   onUp(ev) {}
-
-  oepnLink(c) {
-    this.customer = c;
-    Metro.dialog.open('#linkDialog1');
-  }
-
-  link() {
-    this.api.CustomerUsers.post({user_id: this.user_id, customer_id: this.customer.id}).subscribe(d => {
-      Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-or fg-white', timeout: 3000});
-      this.getCustomers(false);
-      this.user_id = 0;
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.activity.close(this.load);
-        Metro.notify.create('link ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        this.getCustomers(false);
-        this.user_id = 0;
-      }
-    });
-  }
-
-  unLink(e) {
-    this.api.CustomerUsers.getList({customer_id: e.id, user_id: e.users[0].id}).subscribe(d => {
-      d[0].remove().subscribe(data => {
-        this.getCustomers(false);
-      }, q => {
-        if (q.data.error.status_code === 500) {
-          Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        } else if (q.data.error.status_code === 401) {
-          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-        } else {
-          Metro.notify.create('unLink ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        }
-      });
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.notify.create('unLink ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      }
-    });
-  }
-  getUsers() {
-    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
-      this.users = data;
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.activity.close(this.load);
-        Metro.notify.create('getUsers ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      }
-    });
-  }
 
 }

@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/reset', this.user.id]);
         } else {
           // redirection vers facture
-          this.router.navigate(['/s/facture']);
+          this.router.navigate(['/s/univers-client']);
         }
 
 

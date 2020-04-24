@@ -70,19 +70,3 @@
 
 
 </div>
-<div class="dialog" data-role="dialog" id="linkDialog1">
-  <div class="dialog-title">Lier un client à un vendeur</div>
-  <div class="dialog-content" >
-    Choix du vendeur {{user_id}}
-    <div class="form-group">
-      <select [(ngModel)]="user_id">
-        <option *ngFor="let i of users" value="{{i.id}}">{{i.id}}-{{i.name}}</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="dialog-actions text-right">
-    <button class="button js-dialog-close bg-or fg-white" (click)="link()">Valider</button>
-    <button class="button primary js-dialog-close bg-noir">Fermer</button>
-  </div>
-</div>

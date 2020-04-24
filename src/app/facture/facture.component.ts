@@ -405,6 +405,8 @@ export class FactureComponent implements OnInit {
     doc.text('Commentaire: ' + e.note, 6, 40);
     doc.save('bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
+    this.commentaire = '';
+    this.montant_avance = 0;
   }
 
   printEncaissement(e, bills) {
@@ -432,7 +434,7 @@ export class FactureComponent implements OnInit {
     let a = 0;
     bills.forEach((v, k) => {
       doc.text(v.bvs_id, 6, x);
-      a += v.amount;
+      a += (v.amount - v.avance);
       x += 3;
     });
 
