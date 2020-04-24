@@ -43,7 +43,6 @@ export class FactureComponent implements OnInit {
     this.selected_bill = [];
     this.userCustomerIds = await this.getUserCustomerIds(this.user.id);
     this.getBills(false);
-    // console.log(moment(new Date()).format('YYYY-MM-DD HH:mm'));
   }
 
   vide() {
@@ -58,7 +57,6 @@ export class FactureComponent implements OnInit {
       this.factures = this.old_facture;
       this.max_length = this.old_max_length;
     } else {
-      console.log(this.search);
       this.page = 1;
       this.state = true;
       this.factures = [];
@@ -76,7 +74,6 @@ export class FactureComponent implements OnInit {
 
       this.api.Bills.getList(opt).subscribe(
         d => {
-          console.log(d);
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           d.forEach((vv, kk) => {
@@ -113,10 +110,10 @@ export class FactureComponent implements OnInit {
   getBills(s) {
     let load;
     if (s) {
+      this.selected_bill = [];
       this.factures = [];
       this.page = 1;
     }
-    this.selected_bill = [];
     if (!this.isLoadingBills && this.page <= this.last_page) {
       this.isLoadingBills = true;
       if (s) {
@@ -142,8 +139,6 @@ export class FactureComponent implements OnInit {
         page: this.page
       };
 
-      // console.log('option ', opt);
-
       this.api.Bills.getList(opt).subscribe(
         d => {
           this.last_page = d.metadata.last_page;
@@ -165,7 +160,6 @@ export class FactureComponent implements OnInit {
             }
           });
           this.old_facture = this.factures;
-          // console.log(this.factures);
           if (s) {
             Metro.activity.close(load);
             this.state = false;
@@ -244,7 +238,6 @@ export class FactureComponent implements OnInit {
       f.status = 'paid';
       f.put().subscribe(d => {
         this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
-          // console.log('ok', f.id);
           i++;
           Metro.notify.create('Facture ' + f.bvs_id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
           if (i === this.selected_bill.length) {
@@ -276,12 +269,12 @@ export class FactureComponent implements OnInit {
   }
 
   avancer() {
-    const f = [];
-    this.factures.forEach((v, k) => {
+    const f = this.selected_bill;
+    /*this.factures.forEach((v, k) => {
       if (v.check) {
         f.push(v);
       }
-    });
+    });*/
     if (f.length >= 1 && f.length < 2) {
       // ok
       Metro.dialog.open('#avanceDialog1');
@@ -305,7 +298,6 @@ export class FactureComponent implements OnInit {
     };
 
     this.api.Receipts.post(opt).subscribe(d => {
-      console.log(d);
       Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
       if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
         // modification du statut de la facture
@@ -313,9 +305,7 @@ export class FactureComponent implements OnInit {
           data.status = 'paid';
           data.id = data.body.id;
           data.put().subscribe(datap => {
-            //console.log('ok');
             this.state = false;
-            //this.getBills(false);
             const e = {
               id: datap.body.id,
               note: this.commentaire,
@@ -327,7 +317,6 @@ export class FactureComponent implements OnInit {
               avance: this.montant_avance,
               amount: this.facture.amount
             };
-            console.log(e.amount , e.avance , this.montant_avance);
             this.printAvance(e);
           }, q => {
             if (q.data.error.status_code === 500) {
@@ -351,7 +340,6 @@ export class FactureComponent implements OnInit {
         });
       } else {
         this.state = false;
-        //console.log(this.facture);
         const e = {
           id: d.body.id,
           note: this.commentaire,
@@ -363,7 +351,6 @@ export class FactureComponent implements OnInit {
           avance: this.montant_avance ,
           amount: this.facture.amount
         };
-        console.log(e.amount , e.avance , this.montant_avance);
         this.printAvance(e);
       }
     }, q => {
@@ -410,7 +397,6 @@ export class FactureComponent implements OnInit {
   }
 
   printEncaissement(e, bills) {
-    //console.log(e);
     let doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
