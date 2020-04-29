@@ -16,6 +16,7 @@ export class ResetComponent implements OnInit {
     settings: any[];
     has_reset_password: boolean;
     password: string;
+    type: string;
     body: {
       id: number;
       status: string;
@@ -43,6 +44,7 @@ export class ResetComponent implements OnInit {
     this.user.id = this.user.body.id;
     this.user.status = this.user.body.status;
     this.user.has_reset_password = true;
+    this.user.type = 'user';
     this.user.password = pwd;
     this.user.settings = [];
     this.user.put().subscribe(a => {
