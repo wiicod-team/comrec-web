@@ -98,11 +98,19 @@
     <div class="row">
       <div class="cell-6">
         <div class="label">Du</div>
-        <input data-role="datepicker" id="from" data-distance="0" data-locale="fr-FR" data-min-year="2020" data-max-year="2030">
+        <m4-calendar-picker [(ngModel)]="from" cls-calendar="compact"
+                            [dialog-mode]="false"
+                            locale="fr-FR" format="%d/%m/%Y" size="100%"
+                            calendar-button-icon="<span class='mif-calendar'></span>"
+                            [show-header]="true"></m4-calendar-picker>
       </div>
       <div class="cell-6">
         <div class="label">Au</div>
-        <input data-role="datepicker" id="to" data-distance="1" data-locale="fr-FR" data-min-year="2020" data-max-year="2030">
+        <m4-calendar-picker [(ngModel)]="to" cls-calendar="compact"
+                            [dialog-mode]="false"
+                            locale="fr-FR" format="%d/%m/%Y" size="100%"
+                            calendar-button-icon="<span class='mif-calendar'></span>"
+                            [show-header]="true"></m4-calendar-picker>
       </div>
     </div>
   </div>

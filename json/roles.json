@@ -11,12 +11,13 @@
       "advance.bill",
       "cash.bill",
       "consult.bill",
+      "consult.customer-universe",
 
       "add.user",
       "edit.user",
       "delete.user",
       "consult.user",
-      "active.user",
+      "active.account",
 
       "add.role",
       "edit.role",
@@ -32,6 +33,26 @@
       "consult.dashboard",
 
       "reset.password"
+    ]
+  },
+  {
+    "display_name" : "Vendeur BVS",
+    "description" : "Vendeur BVS",
+    "name" : "vendeur.bvs",
+    "permissions":[
+      "consult.receipt",
+      "consult.customer-universe",
+      "advance.bill",
+      "cash.bill",
+      "consult.bill"
+    ]
+  },
+  {
+    "display_name" : "Manager BVS",
+    "description" : "Manager BVS",
+    "name" : "manager.bvs",
+    "permissions":[
+      "consult.dashboard"
     ]
   },
   {

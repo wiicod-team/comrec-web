@@ -125,6 +125,50 @@
 
         </tbody>
       </table>
+      <div class="form-group">
+        <label>Mode de paiement</label>
+        <select [(ngModel)]="payment_method">
+          <option value="Chèque">Chèque</option>
+          <option value="Espèce">Espèce</option>
+          <option value="Paiement mobile">Paiement mobile</option>
+        </select>
+      </div>
+      <div *ngIf="payment_method == 'Chèque'">
+        <div class="form-group">
+          <label>Date</label>
+          <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
+                              [dialog-mode]="true"
+                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
+        <div class="form-group">
+          <label>Banque</label>
+          <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
+        </div>
+        <div class="form-group">
+          <label>N° du chèque</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
+        </div>
+      </div>
+
+      <div *ngIf="payment_method == 'Espèce'">
+        <div class="form-group">
+          <label>Commentaire</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
+        </div>
+      </div>
+
+      <div *ngIf="payment_method == 'Paiement mobile'">
+        <div class="form-group">
+          <label>N° de la transaction</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="N° de la transaction"/>
+        </div>
+        <div class="form-group">
+          <label>Opérateur</label>
+          <input type="text" [(ngModel)]="commentaire2" placeholder="Opérateur"/>
+        </div>
+      </div>
     </div>
     <div class="dialog-content" *ngIf="selected_bill.length<=0">
       Aucune facture selectionnée.
@@ -149,9 +193,51 @@
         <small class="text-muted">Reste à payer : {{facture.amount - facture.avance}} FCFA</small>
       </div>
       <div class="form-group">
-        <label>Commentaire</label>
-        <input type="text" [(ngModel)]="commentaire" placeholder="Commentaire"/>
+        <label>Mode de paiement</label>
+        <select [(ngModel)]="payment_method">
+          <option value="Chèque">Chèque</option>
+          <option value="Espèce">Espèce</option>
+          <option value="Paiement mobile">Paiement mobile</option>
+        </select>
       </div>
+      <div *ngIf="payment_method == 'Chèque'">
+        <div class="form-group">
+          <label>Date {{commentaire3}}</label>
+          <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
+                              [dialog-mode]="true"
+                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
+        <div class="form-group">
+          <label>Banque</label>
+          <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
+        </div>
+        <div class="form-group">
+          <label>N° du chèque</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
+        </div>
+      </div>
+
+      <div *ngIf="payment_method == 'Espèce'">
+        <div class="form-group">
+          <label>Commentaire</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
+        </div>
+      </div>
+
+      <div *ngIf="payment_method == 'Paiement mobile'">
+        <div class="form-group">
+          <label>N° de la transaction</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="N° de la transaction"/>
+        </div>
+        <div class="form-group">
+          <label>Opérateur</label>
+          <input type="text" [(ngModel)]="commentaire2" placeholder="Opérateur"/>
+        </div>
+      </div>
+
+
     </div>
 
     <div class="dialog-actions text-right">

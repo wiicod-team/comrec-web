@@ -164,12 +164,28 @@ export class CustomerDetailComponent implements OnInit {
   getEchues(id) {
     this.api.Bills.getList({should_paginate: false, _agg: 'count', customer_id: id, status: 'pending'}).subscribe(d => {
       this.customer.echue = d[0].value;
+    }, q => {
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getEchues ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getEchues ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
     });
   }
 
   getNonEchues(id) {
     this.api.Bills.getList({should_paginate: false, _agg: 'count', customer_id: id, status: 'new'}).subscribe(d => {
       this.customer.non_echue = d[0].value;
+    }, q => {
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getNonEchues ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getNonEchues ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
     });
   }
 

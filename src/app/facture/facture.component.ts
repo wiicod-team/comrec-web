@@ -28,7 +28,10 @@ export class FactureComponent implements OnInit {
   old_max_length = 0;
   last_page = 10000000;
   facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number } = {id: 0};
-  commentaire;
+  payment_method = '';
+  commentaire1 = '';
+  commentaire2 = '';
+  commentaire3: any;
   montant_avance;
   per_page = 25;
 
@@ -36,6 +39,7 @@ export class FactureComponent implements OnInit {
     // this.search = '';
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
+    this.commentaire3 = new Date();
   }
 
   async ngOnInit() {
@@ -231,13 +235,15 @@ export class FactureComponent implements OnInit {
   }
 
   validerEncaissement() {
+    this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
     this.state = true;
     // actualisation
     let i = 0;
     this.selected_bill.forEach(f => {
       f.status = 'paid';
       f.put().subscribe(d => {
-        this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: 'Soldé', user_id: this.user.id}).subscribe(da => {
+        const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3;
+        this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: note, payment_method: this.payment_method, user_id: this.user.id}).subscribe(da => {
           i++;
           Metro.notify.create('Facture ' + f.bvs_id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
           if (i === this.selected_bill.length) {
@@ -247,6 +253,8 @@ export class FactureComponent implements OnInit {
               vendeur_id: this.user.id,
               vendeur: this.user.name,
               client: f.name,
+              note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+              payment_method: this.payment_method,
               id: da.body.id
             };
             this.printEncaissement(e, this.selected_bill);
@@ -270,13 +278,9 @@ export class FactureComponent implements OnInit {
 
   avancer() {
     const f = this.selected_bill;
-    /*this.factures.forEach((v, k) => {
-      if (v.check) {
-        f.push(v);
-      }
-    });*/
     if (f.length >= 1 && f.length < 2) {
       // ok
+      this.facture = f[0];
       Metro.dialog.open('#avanceDialog1');
       this.facture = f[0];
     } else if (f.length === 0) {
@@ -290,13 +294,14 @@ export class FactureComponent implements OnInit {
 
   validerAvance() {
     this.state = true;
+    this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
     const opt = {
       amount: this.montant_avance,
-      note: this.commentaire,
+      note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+      payment_method: this.payment_method,
       bill_id: this.facture.id,
       user_id: this.user.id
     };
-
     this.api.Receipts.post(opt).subscribe(d => {
       Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
       if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
@@ -308,12 +313,13 @@ export class FactureComponent implements OnInit {
             this.state = false;
             const e = {
               id: datap.body.id,
-              note: this.commentaire,
+              note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
               created_at: data.body.created_at,
               vendeur_id: this.user.id,
               vendeur: this.user.name,
               bill_id: this.facture.bvs_id,
               client: this.facture.name,
+              payment_method: this.payment_method,
               avance: this.montant_avance,
               amount: this.facture.amount
             };
@@ -342,13 +348,14 @@ export class FactureComponent implements OnInit {
         this.state = false;
         const e = {
           id: d.body.id,
-          note: this.commentaire,
+          note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
           created_at: d.body.created_at,
           vendeur_id: this.user.id,
           vendeur: this.user.name,
           bill_id: this.facture.bvs_id,
           client: this.facture.name,
           avance: this.montant_avance ,
+          payment_method: this.payment_method,
           amount: this.facture.amount
         };
         this.printAvance(e);
@@ -389,10 +396,14 @@ export class FactureComponent implements OnInit {
     doc.text('N° Facture: ' + e.bill_id, 6, 32);
     doc.text('Avance: ' + this.api.formarPrice(e.avance) + ' FCFA', 6, 35);
     doc.text('Reste: ' + this.api.formarPrice((e.amount - e.avance - this.facture.avance)) + ' FCFA', 6, 37);
-    doc.text('Commentaire: ' + e.note, 6, 40);
+    doc.text('Mode de paiement: ' + e.payment_method, 6, 40);
+    doc.text('Commentaire: ' + e.note, 6, 43);
     doc.save('bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
-    this.commentaire = '';
+    this.commentaire1 = '';
+    this.commentaire2 = '';
+    this.commentaire3 = new Date();
+    this.payment_method = '';
     this.montant_avance = 0;
   }
 
@@ -425,7 +436,13 @@ export class FactureComponent implements OnInit {
     });
 
     doc.text('Montant versé: ' + this.api.formarPrice(a) + ' FCFA', 6, x);
+    doc.text('Mode de paiement: ' + e.payment_method, 6, x + 3);
+    doc.text('Commentaire: ' + e.note, 6, x + 6);
     doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
+    this.commentaire1 = '';
+    this.commentaire2 = '';
+    this.commentaire3 = new Date();
+    this.payment_method = '';
   }
 }

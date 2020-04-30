@@ -2,6 +2,7 @@
   {
     "username" : "root",
     "bvs_id": 1,
+    'name': 'Edward NANDA',
     "settings":[],
     "password":"root123",
     "roles" : [
@@ -27,12 +28,13 @@
     ]
   },
   {
-    "username" : "client",
+    "username" : "bvfokor01",
     "bvs_id": 4,
+    "name": "Eric FOKO"
     "settings":[],
     "password":"client123",
     "roles" : [
-
+      "administrator"
     ]
   },
   {

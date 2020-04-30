@@ -23,9 +23,9 @@ export class DashboardComponent implements OnInit {
   sellers;
   load;
   today;
-  from;
+  from: any;
   now = new Date();
-  to;
+  to: any;
   public barChartLabels;
   public barChartType = 'bar';
   public barChartData = [
@@ -40,6 +40,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(private api: ApiProvider, private router: Router) {
     this.api.checkUser();
+    this.from = new Date();
+    this.to = new Date();
     const date = new Date();
     const j = date.getDay();
     let d = j % 7;
@@ -50,7 +52,7 @@ export class DashboardComponent implements OnInit {
     }
     moment.locale('fr');
 
-    this.init(new Date(), new Date());
+    this.init(moment(new Date()), moment(new Date()));
   }
 
   ngOnInit() {
@@ -170,9 +172,9 @@ export class DashboardComponent implements OnInit {
   }
 
   validate() {
-    this.from = (document.getElementById('from') as HTMLInputElement).value;
-    this.to = (document.getElementById('to') as HTMLInputElement).value;
-    this.today = 'du ' + this.from + ' au ' + this.to;
+    this.from = new Date(this.from);
+    this.to = new Date(this.to);
+    this.today = 'du ' + moment(this.from).format('DD/MM/YYYY') + ' au ' + moment(this.to).format('DD/MM/YYYY');
     this.init(this.from, this.to);
   }
 }
