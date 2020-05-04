@@ -1,4 +1,4 @@
-<div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+<div class="row border-bottom bd-lightGray ml-2" >
   <div class="cell-md-4 d-flex flex-align-center">
     <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
   </div>
@@ -11,10 +11,16 @@
 </div>
 
 <div class="m-3">
-  <div class="cell-3">
-    <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+  <div class="row mt-2">
+    <div class="cell-3">
+      <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+    </div>
+    <div class="cell-4" *ngIf="state">
+      Chargement des données ...
+      <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
+    </div>
   </div>
-  <div class="row mt-2" style="max-height: 700px; overflow-y: scroll">
+  <div class="row mt-2" style="max-height: 700px; overflow-y: auto">
     <table class="table cell-border compact table-border"
     >
       <thead>
@@ -24,6 +30,7 @@
         <th data-sortable="true">Date</th>
         <th data-sortable="true" data-name="client">Client</th>
         <th data-sortable="true">Montant</th>
+        <th data-sortable="true">Mode de paiement</th>
         <th data-sortable="true">Vendeur</th>
         <th data-sortable="true">Actions</th>
       </tr>
@@ -34,7 +41,8 @@
         <td>{{i.bill.bvs_id}}</td>
         <td>{{i.created_at}}</td>
         <td>{{i.bill.customer.name}}</td>
-        <td>{{i.amount}}</td>
+        <td>{{i.amount |priceFormat}}</td>
+        <td>{{i.payment_method}}</td>
         <td>{{i.vendeur}}</td>
         <td><button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button></td>
       </tr>

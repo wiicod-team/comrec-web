@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
+import {ActivatedRoute} from '@angular/router';
 
 declare var Metro;
 
@@ -34,9 +35,11 @@ export class FactureComponent implements OnInit {
   commentaire3: any;
   montant_avance;
   per_page = 25;
+  customer_id = 0;
 
-  constructor(private api: ApiProvider) {
+  constructor(private api: ApiProvider, private route: ActivatedRoute) {
     // this.search = '';
+    this.customer_id = parseInt(this.route.snapshot.paramMap.get('customer_id'));
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
     this.commentaire3 = new Date();
@@ -45,7 +48,7 @@ export class FactureComponent implements OnInit {
   async ngOnInit() {
     this.state = true;
     this.selected_bill = [];
-    this.userCustomerIds = await this.getUserCustomerIds(this.user.id);
+    //this.userCustomerIds = await this.getUserCustomerIds(this.user.id);
     this.getBills(false);
   }
 
@@ -66,12 +69,13 @@ export class FactureComponent implements OnInit {
       this.factures = [];
       const opt = {
         _includes: 'customer,receipts',
-        'customer_id-in': this.userCustomerIds,
+        //'customer_id-in': this.userCustomerIds,
+        'customer_id': this.customer_id,
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
         'bvs_id-lk': this.search,
-        'status-in': ['pending', 'new'],
+        'status-in': 'new,pending',
         per_page: this.per_page,
         page: this.page
       };
@@ -134,7 +138,8 @@ export class FactureComponent implements OnInit {
 
       const opt = {
         _includes: 'customer,receipts',
-        'customer_id-in': this.userCustomerIds,
+        //'customer_id-in': this.userCustomerIds,
+        'customer_id': this.customer_id,
         should_paginate: true,
         _sort: 'creation_date',
         _sortDir: 'desc',
@@ -222,7 +227,19 @@ export class FactureComponent implements OnInit {
   onUp(ev) {}
 
   openBillModal() {
-    Metro.dialog.open('#demoDialog1');
+    this.payment_method = '';
+    this.commentaire1 = '';
+    this.commentaire2 = '';
+    const f = this.selected_bill;
+    console.log(f);
+    if (f.length >= 1 && f.length < 2) {
+      // ok
+      Metro.dialog.open('#demoDialog1');
+      this.facture = f[0];
+    } else if (f.length === 0) {
+      // pas de factures selectionnées
+      Metro.notify.create('Pas de facture selectionnée', 'Absence de facture', {cls: 'bg-gris'});
+    }
   }
 
   billChecked(bill, val) {
@@ -235,49 +252,57 @@ export class FactureComponent implements OnInit {
   }
 
   validerEncaissement() {
-    this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
-    this.state = true;
-    // actualisation
-    let i = 0;
-    this.selected_bill.forEach(f => {
-      f.status = 'paid';
-      f.put().subscribe(d => {
-        const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3;
-        this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: note, payment_method: this.payment_method, user_id: this.user.id}).subscribe(da => {
-          i++;
-          Metro.notify.create('Facture ' + f.bvs_id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
-          if (i === this.selected_bill.length) {
-            // impression
-            const e = {
-              created_at: da.body.created_at,
-              vendeur_id: this.user.id,
-              vendeur: this.user.name,
-              client: f.name,
-              note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
-              payment_method: this.payment_method,
-              id: da.body.id
-            };
-            this.printEncaissement(e, this.selected_bill);
-            // arret du loading
+    if (this.checkNote()) {
+      document.getElementById('non').click();
+      this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
+      this.state = true;
+      // actualisation
+      let i = 0;
+      this.selected_bill.forEach(f => {
+        f.status = 'paid';
+        f.put().subscribe(d => {
+          const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3;
+          this.api.Receipts.post({bill_id: f.id, amount: f.amount - f.avance, note: note, payment_method: this.payment_method, user_id: this.user.id}).subscribe(da => {
+            i++;
+            Metro.notify.create('Facture ' + f.bvs_id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+            if (i === this.selected_bill.length) {
+              // impression
+              const e = {
+                created_at: da.body.created_at,
+                vendeur_id: this.user.id,
+                vendeur: this.user.name,
+                client: f.name,
+                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+                payment_method: this.payment_method,
+                id: da.body.id
+              };
+              this.printEncaissement(e, this.selected_bill);
+              // arret du loading
+              this.state = false;
+            }
+          });
+        }, q => {
+          if (q.data.error.status_code === 500) {
+            Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          } else if (q.data.error.status_code === 401) {
+            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+          } else {
+            Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
             this.state = false;
           }
         });
-      }, q => {
-        if (q.data.error.status_code === 500) {
-          Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        } else if (q.data.error.status_code === 401) {
-          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-        } else {
-          Metro.notify.create('validerEncaissement ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-          this.state = false;
-        }
-      });
 
-    });
+      });
+    }
   }
 
   avancer() {
+    this.payment_method = '';
+    this.commentaire1 = '';
+    this.commentaire2 = '';
+    this.montant_avance = 0;
     const f = this.selected_bill;
+    console.log(f);
     if (f.length >= 1 && f.length < 2) {
       // ok
       this.facture = f[0];
@@ -293,85 +318,111 @@ export class FactureComponent implements OnInit {
   }
 
   validerAvance() {
-    this.state = true;
-    this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
-    const opt = {
-      amount: this.montant_avance,
-      note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
-      payment_method: this.payment_method,
-      bill_id: this.facture.id,
-      user_id: this.user.id
-    };
-    this.api.Receipts.post(opt).subscribe(d => {
-      Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
-      if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
-        // modification du statut de la facture
-        this.api.Bills.get(this.facture.id).subscribe(data => {
-          data.status = 'paid';
-          data.id = data.body.id;
-          data.put().subscribe(datap => {
-            this.state = false;
-            const e = {
-              id: datap.body.id,
-              note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
-              created_at: data.body.created_at,
-              vendeur_id: this.user.id,
-              vendeur: this.user.name,
-              bill_id: this.facture.bvs_id,
-              client: this.facture.name,
-              payment_method: this.payment_method,
-              avance: this.montant_avance,
-              amount: this.facture.amount
-            };
-            this.printAvance(e);
+    if (this.checkNote()) {
+      document.getElementById('close').click();
+      this.state = true;
+      this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
+      const opt = {
+        amount: this.montant_avance,
+        note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+        payment_method: this.payment_method,
+        bill_id: this.facture.id,
+        user_id: this.user.id
+      };
+      this.api.Receipts.post(opt).subscribe(d => {
+        Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+        if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
+          // modification du statut de la facture
+          this.api.Bills.get(this.facture.id).subscribe(data => {
+            data.status = 'paid';
+            data.id = data.body.id;
+            data.put().subscribe(datap => {
+              this.state = false;
+              const e = {
+                id: datap.body.id,
+                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+                created_at: data.body.created_at,
+                vendeur_id: this.user.id,
+                vendeur: this.user.name,
+                bill_id: this.facture.bvs_id,
+                client: this.facture.name,
+                payment_method: this.payment_method,
+                avance: this.montant_avance,
+                amount: this.facture.amount
+              };
+              this.printAvance(e);
+            }, q => {
+              if (q.data.error.status_code === 500) {
+                Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              } else if (q.data.error.status_code === 401) {
+                Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+              } else {
+                Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+                this.state = false;
+              }
+            });
           }, q => {
             if (q.data.error.status_code === 500) {
               Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
             } else if (q.data.error.status_code === 401) {
-              Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+              Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
             } else {
               Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
               this.state = false;
             }
           });
-        }, q => {
-          if (q.data.error.status_code === 500) {
-            Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-          } else if (q.data.error.status_code === 401) {
-            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-          } else {
-            Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-            this.state = false;
-          }
-        });
-      } else {
-        this.state = false;
-        const e = {
-          id: d.body.id,
-          note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
-          created_at: d.body.created_at,
-          vendeur_id: this.user.id,
-          vendeur: this.user.name,
-          bill_id: this.facture.bvs_id,
-          client: this.facture.name,
-          avance: this.montant_avance ,
-          payment_method: this.payment_method,
-          amount: this.facture.amount
-        };
-        this.printAvance(e);
-      }
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        this.state = false;
-      }
-    });
+        } else {
+          this.state = false;
+          const e = {
+            id: d.body.id,
+            note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+            created_at: d.body.created_at,
+            vendeur_id: this.user.id,
+            vendeur: this.user.name,
+            bill_id: this.facture.bvs_id,
+            client: this.facture.name,
+            avance: this.montant_avance ,
+            payment_method: this.payment_method,
+            amount: this.facture.amount
+          };
+          this.printAvance(e);
+        }
+      }, q => {
+        if (q.data.error.status_code === 500) {
+          Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        } else if (q.data.error.status_code === 401) {
+          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+        } else {
+          Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          this.state = false;
+        }
+      });
+    }
   }
 
+  checkNote() {
+    if (this.payment_method !== '') {
+      if (this.payment_method === 'Espèce' && this.commentaire1 !== '') {
+        return true;
+      } else if (this.payment_method === 'Espèce' && this.commentaire1 === '') {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.payment_method === 'Chèque' && this.commentaire1 !== '' && this.commentaire2 !== '' && this.commentaire3 !== '') {
+        return true;
+      } else if (this.payment_method === 'Chèque' && (this.commentaire1 === '' || this.commentaire2 === '' || this.commentaire3 === '')) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.payment_method === 'Paiement mobile' && this.commentaire1 !== '' && this.commentaire2 !== '') {
+        return true;
+      } else if (this.payment_method === 'Paiement mobile' && (this.commentaire1 === '' || this.commentaire2 === '' )) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      }
+    } else {
+      Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+      return false;
+    }
+  }
 
   printAvance(e) {
     let doc = new jsPDF('P', 'mm', [130, 200]);
@@ -397,12 +448,13 @@ export class FactureComponent implements OnInit {
     doc.text('Avance: ' + this.api.formarPrice(e.avance) + ' FCFA', 6, 35);
     doc.text('Reste: ' + this.api.formarPrice((e.amount - e.avance - this.facture.avance)) + ' FCFA', 6, 37);
     doc.text('Mode de paiement: ' + e.payment_method, 6, 40);
-    doc.text('Commentaire: ' + e.note, 6, 43);
+    doc.text('Commentaire: ' + this.commentaire1, 6, 43);
+    doc.text(this.commentaire2, 6, 46);
+    doc.text(this.commentaire3, 6, 49);
     doc.save('bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
     this.commentaire1 = '';
     this.commentaire2 = '';
-    this.commentaire3 = new Date();
     this.payment_method = '';
     this.montant_avance = 0;
   }
@@ -437,12 +489,13 @@ export class FactureComponent implements OnInit {
 
     doc.text('Montant versé: ' + this.api.formarPrice(a) + ' FCFA', 6, x);
     doc.text('Mode de paiement: ' + e.payment_method, 6, x + 3);
-    doc.text('Commentaire: ' + e.note, 6, x + 6);
+    doc.text('Commentaire: ' + this.commentaire1, 6, x + 6);
+    doc.text(this.commentaire2, 6, x + 9);
+    doc.text(this.commentaire3, 6, x + 12);
     doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
     this.commentaire1 = '';
     this.commentaire2 = '';
-    this.commentaire3 = new Date();
     this.payment_method = '';
   }
 }

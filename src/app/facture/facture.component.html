@@ -1,4 +1,4 @@
-<div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+<div class="row border-bottom bd-lightGray ml-2" >
   <div class="cell-md-4 d-flex flex-align-center">
     <h3 class="dashboard-section-title  text-center text-left-md w-100">Factures</h3>
   </div>
@@ -26,7 +26,6 @@
       <m4-input [(ngModel)]="search"
                 placeholder="N° Facture"
                 (ngModelChange)="vide()"
-                (focusout)="rechercher()"
                 [ngModelOptions]="{standalone: true}"
                 [search-button]="true" (search-button-click)="rechercher()"></m4-input>
     </div>
@@ -54,7 +53,7 @@
 
   <div
     class="row mt-2 main-panel"
-    style="max-height: 490px; overflow-y: scroll"
+    style="max-height: 490px; overflow-y: auto"
 
   >
     <table class="table cell-border compact table-border"
@@ -80,9 +79,9 @@
         <td>{{i.bvs_id}}</td>
         <td>{{i.creation_date}}</td>
         <td>{{i.name}}</td>
-        <td>{{i.amount}}</td>
-        <td>{{i.avance}}</td>
-        <td>{{i.amount - i.avance}}</td>
+        <td class="text-right">{{i.amount |priceFormat}}</td>
+        <td class="text-right">{{i.avance |priceFormat}}</td>
+        <td class="text-right">{{(i.amount - i.avance) |priceFormat}}</td>
         <td>{{i.statut}}</td>
         <td>
           <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
@@ -174,10 +173,10 @@
       Aucune facture selectionnée.
     </div>
     <div class="dialog-actions text-right">
-      <button class="button js-dialog-close bg-or fg-white" (click)="validerEncaissement()"
-              *ngIf="selected_bill.length>0">Oui
+      <button class="button bg-or fg-white" (click)="validerEncaissement()"
+              *ngIf="selected_bill.length>0 && payment_method != ''">Oui
       </button>
-      <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0">Non</button>
+      <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0" id="non">Non</button>
       <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length<=0">Fermer</button>
     </div>
   </div>
@@ -202,7 +201,7 @@
       </div>
       <div *ngIf="payment_method == 'Chèque'">
         <div class="form-group">
-          <label>Date {{commentaire3}}</label>
+          <label>Date</label>
           <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
                               [dialog-mode]="true"
                               locale="fr-FR" format="%d/%m/%Y" size="100%"
@@ -241,8 +240,8 @@
     </div>
 
     <div class="dialog-actions text-right">
-      <button class="button js-dialog-close bg-or fg-white" (click)="validerAvance()">Valider</button>
-      <button class="button primary js-dialog-close bg-noir">Fermer</button>
+      <button class="button bg-or fg-white" *ngIf="payment_method != '' && montant_avance>0" (click)="validerAvance()">Valider</button>
+      <button class="button primary js-dialog-close bg-noir" id="close">Fermer</button>
     </div>
   </div>
 </div>

@@ -1,9 +1,7 @@
 <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
   <div class="cell-md-6 d-flex flex-align-center">
-    <h3 class="dashboard-section-title  text-center text-left-md w-100">{{customer.name}}</h3>
+    <h3 class="dashboard-section-title  text-center text-left-md w-100">#{{customer.id}} {{customer.name}}</h3>
   </div>
-
-
 
   <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
     <ul class="breadcrumbs bg-transparent">
@@ -13,19 +11,22 @@
 </div>
 
 <div class="container-fluid">
+  <div class="row text-right">
+    <button class="button bg-noir fg-white ml-auto mr-2" routerLink="/s/detail-client/{{customer.id}}/facture/{{customer.id}}">Factures</button>
+    <button class="button bg-noir fg-white mr-1" routerLink="/s/detail-client/{{customer.id}}/encaissement/{{customer.id}}">Encaissements</button>
+  </div>
+
   <div class="row mt-2">
-    <div class="cell-4">
-
-
-      <div class="icon-box border bd-default spec">
+    <div class="cell-3">
+      <div class="icon-box border bd-or">
         <div class="content p-4">
-          <div class="text-upper">#{{customer.id}}</div>
           <div class="text-upper">{{customer.name}}</div>
-          <div>{{customer.email}}</div>
           <div>{{customer.sale_network}}</div>
           <div class="text-upper text-bold text-lead">{{customer.status |status}}</div>
         </div>
       </div>
+    </div>
+    <div class="cell-3">
       <div class="icon-box border bd-default">
         <div class="icon bg-or fg-black"><span class="mif-dollars"></span></div>
         <div class="content p-4">
@@ -33,7 +34,8 @@
           <div class="text-upper text-bold text-lead">Situation du compte</div>
         </div>
       </div>
-
+    </div>
+    <div class="cell-3">
       <div class="icon-box border bd-default">
         <div class="icon bg-gris fg-noir"><span class="mif-thumbs-up"></span></div>
         <div class="content p-4">
@@ -41,7 +43,8 @@
           <div class="text-upper text-bold text-lead">Factures echues</div>
         </div>
       </div>
-
+    </div>
+    <div class="cell-3">
       <div class="icon-box border bd-default">
         <div class="icon bg-gris fg-noir"><span class="mif-thumbs-down"></span></div>
         <div class="content p-4">
@@ -50,153 +53,14 @@
         </div>
       </div>
     </div>
-    <div class="cell-8 pt-0 mt-0">
-      <div class="mr-3 ml-3 pt-0 mt-0"
-           infinite-scroll
-           [infiniteScrollDistance]="scrollDistance"
-           [infiniteScrollUpDistance]="scrollUpDistance"
-           [infiniteScrollThrottle]="throttle"
-           (scrolled)="onScrollDown($event)"
-           (scrolledUp)="onUp($event)"
-           [infiniteScrollContainer]="'.main-panel'"
-           [alwaysCallback]="true">
 
-        <div class="row pt-0 mt-0">
-          <div class="cell-4 pl-0 mt-0">
-            <m4-input [(ngModel)]="search"
-                      placeholder="N° Facture"
-                      (ngModelChange)="vide()"
-                      (focusout)="rechercher()"
-                      [ngModelOptions]="{standalone: true}"
-                      [search-button]="true" (search-button-click)="rechercher()"></m4-input>
-          </div>
+  </div>
+  <div class="row">
+    <div class="pt-0 mt-0">
 
-          <div class="cell-2 hide">
-            Afficher
-            <div class="form-group">
-              <select [(ngModel)]="per_page">
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="200">200</option>
-                <option value="500">500</option>
-              </select>
-            </div>
-          </div>
-          <div class="cell-4" *ngIf="state">
-            Chargement des données ...
-            <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
-          </div>
-
-          <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2 pt-0 mt-0" (click)="avancer()">Avancer</button>
-          <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 pt-0 mt-0" (click)="openBillModal()">Encaisser</button>
-
-        </div>
-
-        <div class="row mt-2 main-panel" style="max-height: 470px; overflow-y: scroll">
-          <table class="table cell-border compact table-border"
-          >
-            <thead>
-            <tr>
-              <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
-              <th data-sortable="true">Date</th>
-              <th data-sortable="true">Montant</th>
-              <th data-sortable="true">Avance</th>
-              <th data-sortable="true">Reste</th>
-              <th data-sortable="true">Statut</th>
-              <th>Selectionner</th>
-            </tr>
-            </thead>
-            <tbody>
-            <!--tr *ngFor="let i of factures"-->
-            <tr
-              *ngFor="let i of factures;trackBy:trackByIndex |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
-              [ngClass]="{'bg-or':i.check==true}"
-            >
-              <td>{{i.bvs_id}}</td>
-              <td>{{i.creation_date}}</td>
-              <td>{{i.amount}}</td>
-              <td>{{i.avance}}</td>
-              <td>{{i.amount - i.avance}}</td>
-              <td>{{i.statut}}</td>
-              <td>
-                <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
-                  Sélectionner
-                </button>
-                <button class="button mini" (click)="billChecked(i,false)" *ngIf="i.check">Désélectionner</button>
-              </td>
-            </tr>
-
-            </tbody>
-          </table>
-        </div>
-
-        <div class="cell-5">
-          <small>{{factures.length}} sur {{max_length}} Factures</small>
-        </div>
-
-
-      </div>
     </div>
-  </div>
-</div>
-
-<div class="dialog" data-role="dialog" id="demoDialog1">
-  <div class="dialog-title">Encaissement</div>
-  <div class="dialog-content" *ngIf="selected_bill.length>0">
-    Souhaitez-vous encaisser les factures ci-dessous ?
-    <table class="table compact">
-      <thead>
-      <tr>
-        <th>N° Facture</th>
-        <th>Date</th>
-        <th data-sortable="true">Montant</th>
-        <th data-sortable="true">Avance</th>
-        <th data-sortable="true">Reste</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let i of selected_bill">
-        <td>{{i.bvs_id}}</td>
-        <td>{{i.creation_date}}</td>
-        <td>{{i.amount}}</td>
-        <td>{{i.avance}}</td>
-        <td>{{i.amount - i.avance}}</td>
-      </tr>
-
-      </tbody>
-    </table>
-  </div>
-  <div class="dialog-content" *ngIf="selected_bill.length<=0">
-    Aucune facture selectionnée.
-  </div>
-  <div class="dialog-actions text-right">
-    <button class="button js-dialog-close bg-or fg-white" (click)="validerEncaissement()"
-            *ngIf="selected_bill.length>0">Oui
-    </button>
-    <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0">Non</button>
-    <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length<=0">Fermer</button>
-  </div>
-</div>
-
-<div class="dialog" data-role="dialog" id="avanceDialog1">
-  <div class="dialog-title">Avance de paiement sur facure {{facture.bvs_id}}</div>
-  <div class="dialog-content">
-    Combien souhaitez-vous avancer ?
-    <div class="form-group">
-      <label>Montant</label>
-      <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}"
-             placeholder="Montant de l'avance"/>
-      <small class="text-muted">Reste à payer : {{facture.amount - facture.avance}} FCFA</small>
+    <div class="cell-12">
+      <router-outlet></router-outlet>
     </div>
-    <div class="form-group">
-      <label>Commentaire</label>
-      <input type="text" [(ngModel)]="commentaire" placeholder="Commentaire"/>
-    </div>
-  </div>
-
-  <div class="dialog-actions text-right">
-    <button class="button js-dialog-close bg-or fg-white" (click)="validerAvance()">Valider</button>
-    <button class="button primary js-dialog-close bg-noir">Fermer</button>
   </div>
 </div>
