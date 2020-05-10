@@ -103,6 +103,14 @@ export class RolesComponent implements OnInit {
   }
 
   openNewRole() {
+    this.new = {
+      id: 0,
+      name: '',
+      display_name: '',
+      description: '',
+      permissions: [],
+      put: () => {}
+    };
     this.new.permissions = this.permissions;
     this.new.permissions.forEach(v => {
       v.check = false;
