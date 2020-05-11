@@ -15,6 +15,8 @@
     <div class="cell-3">
       <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
     </div>
+
+    <button *ngxPermissionsOnly="['add.user']" class="button ml-auto mr-2" (click)="newUser()">Ajouter</button>
   </div>
 
   <div class="row mt-2">
@@ -116,6 +118,35 @@
 
   <div class="dialog-actions text-right">
     <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['manage.admin']" (click)="updateUser()">Enregistrer</button>
+    <button class="button primary js-dialog-close bg-noir">Fermer</button>
+  </div>
+</div>
+
+<div class="dialog" data-role="dialog" id="newUserDialog1">
+  <div class="dialog-title">
+    Nouvel utilisateur
+  </div>
+  <div class="dialog-content" >
+    <div class="form-group">
+      <label>Nom d'utilisateur</label>
+      <input type="text" [(ngModel)]="new.username" placeholder="Nom d'utilisateur"/>
+    </div>
+    <div class="form-group">
+      <label>Nom</label>
+      <input type="text" [(ngModel)]="new.name" placeholder="Nom(s) et prénom(s)"/>
+    </div>
+    <div class="form-group">
+      <label>Statut</label>
+      <select [(ngModel)]="new.status">
+        <option value="enable">Activé</option>
+        <option value="disable">Désactivé</option>
+      </select>
+      <small class="text-muted">Mot de passe par défaut : password</small>
+    </div>
+  </div>
+
+  <div class="dialog-actions text-right">
+    <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['manage.admin']" (click)="saveUser()">Enregistrer</button>
     <button class="button primary js-dialog-close bg-noir">Fermer</button>
   </div>
 </div>

@@ -89,35 +89,35 @@ const routes: Routes = [
   {
     path : 'admin',
     component : SidemenuComponent,
-    canActivate: [NgxPermissionsGuard],
+    /*canActivate: [NgxPermissionsGuard],
     data: {
       permissions: {
         only: ['manage.admin'],
         redirectTo: '/403'
       }
-    },
+    },*/
     children : [
       {
         path : 'users',
         component : UsersComponent,
-        canActivate: [NgxPermissionsGuard],
-        data: {
-          permissions: {
-            only: ['consult.user'],
-            redirectTo: '/403'
-          }
-        }
-      },
-      {
-        path : 'roles',
-        component : RolesComponent,
-        canActivate: [NgxPermissionsGuard],
+        /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {
             only: ['consult.role'],
             redirectTo: '/403'
           }
-        }
+        }*/
+      },
+      {
+        path : 'roles',
+        component : RolesComponent,
+        /*canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.role'],
+            redirectTo: '/403'
+          }
+        }*/
       },
       {
         path : 'customers',

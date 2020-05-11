@@ -63,24 +63,24 @@
   },
 
   {
-    "display_name" : "Ajouter Role",
+    "display_name" : "Ajouter Rôle",
     "name" : "add.role",
-    "description" : "Ajouter Role"
+    "description" : "Ajouter Rôle"
   },
   {
-    "display_name" : "Editer Role",
+    "display_name" : "Editer Rôle",
     "name" : "edit.role",
-    "description" : "Editer Role"
+    "description" : "Editer Rôle"
   },
   {
-    "display_name" : "Supprimer Role",
+    "display_name" : "Supprimer Rôle",
     "name" : "delete.role",
-    "description" : "Supprimer Role"
+    "description" : "Supprimer Rôle"
   },
   {
-    "display_name" : "Consulter Role",
+    "display_name" : "Consulter Rôle",
     "name" : "consult.role",
-    "description" : "Consulter Role"
+    "description" : "Consulter Rôle"
   },
 
   {

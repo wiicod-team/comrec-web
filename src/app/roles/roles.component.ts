@@ -53,13 +53,12 @@ export class RolesComponent implements OnInit {
     });
 
     this.getRoles();
-    this.getPermissions();
   }
 
   getRoles() {
     this.api.Roles.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'permissions'}).subscribe(data => {
       this.roles = data;
-      Metro.activity.close(this.load);
+      this.getPermissions();
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getRoles ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -75,6 +74,7 @@ export class RolesComponent implements OnInit {
   getPermissions() {
     this.api.Permissions.getList({should_paginate: false, _sort: 'display_name', _sortDir: 'asc'}).subscribe(data => {
       this.permissions = data;
+      Metro.activity.close(this.load);
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getPermissions ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -88,17 +88,23 @@ export class RolesComponent implements OnInit {
   }
 
   openEdit(r) {
+    this.permissions.forEach(p => {
+      p.check = false;
+    });
     this.role = r;
     // console(r);
-    r.permissions.forEach(v => {
-      this.permissions.forEach(p => {
-        if (v.id === p.id) {
-          v.check = true;
-          p.check = true;
-          // console(r.id);
-        }
+    if (r.permissions.length > 0) {
+      r.permissions.forEach(v => {
+        this.permissions.forEach(p => {
+          if (v.id === p.id) {
+            v.check = true;
+            p.check = true;
+            // console(r.id);
+          }
+        });
       });
-    });
+    }
+
     Metro.dialog.open('#roleDialog1');
   }
 

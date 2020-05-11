@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import {Router} from '@angular/router';
+import * as _ from 'lodash';
 declare var Metro;
 @Component({
   selector: 'app-users',
@@ -9,6 +10,7 @@ declare var Metro;
 })
 export class UsersComponent implements OnInit {
   users;
+  new;
   user_roles: any[];
   edit_role: boolean;
   search;
@@ -48,6 +50,7 @@ export class UsersComponent implements OnInit {
       roles: [],
       put: () => {}
     };
+    this.new = this.user;
     this.getUsers();
     this.getRoles();
   }
@@ -124,7 +127,6 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser() {
-    // // console(this.roles);
     const u = this.user;
     let text = '';
     let bool = false;
@@ -145,12 +147,16 @@ export class UsersComponent implements OnInit {
       bool = true;
     }
     if (this.edit_role) {
+      let i = 0;
       this.roles.forEach((v, k) => {
+        i++;
         if (v.action === 'ajouter') {
           this.api.RoleUsers.post({user_id: u.id, role_id: v.id, user_type: 'App\\User'}).subscribe(d => {
             v.action = '';
             v.check = false;
-            this.getUsers();
+            if (i === this.roles.length) {
+              this.getUsers();
+            }
             Metro.notify.create(v.display_name + ' attribué à l\'utilisateur', 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
@@ -165,7 +171,9 @@ export class UsersComponent implements OnInit {
           this.api.restangular.all('role_users/' + v.id + '/' + this.user.id).remove().subscribe( d => {
             v.action = '';
             v.check = false;
-            this.getUsers();
+            if (i === this.roles.length) {
+              this.getUsers();
+            }
             Metro.notify.create(v.display_name + ' supprimé chez l\'utilisateur', 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
@@ -209,5 +217,39 @@ export class UsersComponent implements OnInit {
       r.check = true;
     }
     this.edit_role = true;
+  }
+
+  newUser() {
+    this.new = {
+      id: 0,
+      name: '',
+      username: '',
+      status: '',
+      has_reset_password: false,
+      compte_statut: false,
+      reset_password: false,
+      password: '',
+      pass: '',
+      settings: [],
+      roles: [],
+      put: () => {}
+    };
+    Metro.dialog.open('#newUserDialog1');
+  }
+
+  saveUser() {
+    this.new.password = 'password';
+    this.api.Users.post(this.new).subscribe(d => {
+      this.users.push(d.body);
+      this.users = _.orderBy(this.users, 'name');
+    }, q => {
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('saveUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('saveUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
+    });
   }
 }
