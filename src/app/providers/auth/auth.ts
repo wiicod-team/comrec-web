@@ -40,7 +40,7 @@ export class AuthProvider {
           $auth.setToken(response.data);*/
           resolve(data);
         }, function(error) {
-          console.log(error);
+          //console.log(error);
           /*if (error.status == 401) {
             var errors = error.data.errors;
             for (var key in errors) {
@@ -69,7 +69,7 @@ export class AuthProvider {
 
           resolve(data);
         }, function(error) {
-          console.log(error);
+          //console.log(error);
 
           reject(error);
         });
@@ -111,7 +111,7 @@ export class AuthProvider {
 
           resolve(data);
         }, function(error) {
-          console.log(error);
+          //console.log(error);
 
           reject(error);
         });

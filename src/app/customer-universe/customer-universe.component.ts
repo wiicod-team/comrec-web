@@ -61,7 +61,7 @@ export class CustomerUniverseComponent implements OnInit {
     } else {
       this.state = true;
       this.page = 1;
-      console.log(this.search);
+      //console.log(this.search);
       this.customers = [];
 
       const opt = {

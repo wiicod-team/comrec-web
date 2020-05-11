@@ -231,7 +231,7 @@ export class FactureComponent implements OnInit {
     this.commentaire1 = '';
     this.commentaire2 = '';
     const f = this.selected_bill;
-    console.log(f);
+    //console.log(f);
     if (f.length >= 1 && f.length < 2) {
       // ok
       Metro.dialog.open('#demoDialog1');
@@ -302,7 +302,7 @@ export class FactureComponent implements OnInit {
     this.commentaire2 = '';
     this.montant_avance = 0;
     const f = this.selected_bill;
-    console.log(f);
+    //console.log(f);
     if (f.length >= 1 && f.length < 2) {
       // ok
       this.facture = f[0];
@@ -489,9 +489,10 @@ export class FactureComponent implements OnInit {
 
     doc.text('Montant versé: ' + this.api.formarPrice(a) + ' FCFA', 6, x);
     doc.text('Mode de paiement: ' + e.payment_method, 6, x + 3);
-    doc.text('Commentaire: ' + this.commentaire1, 6, x + 6);
-    doc.text(this.commentaire2, 6, x + 9);
-    doc.text(this.commentaire3, 6, x + 12);
+    doc.text('Commentaires', 6, x + 6);
+    doc.text(this.commentaire1, 6, x + 9);
+    doc.text(this.commentaire2, 6, x + 12);
+    doc.text(this.commentaire3, 6, x + 15);
     doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
     this.commentaire1 = '';

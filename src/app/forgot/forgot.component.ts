@@ -22,7 +22,7 @@ export class ForgotComponent implements OnInit {
         }
       ];
       d[0].put().subscribe(data => {
-        console.log(data);
+        //console.log(data);
         Metro.notify.create('Votre demande a été prise en compte. Vous recevrez un mail avec votre nouveau mot de passe.', 'Demande prise en charge ', {cls: 'bg-or fg-white', timeout: 5000, width: 300});
         this.username = '';
         this.router.navigate(['/login']);

@@ -73,6 +73,9 @@ export class CustomerDetailComponent implements OnInit {
     this.api.Bills.getList({_agg: 'sum|amount', should_paginate: false, customer_id: id}).subscribe(d => {
       this.api.Receipts.getList({_agg: 'sum|amount', _includes: 'bill', 'bill-fk': 'customer_id=' + id, should_paginate: false}).subscribe(da => {
         this.dette = d[0].value - da[0].value;
+        if (this.dette > 0) {
+          this.customer.status = 'insolvent';
+        }
       });
     }, q => {
       if (q.data.error.status_code === 500) {

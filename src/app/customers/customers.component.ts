@@ -61,7 +61,7 @@ export class CustomersComponent implements OnInit {
     } else {
       this.state = true;
       this.page = 1;
-      console.log(this.search);
+      //console.log(this.search);
       this.customers = [];
 
       const opt = {
@@ -206,7 +206,7 @@ export class CustomersComponent implements OnInit {
   }
 
   unLink(e) {
-    console.log(e);
+    //console.log(e);
     this.api.CustomerUsers.getList({customer_id: e.id, user_id: e.users[0].id}).subscribe(d => {
       d[0].remove().subscribe(data => {
         Metro.notify.create('Client ' + e.name + ' délié du vendeur', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
