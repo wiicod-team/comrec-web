@@ -261,7 +261,36 @@ export class UsersComponent implements OnInit {
   }
 
   deleteUser(i) {
-    console.log(i);
-    Metro.toast.create('Vous n\'est pas autorisé à effectuer cette action');
+    Metro.dialog.create({
+      title: 'Supprimer',
+      content: '<div>Voullez-vous supprimer <b>' + i.name + '</b></div>',
+      actions: [
+        {
+          caption: 'Oui',
+          cls: 'js-dialog-close bg-or fg-white',
+          onclick: () => {
+            i.remove().subscribe(d => {
+              Metro.notify.create(i.display_name + ' supprimé', 'info', {});
+              this.getUsers();
+            }, q => {
+              if (q.data.error.status_code === 500) {
+                Metro.notify.create('delete ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              } else if (q.data.error.status_code === 401) {
+                Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+              } else {
+                Metro.notify.create('delete ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              }
+            });
+          }
+        },
+        {
+          caption: 'Non',
+          cls: 'js-dialog-close bg-noir fg-white',
+          onclick: () => {
+
+          }
+        }
+      ]
+    });
   }
 }
