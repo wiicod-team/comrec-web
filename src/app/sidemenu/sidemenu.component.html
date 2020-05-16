@@ -38,22 +38,28 @@
         <div *ngxPermissionsOnly="['manage.admin']">
           <li class="item-header">Administration</li>
 
-          <li *ngxPermissionsOnly="['consult.user']">
-            <a routerLink="/admin/users">
-              <span class="icon"><span class="mif-user"></span></span>
-              <span class="caption">Utilisateurs</span>
-            </a>
-          </li>
           <li *ngxPermissionsOnly="['consult.customer']">
-            <a routerLink="/admin/customers">
+            <a routerLink="/admin/c">
               <span class="icon"><span class="mif-users"></span></span>
               <span class="caption">Clients</span>
             </a>
           </li>
+          <li *ngxPermissionsOnly="['consult.bill']">
+            <a routerLink="/admin/f/0">
+              <span class="icon"><span class="mif-file-pdf"></span></span>
+              <span class="caption">Factures</span>
+            </a>
+          </li>
+          <li *ngxPermissionsOnly="['consult.user']">
+            <a routerLink="/admin/u">
+              <span class="icon"><span class="mif-user"></span></span>
+              <span class="caption">Utilisateurs</span>
+            </a>
+          </li>
           <li *ngxPermissionsOnly="['consult.role']">
-            <a routerLink="/admin/roles">
+            <a routerLink="/admin/r">
               <span class="icon"><span class="mif-lock"></span></span>
-              <span class="caption">Rôles et permissions</span>
+              <span class="caption">Rôles</span>
             </a>
           </li>
         </div>

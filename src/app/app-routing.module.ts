@@ -98,7 +98,7 @@ const routes: Routes = [
     },*/
     children : [
       {
-        path : 'users',
+        path : 'u',
         component : UsersComponent,
         /*canActivate: [NgxPermissionsGuard],
         data: {
@@ -109,7 +109,18 @@ const routes: Routes = [
         }*/
       },
       {
-        path : 'roles',
+        path : 'f/:customer_id',
+        component : FactureComponent,
+        /*canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.dashboard'],
+            redirectTo: '/403'
+          }
+        }*/
+      },
+      {
+        path : 'r',
         component : RolesComponent,
         /*canActivate: [NgxPermissionsGuard],
         data: {
@@ -120,7 +131,7 @@ const routes: Routes = [
         }*/
       },
       {
-        path : 'customers',
+        path : 'c',
         component : CustomersComponent,
       },
     ]

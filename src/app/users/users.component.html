@@ -43,9 +43,11 @@
         </td>
         <td>{{i.status |status}}</td>
         <td>{{i.pass}}</td>
-        <td *ngxPermissionsOnly="['manage.admin']">
-          <button class="button mini" (click)="editUser(i)"><span class="mif-pencil"></span></button>
+        <td *ngIf="i.username != 'root'">
+          <button class="button mini" *ngxPermissionsOnly="['edit.user']" (click)="editUser(i)"><span class="mif-pencil"></span></button>
+          <button class="button mini" *ngxPermissionsOnly="['delete.user']" (click)="deleteUser(i)"><span class="mif-bin"></span></button>
         </td>
+        <td *ngIf="i.username == 'root'"></td>
       </tr>
 
       </tbody>

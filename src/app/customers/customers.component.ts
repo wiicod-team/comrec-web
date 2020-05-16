@@ -188,7 +188,7 @@ export class CustomersComponent implements OnInit {
 
   link() {
     this.api.CustomerUsers.post({user_id: this.user_id, customer_id: this.customer.id}).subscribe(d => {
-      Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+      Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-or fg-white', keepopen: true});
       this.getCustomers(true);
       this.user_id = 0;
     }, q => {
@@ -209,7 +209,7 @@ export class CustomersComponent implements OnInit {
     //console.log(e);
     this.api.CustomerUsers.getList({customer_id: e.id, user_id: e.users[0].id}).subscribe(d => {
       d[0].remove().subscribe(data => {
-        Metro.notify.create('Client ' + e.name + ' délié du vendeur', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+        Metro.notify.create('Client ' + e.name + ' délié du vendeur', 'Succès', {cls: 'bg-or fg-white', keepopen: true});
         this.getCustomers(true);
       }, q => {
         if (q.data.error.status_code === 500) {

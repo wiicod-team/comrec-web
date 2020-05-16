@@ -18,6 +18,8 @@ export class UsersComponent implements OnInit {
   active: boolean;
   public roles: any[];
   public user: {
+    phone: string;
+    email: string;
     id: number,
     name: string,
     username: string
@@ -39,6 +41,8 @@ export class UsersComponent implements OnInit {
     this.user = {
       id: 0,
       name: '',
+      email: '',
+      phone: '',
       username: '',
       status: '',
       has_reset_password: false,
@@ -85,6 +89,7 @@ export class UsersComponent implements OnInit {
         }
       });
       this.users = data;
+      this.users = _.orderBy(this.users, 'name');
       Metro.activity.close(load);
     }, q => {
       if (q.data.error.status_code === 500) {
@@ -128,6 +133,8 @@ export class UsersComponent implements OnInit {
 
   updateUser() {
     const u = this.user;
+    delete u.email;
+    delete u.phone;
     let text = '';
     let bool = false;
     if (u.reset_password) {
@@ -251,5 +258,10 @@ export class UsersComponent implements OnInit {
         Metro.notify.create('saveUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
+  }
+
+  deleteUser(i) {
+    console.log(i);
+    Metro.toast.create('Vous n\'est pas autorisé à effectuer cette action');
   }
 }

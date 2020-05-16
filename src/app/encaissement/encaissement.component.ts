@@ -100,6 +100,8 @@ export class EncaissementComponent implements OnInit {
         index ++;
         if (d[0].payment_method === 'Espèce') {
           doc.text(i, 6, x);
+        } else if (d[0].payment_method === 'Virement') {
+          doc.text('Référence: ' + i, 6, x);
         } else if (d[0].payment_method === 'Chèque') {
           if (index === 1) {
             doc.text('N° Chèque: ' + i, 6, x);

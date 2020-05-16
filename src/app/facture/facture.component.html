@@ -1,4 +1,4 @@
-<div class="row border-bottom bd-lightGray ml-2" >
+<div class="row border-bottom bd-lightGray ml-2 mr-0" id="fac">
   <div class="cell-md-4 d-flex flex-align-center">
     <h3 class="dashboard-section-title  text-center text-left-md w-100">Factures</h3>
   </div>
@@ -22,27 +22,25 @@
      [alwaysCallback]="true"
 >
   <div class="row mt-2">
+    <div class="cell-2">
+      <m4-select prepend="<span class='mif-eye'></span>"
+                 (ngModelChange)="show($event)"
+                 [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '200': '200'}"></m4-select>
+    </div>
+    <div class="cell-2">
+      <m4-select prepend="<span class='mif-filter'></span>"
+                 [(ngModel)]="filtre"
+                 [options]="{ 'bvs_id-lk': 'N° facture', 'customer_id-lk': 'Code client', 'creation_date-lk': 'Date facture'}"></m4-select>
+    </div>
     <div class="cell-3">
       <m4-input [(ngModel)]="search"
-                placeholder="N° Facture"
+                placeholder="Recherche"
                 (ngModelChange)="vide()"
                 [ngModelOptions]="{standalone: true}"
                 [search-button]="true" (search-button-click)="rechercher()"></m4-input>
     </div>
-    <div class="cell-2 hide">
-      Afficher
-      <div class="form-group">
-        <select [(ngModel)]="per_page">
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="500">500</option>
-        </select>
-      </div>
-    </div>
-    <div class="cell-4" *ngIf="state">
-      Chargement des données ...
+    <div class="cell-2" *ngIf="state">
+      Chargement ...
       <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
     </div>
 
@@ -60,14 +58,15 @@
     >
       <thead>
       <tr>
-        <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
-        <th data-sortable="true">Date</th>
-        <th data-sortable="true" data-name="client">Client</th>
-        <th data-sortable="true">Montant</th>
-        <th data-sortable="true">Avance</th>
-        <th data-sortable="true">Reste</th>
-        <th data-sortable="true">Statut</th>
-        <th>Selectionner</th>
+        <th data-sortable="true" (click)="orderBy('bvs_id')">N° Facture</th>
+        <th data-sortable="true" (click)="orderBy('creation_date')">Date</th>
+        <th data-sortable="true" (click)="orderBy('customer_id')">#Client</th>
+        <th data-sortable="true" (click)="orderBy('name')">Client</th>
+        <th data-sortable="true" (click)="orderBy('amount')">Montant</th>
+        <th data-sortable="true" (click)="orderBy('avance')">Avance</th>
+        <th data-sortable="true" (click)="orderBy('reste')">Reste</th>
+        <th data-sortable="true" (click)="orderBy('statut')">Statut</th>
+        <th *ngxPermissionsOnly="['advance.bill']">Selectionner</th>
       </tr>
       </thead>
       <tbody>
@@ -78,12 +77,13 @@
          >
         <td>{{i.bvs_id}}</td>
         <td>{{i.creation_date}}</td>
+        <td>{{i.customer_id}}</td>
         <td>{{i.name}}</td>
         <td class="text-right">{{i.amount |priceFormat}}</td>
         <td class="text-right">{{i.avance |priceFormat}}</td>
-        <td class="text-right">{{(i.amount - i.avance) |priceFormat}}</td>
+        <td class="text-right">{{(i.reste) |priceFormat}}</td>
         <td>{{i.statut}}</td>
-        <td>
+        <td *ngxPermissionsOnly="['advance.bill']">
           <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
             Sélectionner
           </button>
@@ -95,8 +95,10 @@
     </table>
   </div>
 
-  <div class="cell-2">
-    <small>{{factures.length}} sur {{max_length}} Factures</small>
+  <div class="row">
+    <div class="cell-2">
+      <small>{{factures.length}} sur {{max_length}} Factures</small>
+    </div>
   </div>
 
   <div class="dialog encaissementDialog" data-role="dialog" id="demoDialog1">
@@ -117,9 +119,9 @@
         <tr *ngFor="let i of selected_bill">
           <td>{{i.bvs_id}}</td>
           <td>{{i.creation_date}}</td>
-          <td>{{i.amount}}</td>
-          <td>{{i.avance}}</td>
-          <td>{{i.amount - i.avance}}</td>
+          <td>{{i.amount|priceFormat}}</td>
+          <td>{{i.avance|priceFormat}}</td>
+          <td>{{i.amount - i.avance|priceFormat}}</td>
         </tr>
 
         </tbody>
@@ -130,6 +132,7 @@
           <option value="Chèque">Chèque</option>
           <option value="Espèce">Espèce</option>
           <option value="Paiement mobile">Paiement mobile</option>
+          <option value="Virement">Virement</option>
         </select>
       </div>
       <div *ngIf="payment_method == 'Chèque'">
@@ -148,6 +151,12 @@
         <div class="form-group">
           <label>N° du chèque</label>
           <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
+        </div>
+      </div>
+      <div *ngIf="payment_method == 'Virement'">
+        <div class="form-group">
+          <label>Reférence</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
         </div>
       </div>
 
@@ -197,6 +206,7 @@
           <option value="Chèque">Chèque</option>
           <option value="Espèce">Espèce</option>
           <option value="Paiement mobile">Paiement mobile</option>
+          <option value="Virement">Virement</option>
         </select>
       </div>
       <div *ngIf="payment_method == 'Chèque'">
@@ -222,6 +232,12 @@
         <div class="form-group">
           <label>Commentaire</label>
           <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
+        </div>
+      </div>
+      <div *ngIf="payment_method == 'Virement'">
+        <div class="form-group">
+          <label>Reférence</label>
+          <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
         </div>
       </div>
 

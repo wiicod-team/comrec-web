@@ -43,7 +43,6 @@
         <th data-sortable="true">Nom</th>
         <th data-sortable="true" data-name="client">Réseau</th>
         <th data-sortable="true">Vendeur</th>
-        <th data-sortable="true">Statut</th>
         <th>Selectionner</th>
       </tr>
       </thead>
@@ -53,7 +52,6 @@
         <td>{{i.name}}</td>
         <td>{{i.sale_network}}</td>
         <td>{{i.username}}</td>
-        <td>{{i.status |status}}</td>
         <td *ngxPermissionsOnly="['link.customer']">
           <button class="button mini" *ngIf="!i.link" (click)="oepnLink(i)">Lier</button>
           <button class="button mini" *ngIf="i.link" (click)="unLink(i)">Délier</button>
