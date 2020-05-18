@@ -35,7 +35,7 @@ export class CustomerDetailComponent implements OnInit {
     email: 'x@x.a',
     status: '',
     echue: 0,
-    non_echue: 0,
+    bills: 0,
     sale_network: ''
   };
   per_page = 25;
@@ -43,7 +43,6 @@ export class CustomerDetailComponent implements OnInit {
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
     const id = this.route.snapshot.paramMap.get('i');
-    //this.router.navigate(['/s/detail-client/' + id + '/facture/' + id]);
     this.getCustomer(id);
   }
 
@@ -63,7 +62,7 @@ export class CustomerDetailComponent implements OnInit {
     this.api.Customers.get(id).subscribe(d => {
       this.customer = d.body;
       this.getEchues(id);
-      this.getNonEchues(id);
+      this.getCustomerBillCount(id);
       this.getDebt(id);
       Metro.activity.close(load);
     });
@@ -102,9 +101,9 @@ export class CustomerDetailComponent implements OnInit {
     });
   }
 
-  getNonEchues(id) {
-    this.api.Bills.getList({should_paginate: false, _agg: 'count', customer_id: id, status: 'new'}).subscribe(d => {
-      this.customer.non_echue = d[0].value;
+  getCustomerBillCount(id) {
+    this.api.Bills.getList({should_paginate: false, _agg: 'count', customer_id: id, 'status-in': 'new,pending'}).subscribe(d => {
+      this.customer.bills = d[0].value;
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getNonEchues ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

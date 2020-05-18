@@ -12,6 +12,7 @@ export class CustomersComponent implements OnInit {
   old_customers = [];
   users;
   search;
+  searchtext;
   load;
   state = false;
   isLoadingBills = false;
@@ -25,9 +26,11 @@ export class CustomersComponent implements OnInit {
   throttle = 30;
   scrollDistance = 1;
   scrollUpDistance = 2;
+  private edit_user: boolean;
   constructor(private api: ApiProvider) {
     this.api.checkUser();
     this.search = '';
+    this.searchtext = '';
     this.init();
   }
 
@@ -183,53 +186,91 @@ export class CustomersComponent implements OnInit {
 
   oepnLink(c) {
     this.customer = c;
+    if (c.users.length > 0) {
+      c.users.forEach(v => {
+        this.users.forEach(p => {
+          if (v.id === p.id) {
+            v.check = true;
+            p.check = true;
+            // console(r.id);
+          }
+        });
+      });
+    }
     Metro.dialog.open('#linkDialog1');
   }
 
-  link() {
-    this.api.CustomerUsers.post({user_id: this.user_id, customer_id: this.customer.id}).subscribe(d => {
-      Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-or fg-white', keepopen: true});
-      this.getCustomers(true);
-      this.user_id = 0;
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.activity.close(this.load);
-        Metro.notify.create('link ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        this.getCustomers(true);
-        this.user_id = 0;
-      }
-    });
+  setUser(r) {
+    if (r.check) {
+      r.action = 'supprimer';
+      r.check = false;
+    } else {
+      r.action = 'ajouter';
+      r.check = true;
+    }
+    this.edit_user = true;
   }
 
-  unLink(e) {
-    //console.log(e);
-    this.api.CustomerUsers.getList({customer_id: e.id, user_id: e.users[0].id}).subscribe(d => {
-      d[0].remove().subscribe(data => {
-        Metro.notify.create('Client ' + e.name + ' délié du vendeur', 'Succès', {cls: 'bg-or fg-white', keepopen: true});
-        this.getCustomers(true);
-      }, q => {
-        if (q.data.error.status_code === 500) {
-          Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-        } else if (q.data.error.status_code === 401) {
-          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-        } else {
-          Metro.notify.create('unLink ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+  link() {
+    if (this.edit_user) {
+      let index = 0;
+      this.users.forEach(v => {
+        index ++;
+        if (v.action === 'ajouter') {
+          this.api.CustomerUsers.post({user_id: v.id, customer_id: this.customer.id}).subscribe(d => {
+            Metro.notify.create('Client ' + this.customer.name + ' lié au vendeur', 'Succès', {cls: 'bg-or fg-white', keepopen: true});
+            v.action = '';
+            v.check = false;
+          }, q => {
+            if (q.data.error.status_code === 500) {
+              Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            } else if (q.data.error.status_code === 401) {
+              Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+            } else {
+              Metro.activity.close(this.load);
+              Metro.notify.create('link ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              this.getCustomers(true);
+              this.user_id = 0;
+            }
+          });
+        } else if (v.action === 'supprimer') {
+          this.api.CustomerUsers.getList({customer_id: this.customer.id, user_id: v.id}).subscribe(d => {
+            d[0].remove().subscribe(data => {
+              Metro.notify.create('Client ' + this.customer.name + ' délié du vendeur', 'Succès', {cls: 'bg-or fg-white', keepopen: true});
+              this.getCustomers(true);
+            }, q => {
+              if (q.data.error.status_code === 500) {
+                Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              } else if (q.data.error.status_code === 401) {
+                Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+              } else {
+                Metro.notify.create('link ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              }
+            });
+          }, q => {
+            if (q.data.error.status_code === 500) {
+              Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            } else if (q.data.error.status_code === 401) {
+              Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+            } else {
+              Metro.notify.create('link ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+            }
+          });
+        }
+        if (index === this.users.length) {
+          this.load = Metro.activity.open({
+            type: 'metro',
+            overlayColor: '#fff',
+            overlayAlpha: 1,
+            text: '<div class=\'mt-2 text-small\'>Actualisation des données...</div>',
+            overlayClickClose: true
+          });
+          this.getCustomers(true);
         }
       });
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.notify.create('unLink ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      }
-    });
+    }
   }
+
   getUsers() {
     this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc'}).subscribe(data => {
       this.users = data;

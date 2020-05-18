@@ -1,54 +1,57 @@
-<div class="row border-bottom bd-lightGray ml-2" >
-  <div class="cell-md-4 d-flex flex-align-center">
-    <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
-  </div>
-
-  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-    <ul class="breadcrumbs bg-transparent">
-      <li class="page-item"><a (click)="getReceipts()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
-    </ul>
-  </div>
-</div>
-
-<div class="m-3">
-  <div class="row mt-2">
-    <div class="cell-3">
-      <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+<div *ngxPermissionsOnly="['consult.receipt']">
+  <div class="row border-bottom bd-lightGray ml-2" >
+    <div class="cell-md-4 d-flex flex-align-center">
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
     </div>
-    <div class="cell-4" *ngIf="state">
-      Chargement des données ...
-      <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
+
+    <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+      <ul class="breadcrumbs bg-transparent">
+        <li class="page-item"><a (click)="getReceipts()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+      </ul>
     </div>
   </div>
-  <div class="row mt-2" style="max-height: 700px; overflow-y: auto">
-    <table class="table cell-border compact table-border"
-    >
-      <thead>
-      <tr>
-        <th data-sortable="true">#</th>
-        <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
-        <th data-sortable="true">Date</th>
-        <th data-sortable="true" data-name="client">Client</th>
-        <th data-sortable="true">Montant</th>
-        <th data-sortable="true">Mode de paiement</th>
-        <th data-sortable="true">Vendeur</th>
-        <th data-sortable="true">Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let i of encaissements |filter:{ bvs_id: search, name: search, created_at: search, amount: search, vendeur: search } : false" [ngClass]="{'dark':i.check==true}">
-        <td>{{i.id}}</td>
-        <td>{{i.bill.bvs_id}}</td>
-        <td>{{i.created_at}}</td>
-        <td>{{i.bill.customer.name}}</td>
-        <td>{{i.amount |priceFormat}}</td>
-        <td>{{i.payment_method}}</td>
-        <td>{{i.vendeur}}</td>
-        <td><button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button></td>
-      </tr>
 
-      </tbody>
-    </table>
+  <div class="m-3">
+    <div class="row mt-2">
+      <div class="cell-3">
+        <input type="text" [(ngModel)]="search" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+      </div>
+      <div class="cell-4" *ngIf="state">
+        Chargement des données ...
+        <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
+      </div>
+    </div>
+    <div class="row mt-2" style="max-height: 700px; overflow-y: auto">
+      <table class="table cell-border compact table-border"
+      >
+        <thead>
+        <tr>
+          <th data-sortable="true">#</th>
+          <th data-sortable="true" data-sort-dir="asc" data-name="facture">N° Facture</th>
+          <th data-sortable="true">Date</th>
+          <th data-sortable="true" data-name="client">Client</th>
+          <th data-sortable="true">Montant</th>
+          <th data-sortable="true">Mode de paiement</th>
+          <th data-sortable="true">Vendeur</th>
+          <th data-sortable="true">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let i of encaissements |filter:{ bvs_id: search, name: search, created_at: search, amount: search, vendeur: search } : false" [ngClass]="{'dark':i.check==true}">
+          <td>{{i.id}}</td>
+          <td>{{i.bill.bvs_id}}</td>
+          <td>{{i.created_at}}</td>
+          <td>{{i.bill.customer.name}}</td>
+          <td>{{i.amount |priceFormat}}</td>
+          <td>{{i.payment_method}}</td>
+          <td>{{i.vendeur}}</td>
+          <td><button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button></td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+
   </div>
 
 </div>

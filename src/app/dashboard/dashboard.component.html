@@ -1,122 +1,125 @@
-<div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
-  <div class="cell-md-6 d-flex flex-align-center">
-    <h3 class="dashboard-section-title  text-center text-left-md w-100">Dashboard <small>{{today}}</small></h3>
-  </div>
-
-  <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-
-    <div class="buttongroup">
-      <button class="button"><a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
-      <button class="button"><a (click)="init(now,now)" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
+<div *ngxPermissionsOnly="['consult.dashboard']">
+  <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+    <div class="cell-md-6 d-flex flex-align-center">
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Dashboard <small>{{today}}</small></h3>
     </div>
-  </div>
-</div>
 
-<div class="m-3">
-  <div class="row mt-2">
-    <div class="cell-lg-4 cell-sm-6 mt-2">
-      <div class="icon-box border bd-noir">
-        <div class="icon bg-noir fg-white"><span class="mif-user"></span></div>
-        <div class="content p-4">
-          <div class="text-upper">Vendeurs</div>
-          <div class="text-upper text-bold text-lead">{{users_count |priceFormat}}</div>
-        </div>
-      </div>
-    </div>
-    <div class="cell-lg-4 cell-sm-6 mt-2">
-      <div class="icon-box border bd-noir">
-        <div class="icon bg-noir fg-white"><span class="mif-user-secret"></span></div>
-        <div class="content p-4">
-          <div class="text-upper">Clients</div>
-          <div class="text-upper text-bold text-lead">{{customers_count |priceFormat}}</div>
-        </div>
-      </div>
-    </div>
-    <div class="cell-lg-4 cell-sm-6 mt-2">
-      <div class="icon-box border bd-noir">
-        <div class="icon bg-noir fg-white"><span class="mif-money"></span></div>
-        <div class="content p-4">
-          <div class="text-upper">Encaissements</div>
-          <div class="text-upper text-bold text-lead">{{receipts_count |priceFormat}}</div>
-        </div>
+    <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+
+      <div class="buttongroup">
+        <button class="button"><a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
+        <button class="button"><a (click)="init(now,now)" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
       </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="cell-lg-6 cell-md-6 mt-2">
-      <div class="more-info-box bg-or fg-noir">
-        <div class="content">
-          <h2 class="text-bold mb-0">{{best_seller}}</h2>
-          <div class="text-upper">Meilleur recouvreur</div>
+  <div class="m-3">
+    <div class="row mt-2">
+      <div class="cell-lg-4 cell-sm-6 mt-2">
+        <div class="icon-box border bd-noir">
+          <div class="icon bg-noir fg-white"><span class="mif-user"></span></div>
+          <div class="content p-4">
+            <div class="text-upper">Vendeurs</div>
+            <div class="text-upper text-bold text-lead">{{users_count |priceFormat}}</div>
+          </div>
         </div>
-        <div class="icon">
-          <span class="mif-star-full fg-noir"></span>
+      </div>
+      <div class="cell-lg-4 cell-sm-6 mt-2">
+        <div class="icon-box border bd-noir">
+          <div class="icon bg-noir fg-white"><span class="mif-user-secret"></span></div>
+          <div class="content p-4">
+            <div class="text-upper">Clients</div>
+            <div class="text-upper text-bold text-lead">{{customers_count |priceFormat}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="cell-lg-4 cell-sm-6 mt-2">
+        <div class="icon-box border bd-noir">
+          <div class="icon bg-noir fg-white"><span class="mif-money"></span></div>
+          <div class="content p-4">
+            <div class="text-upper">Encaissements</div>
+            <div class="text-upper text-bold text-lead">{{receipts_count |priceFormat}}</div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="cell-lg-6 cell-md-6 mt-2">
-      <div class="more-info-box bg-or fg-noir">
-        <div class="content">
-          <h2 class="text-bold mb-0">{{sum_receipt |priceFormat}} FCFA</h2>
-          <div class="text-upper">Recouvré</div>
-        </div>
-        <div class="icon">
-          <span class="mif-money fg-noir"></span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div data-role="panel" data-title-caption="Diagramme" data-collapsible="true"
-       data-title-icon="<span class='mif-chart-line'></span>" class="mt-4">
     <div class="row">
-      <div class="cell-md-8 p-10">
-        <h5 class="text-center">Recouvrement {{today}}</h5>
-        <canvas id="dashboardChart1"
-                baseChart
-                [datasets]="barChartData"
-                [labels]="barChartLabels"
-                [chartType]="barChartType"></canvas>
+      <div class="cell-lg-6 cell-md-6 mt-2">
+        <div class="more-info-box bg-or fg-noir">
+          <div class="content">
+            <h2 class="text-bold mb-0">{{best_seller}}</h2>
+            <div class="text-upper">Meilleur recouvreur</div>
+          </div>
+          <div class="icon">
+            <span class="mif-star-full fg-noir"></span>
+          </div>
+        </div>
       </div>
-      <div class="cell-md-4 p-10">
-        <h5 class="text-center">Details du recouvrement</h5>
-        <div class="mt-6" *ngFor="let item of sellers">
-          <div class="clear">
-            <div class="place-left">{{item.user.name}}</div>
-            <div class="place-right"><strong>{{item.total_amount |priceFormat}}</strong> FCFA</div>
+      <div class="cell-lg-6 cell-md-6 mt-2">
+        <div class="more-info-box bg-or fg-noir">
+          <div class="content">
+            <h2 class="text-bold mb-0">{{sum_receipt |priceFormat}} FCFA</h2>
+            <div class="text-upper">Recouvré</div>
+          </div>
+          <div class="icon">
+            <span class="mif-money fg-noir"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-role="panel" data-title-caption="Diagramme" data-collapsible="true"
+         data-title-icon="<span class='mif-chart-line'></span>" class="mt-4">
+      <div class="row">
+        <div class="cell-md-8 p-10">
+          <h5 class="text-center">Recouvrement {{today}}</h5>
+          <canvas id="dashboardChart1"
+                  baseChart
+                  [datasets]="barChartData"
+                  [labels]="barChartLabels"
+                  [chartType]="barChartType"></canvas>
+        </div>
+        <div class="cell-md-4 p-10">
+          <h5 class="text-center">Details du recouvrement</h5>
+          <div class="mt-6" *ngFor="let item of sellers">
+            <div class="clear">
+              <div class="place-left">{{item.user.name}}</div>
+              <div class="place-right"><strong>{{item.total_amount |priceFormat}}</strong> FCFA</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="dialog" data-role="dialog" id="periodDialog">
-  <div class="dialog-title">Période</div>
-  <div class="dialog-content">
-    <div class="row">
-      <div class="cell-6">
-        <div class="label">Du</div>
-        <m4-calendar-picker [(ngModel)]="from" cls-calendar="compact"
-                            [dialog-mode]="false"
-                            locale="fr-FR" format="%d/%m/%Y" size="100%"
-                            calendar-button-icon="<span class='mif-calendar'></span>"
-                            [show-header]="true"></m4-calendar-picker>
+  <div class="dialog" data-role="dialog" id="periodDialog">
+    <div class="dialog-title">Période</div>
+    <div class="dialog-content">
+      <div class="row">
+        <div class="cell-6">
+          <div class="label">Du</div>
+          <m4-calendar-picker [(ngModel)]="from" cls-calendar="compact"
+                              [dialog-mode]="false"
+                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
+        <div class="cell-6">
+          <div class="label">Au</div>
+          <m4-calendar-picker [(ngModel)]="to" cls-calendar="compact"
+                              [dialog-mode]="false"
+                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
       </div>
-      <div class="cell-6">
-        <div class="label">Au</div>
-        <m4-calendar-picker [(ngModel)]="to" cls-calendar="compact"
-                            [dialog-mode]="false"
-                            locale="fr-FR" format="%d/%m/%Y" size="100%"
-                            calendar-button-icon="<span class='mif-calendar'></span>"
-                            [show-header]="true"></m4-calendar-picker>
-      </div>
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" (click)="validate()">Valider</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
     </div>
   </div>
 
-  <div class="dialog-actions text-right">
-    <button class="button js-dialog-close bg-or fg-white" (click)="validate()">Valider</button>
-    <button class="button primary js-dialog-close bg-noir">Fermer</button>
-  </div>
 </div>

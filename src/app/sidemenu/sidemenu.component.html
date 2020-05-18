@@ -8,7 +8,7 @@
         <h2 class="text-light m-0 fg-or pl-7" style="line-height: 52px">Recouvrement</h2>
       </div>
 
-      <ul class="navview-menu mt-4" id="side-menu">
+      <ul class="navview-menu mt-4" id="side-menu" *ngxPermissionsOnly="['comrec.permission']">
         <li class="item-header">MENU</li>
         <li *ngxPermissionsOnly="['consult.dashboard']">
           <a routerLink="/s/dashboard">
@@ -91,7 +91,7 @@
         </div>
       </div>
 
-      <div id="content-wrapper" class="content-inner h-100" style="overflow-y: auto">
+      <div id="content-wrapper" class="content-inner h-100" style="overflow-y: auto"  *ngxPermissionsOnly="['comrec.permission']">
         <router-outlet></router-outlet>
 
       </div>

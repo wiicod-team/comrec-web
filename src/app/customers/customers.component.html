@@ -1,86 +1,109 @@
-<div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
-  <div class="cell-md-4 d-flex flex-align-center">
-    <h3 class="dashboard-section-title  text-center text-left-md w-100">Clients</h3>
+<div *ngxPermissionsOnly="['consult.customer']">
+  <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+    <div class="cell-md-4 d-flex flex-align-center">
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Clients</h3>
+    </div>
+
+    <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+      <ul class="breadcrumbs bg-transparent">
+        <li class="page-item"><a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+      </ul>
+    </div>
   </div>
 
-  <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-    <ul class="breadcrumbs bg-transparent">
-      <li class="page-item"><a (click)="init()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
-    </ul>
-  </div>
-</div>
+  <div class="m-3"
+       infinite-scroll
+       [infiniteScrollDistance]="scrollDistance"
+       [infiniteScrollUpDistance]="scrollUpDistance"
+       [infiniteScrollThrottle]="throttle"
+       (scrolled)="onScrollDown($event)"
+       (scrolledUp)="onUp($event)"
+       [infiniteScrollContainer]="'.main-panel'"
+       [alwaysCallback]="true">
+    <div class="row mt-2">
+      <div class="cell-3">
+        <m4-input [(ngModel)]="search"
+                  placeholder="Client"
+                  (ngModelChange)="vide()"
+                  (focusout)="rechercher()"
+                  [ngModelOptions]="{standalone: true}"
+                  [search-button]="true" (search-button-click)="rechercher()"></m4-input>
+      </div>
+      <div class="cell-4" *ngIf="state">
+        Chargement des données ...
+        <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
+      </div>
+    </div>
 
-<div class="m-3"
-     infinite-scroll
-     [infiniteScrollDistance]="scrollDistance"
-     [infiniteScrollUpDistance]="scrollUpDistance"
-     [infiniteScrollThrottle]="throttle"
-     (scrolled)="onScrollDown($event)"
-     (scrolledUp)="onUp($event)"
-     [infiniteScrollContainer]="'.main-panel'"
-     [alwaysCallback]="true">
-  <div class="row mt-2">
-    <div class="cell-3">
-      <m4-input [(ngModel)]="search"
-                placeholder="Client"
-                (ngModelChange)="vide()"
-                (focusout)="rechercher()"
+    <div class="row mt-2 main-panel" style="max-height: 500px; overflow-y: scroll">
+      <table class="table cell-border compact table-border"
+      >
+        <thead>
+        <tr>
+          <th data-sortable="true" data-sort-dir="asc" data-name="facture">#</th>
+          <th data-sortable="true">Nom</th>
+          <th data-sortable="true" data-name="client">Réseau</th>
+          <th data-sortable="true">Vendeur</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
+          <td>{{i.id}}</td>
+          <td>{{i.name}}</td>
+          <td>{{i.sale_network}}</td>
+          <td>{{i.username}}</td>
+          <td *ngxPermissionsOnly="['link.customer']">
+            <button class="button mini" (click)="oepnLink(i)"><span class="mif-pencil"></span></button>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cell-2">
+      <small>{{customers.length}} sur {{max_length}} Clients</small>
+    </div>
+
+
+  </div>
+  <div class="dialog" data-role="dialog" id="linkDialog1">
+    <div class="dialog-title">Lier un client à un vendeur</div>
+    <div class="dialog-content" >
+      <m4-input [(ngModel)]="searchtext"
+                placeholder="Vendeur"
                 [ngModelOptions]="{standalone: true}"
-                [search-button]="true" (search-button-click)="rechercher()"></m4-input>
+                [search-button]="true"></m4-input>
+      <div class="form-group">
+        <div style="max-height: 150px; overflow-y: scroll">
+          <table class="table cell-border compact table-border"
+          >
+            <thead>
+            <tr>
+              <th data-sortable="true">Nom</th>
+              <th data-sortable="true" data-name="client">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of users| filter:{username: searchtext, name: searchtext} : false">
+              <td>{{item.name}}</td>
+              <td>
+                <button class="button mini bg-noir fg-white" (click)="setUser(item)" *ngIf="!item.check">Ajouter</button>
+                <button class="button mini" (click)="setUser(item)" *ngIf="item.check">Supprimer</button>
+              </td>
+            </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    <div class="cell-4" *ngIf="state">
-      Chargement des données ...
-      <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
-    </div>
-  </div>
 
-  <div class="row mt-2 main-panel" style="max-height: 500px; overflow-y: scroll">
-    <table class="table cell-border compact table-border"
-    >
-      <thead>
-      <tr>
-        <th data-sortable="true" data-sort-dir="asc" data-name="facture">#</th>
-        <th data-sortable="true">Nom</th>
-        <th data-sortable="true" data-name="client">Réseau</th>
-        <th data-sortable="true">Vendeur</th>
-        <th>Selectionner</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
-        <td>{{i.id}}</td>
-        <td>{{i.name}}</td>
-        <td>{{i.sale_network}}</td>
-        <td>{{i.username}}</td>
-        <td *ngxPermissionsOnly="['link.customer']">
-          <button class="button mini" *ngIf="!i.link" (click)="oepnLink(i)">Lier</button>
-          <button class="button mini" *ngIf="i.link" (click)="unLink(i)">Délier</button>
-        </td>
-      </tr>
-
-      </tbody>
-    </table>
-  </div>
-
-  <div class="cell-2">
-    <small>{{customers.length}} sur {{max_length}} Clients</small>
-  </div>
-
-
-</div>
-<div class="dialog" data-role="dialog" id="linkDialog1">
-  <div class="dialog-title">Lier un client à un vendeur</div>
-  <div class="dialog-content" >
-    Choix du vendeur
-    <div class="form-group">
-      <select [(ngModel)]="user_id">
-        <option *ngFor="let i of users" value="{{i.id}}">{{i.name}}</option>
-      </select>
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" (click)="link()">Valider</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
     </div>
   </div>
 
-  <div class="dialog-actions text-right">
-    <button class="button js-dialog-close bg-or fg-white" (click)="link()">Valider</button>
-    <button class="button primary js-dialog-close bg-noir">Fermer</button>
-  </div>
 </div>

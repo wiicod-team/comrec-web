@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
 import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
+import * as _ from 'lodash';
 import {ActivatedRoute} from '@angular/router';
 
 declare var Metro;
@@ -14,7 +15,8 @@ declare var Metro;
 export class FactureComponent implements OnInit {
   search = '';
   factures = [];
-  userCustomerIds: string;
+  entite: string;
+  montant = 0;
   old_facture = [];
   selected_bill = [];
   filtre = 'bvs_id-lf';
@@ -40,7 +42,7 @@ export class FactureComponent implements OnInit {
   customer_id = 0;
 
   constructor(private api: ApiProvider, private route: ActivatedRoute) {
-    // this.search = '';
+    this.entite = 'BDC';
     this.customer_id = parseInt(this.route.snapshot.paramMap.get('customer_id'));
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
@@ -297,7 +299,7 @@ export class FactureComponent implements OnInit {
       this.selected_bill.forEach(f => {
         f.status = 'paid';
         f.put().subscribe(d => {
-          const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3;
+          const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite;
           this.api.Receipts.post({
             bill_id: f.id,
             amount: f.amount - f.avance,
@@ -378,7 +380,7 @@ export class FactureComponent implements OnInit {
       this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
       const opt = {
         amount: this.montant_avance,
-        note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+        note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite,
         payment_method: this.payment_method,
         bill_id: this.facture.id,
         user_id: this.user.id
@@ -524,19 +526,22 @@ export class FactureComponent implements OnInit {
     doc.setFontSize(6);
     doc.setFontStyle('bold');
     // doc.setCreationDate(new Date());
-    doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
-    doc.text('BP: 1352 Douala', 6, 8);
+    if (this.entite === 'BDC') {
+      doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
+      doc.text('BP: 1352 Douala', 6, 8);
+    } else {
+      doc.text('BVS PRODUCTION CAMEROUN S.A', 6, 5);
+      doc.text('BP: 4036 Douala', 6, 8);
+    }
     doc.text('Montée BBR - BASSA', 6, 11);
     doc.text('Tél.: 690 404 180/89', 6, 14);
     // info sur le vendeur
     doc.text('Avancé le : ' + e.created_at, 6, 17);
     doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 20);
     // Client vendeur
-    doc.text('AVA-' + e.id + '-' + moment(new Date()).format('YYMMDD'), 6, 23);
+    doc.text('ENC-' + e.id, 6, 23);
     doc.setFontSize(5);
     doc.text('Client: ' + e.client.toUpperCase(), 6, 26);
-    doc.setFontSize(6);
-    doc.setFontSize(5);
     doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 29);
     doc.setFontSize(6);
     doc.text('N° Facture: ' + e.bill_id, 6, 31);
@@ -552,7 +557,7 @@ export class FactureComponent implements OnInit {
     } else if (e.payment_method === 'Chèque') {
       doc.text('N° Chèque: ' + this.commentaire1, 6, 46);
       doc.text('Banque: ' + this.commentaire2, 6, 49);
-      doc.text('Date: ' + this.commentaire3, 6, x + 52);
+      doc.text('Date: ' + this.commentaire3, 6, 52);
     } else {
       doc.text('N° Transaction: ' + this.commentaire1, 6, 46);
       doc.text('Opérateur: ' + this.commentaire2, 6, 49);
@@ -570,16 +575,20 @@ export class FactureComponent implements OnInit {
     const doc = new jsPDF('P', 'mm', [130, 200]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
-    // doc.setCreationDate(new Date());
-    doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
-    doc.text('BP: 1352 Douala', 6, 8);
+    if (this.entite === 'BDC') {
+      doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
+      doc.text('BP: 1352 Douala', 6, 8);
+    } else {
+      doc.text('BVS PRODUCTION CAMEROUN S.A', 6, 5);
+      doc.text('BP: 4036 Douala', 6, 8);
+    }
     doc.text('Montée BBR - BASSA', 6, 11);
     doc.text('Tél.: 690 404 180/89', 6, 14);
     // info sur le vendeur
     doc.text('Encaissé le : ' + e.created_at, 6, 20);
     doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
     // Client vendeur
-    doc.text('ENC-' + e.id + '-' + moment(new Date()).format('YYMMDD'), 6, 29);
+    doc.text('ENC-' + e.id, 6, 29);
     doc.setFontSize(5);
     doc.text('Client: ' + e.client.toUpperCase(), 6, 32);
     doc.setFontSize(6);
