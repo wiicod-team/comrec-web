@@ -30,6 +30,7 @@ import {StatutPipe} from './pipe/status';
 import {PriceFormatPipe} from './pipe/price-format';
 import { CustomerUniverseComponent } from './customer-universe/customer-universe.component';
 import { CustomerDetailComponent } from './customer-detail/customer-detail.component';
+import { ReceiptsComponent } from './receipts/receipts.component';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -94,7 +95,8 @@ export function RestangularConfigFactory(RestangularProvider) {
     ResetComponent,
     ForgotComponent,
     CustomerUniverseComponent,
-    CustomerDetailComponent
+    CustomerDetailComponent,
+    ReceiptsComponent
   ],
   imports: [
     BrowserModule,

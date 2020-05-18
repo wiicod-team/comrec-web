@@ -40,6 +40,7 @@ export class FactureComponent implements OnInit {
   montant_avance;
   per_page = 25;
   customer_id = 0;
+  private state_montant: false;
 
   constructor(private api: ApiProvider, private route: ActivatedRoute) {
     this.entite = 'BDC';
@@ -238,27 +239,6 @@ export class FactureComponent implements OnInit {
     return index;
   }
 
-  async getUserCustomerIds(userId) {
-    const params = {
-      should_paginate: false,
-      user_id: userId
-    };
-    const ucustomers: any = await this.api.CustomerUsers.getList(params).toPromise();
-    if (ucustomers) {
-      return ucustomers.plain().reduce((res, item) => {
-        if (res !== '') {
-          this.state = false;
-          return `${res},${item.customer_id}`;
-        }
-        this.state = false;
-        return item.customer_id;
-      }, '');
-    }
-    this.state = false;
-    return null;
-
-  }
-
   onScrollDown(ev) {
     this.getBills(false);
   }
@@ -283,8 +263,11 @@ export class FactureComponent implements OnInit {
   billChecked(bill, val) {
     bill.check = val;
     if (val) {
+      this.montant += (bill.amount - bill.avance);
+      console.log(bill);
       this.selected_bill.push(bill);
     } else {
+      this.montant -= (bill.amount - bill.avance);
       this.selected_bill.splice(this.selected_bill.indexOf(bill), 1);
     }
   }
@@ -297,6 +280,11 @@ export class FactureComponent implements OnInit {
       // actualisation
       let i = 0;
       this.selected_bill.forEach(f => {
+        if (this.payment_method === 'Chèque') {
+          f.received_at = moment(new Date(this.commentaire3)).format('DD-MM-YYYY');
+        } else {
+          f.received_at = moment(new Date()).format('DD-MM-YYYY hh:mm:ss');
+        }
         f.status = 'paid';
         f.put().subscribe(d => {
           const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite;
@@ -323,6 +311,7 @@ export class FactureComponent implements OnInit {
               this.printEncaissement(e, this.selected_bill);
               // arret du loading
               this.state = false;
+              this.montant = 0;
             }
           });
         }, q => {
@@ -383,8 +372,12 @@ export class FactureComponent implements OnInit {
         note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite,
         payment_method: this.payment_method,
         bill_id: this.facture.id,
-        user_id: this.user.id
+        user_id: this.user.id,
+        received_at: moment(new Date()).format('DD-MM-YYYY hh:mm:ss')
       };
+      if (this.payment_method === 'Chèque') {
+        opt.received_at = moment(new Date(this.commentaire3)).format('DD-MM-YYYY');
+      }
       this.api.Receipts.post(opt).subscribe(d => {
         Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
         if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
@@ -407,6 +400,7 @@ export class FactureComponent implements OnInit {
                 amount: this.facture.amount
               };
               this.printAvance(e);
+              this.montant = 0;
             }, q => {
               if (q.data.error.status_code === 500) {
                 Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {
@@ -466,6 +460,7 @@ export class FactureComponent implements OnInit {
             amount: this.facture.amount
           };
           this.printAvance(e);
+          this.montant = 0;
         }
       }, q => {
         if (q.data.error.status_code === 500) {

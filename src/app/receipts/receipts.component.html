@@ -1,0 +1,95 @@
+<div *ngxPermissionsOnly="['consult.receipt']" style="margin-top: 52px">
+  <div class="row border-bottom bd-lightGray ml-2" >
+    <div class="cell-md-4 d-flex flex-align-center">
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
+    </div>
+
+    <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+      <ul class="breadcrumbs bg-transparent">
+        <li class="page-item"><a (click)="getReceipts()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="m-3"
+       infinite-scroll
+       [infiniteScrollDistance]="scrollDistance"
+       [infiniteScrollUpDistance]="scrollUpDistance"
+       [infiniteScrollThrottle]="throttle"
+       (scrolled)="onScrollDown($event)"
+       (scrolledUp)="onUp($event)"
+       [infiniteScrollContainer]="'.main-panel'"
+       [alwaysCallback]="true"
+  >
+    <div class="row mt-2">
+      <div class="cell-2">
+        <m4-select prepend="<span class='mif-eye'></span>"
+                   (ngModelChange)="show($event)"
+                   [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '200': '200'}"></m4-select>
+      </div>
+      <div class="cell-2">
+        <m4-select prepend="<span class='mif-filter'></span>"
+                   [(ngModel)]="filtre"
+                   [options]="{ 'bill_id': 'N° facture',
+                    'customer_id': 'Code client',
+                    'user_id-lk': 'Code vendeur',
+                     'received_at-lk': 'Date encaissement',
+                    'payment_method-lk': 'Mode de paiement'}"></m4-select>
+      </div>
+      <div class="cell-3">
+        <m4-input [(ngModel)]="search"
+                  placeholder="Recherche"
+                  (ngModelChange)="vide()"
+                  [ngModelOptions]="{standalone: true}"
+                  [search-button]="true" (search-button-click)="rechercher()"></m4-input>
+      </div>
+      <div class="cell-2">
+        Total : <strong>{{montant |priceFormat}} FCFA</strong>
+      </div>
+
+      <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2">Exporter</button>
+
+    </div>
+    <div class="row mt-2" style="max-height: 700px; overflow-y: auto">
+      <table class="table cell-border compact table-border main-panel"
+      >
+        <thead>
+        <tr>
+          <th data-sortable="true" (click)="orderBy('id')">#</th>
+          <th data-sortable="true" (click)="orderBy('bill.bvs_id')">N° Facture</th>
+          <th data-sortable="true" (click)="orderBy('received_at')">Date</th>
+          <th data-sortable="true" (click)="orderBy('bill.customer_id')">#Client</th>
+          <th data-sortable="true" (click)="orderBy('bill.customer.name')">Client</th>
+          <th data-sortable="true" (click)="orderBy('amount')">Montant</th>
+          <th data-sortable="true" (click)="orderBy('payment_method')">Mode de paiement</th>
+          <th data-sortable="true" (click)="orderBy('user_id')">#Vendeur</th>
+          <th data-sortable="true" (click)="orderBy('vendeur')">Vendeur</th>
+          <th data-sortable="true">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let i of encaissements">
+          <td>{{i.id}}</td>
+          <td>{{i.bill.bvs_id}}</td>
+          <td>{{i.received_at}}</td>
+          <td>{{i.bill.customer.id}}</td>
+          <td>{{i.bill.customer.name}}</td>
+          <td>{{i.amount |priceFormat}}</td>
+          <td>{{i.payment_method}}</td>
+          <td>{{i.user_id}}</td>
+          <td>{{i.vendeur}}</td>
+          <td><button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button></td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row">
+      <div class="cell-2">
+        <small>{{encaissements.length}} sur {{max_length}} Factures</small>
+      </div>
+    </div>
+  </div>
+
+</div>

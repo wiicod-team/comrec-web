@@ -16,6 +16,12 @@
             <span class="caption">Dashboard</span>
           </a>
         </li>
+        <li *ngxPermissionsOnly="['consult.receipt']">
+          <a routerLink="/s/r">
+            <span class="icon"><span class="mif-money"></span></span>
+            <span class="caption">Encaissements</span>
+          </a>
+        </li>
         <li *ngxPermissionsOnly="['consult.customer-universe']">
           <a routerLink="/s/univers-client">
             <span class="icon"><span class="mif-users"></span></span>

@@ -1,54 +1,84 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-import * as jsPDF from 'jspdf';
-import * as moment from 'moment';
 import {ActivatedRoute} from '@angular/router';
+import * as moment from 'moment';
+import * as jsPDF from 'jspdf';
+import * as _ from 'lodash';
+
 declare var Metro;
-
 @Component({
-  selector: 'app-encaissement',
-  templateUrl: './encaissement.component.html',
-  styleUrls: ['./encaissement.component.scss']
+  selector: 'app-receipts',
+  templateUrl: './receipts.component.html',
+  styleUrls: ['./receipts.component.scss']
 })
-export class EncaissementComponent implements OnInit {
+export class ReceiptsComponent implements OnInit {
 
-  encaissements;
+  encaissements = [];
+  old_encaissements = [];
   user;
+  max_length = 0;
+  old_max_length = 0;
   search;
+  order = '';
+  page = 1;
+  last_page = 10000000;
+  montant = 0;
+  filtre = 'bill_id';
+  per_page = 25;
   state = false;
-  customer_id = 0;
+  isLoadingBills = false;
+  throttle = 30;
+  scrollDistance = 1;
+  scrollUpDistance = 2;
+
   @ViewChild('pdfTable', {static: false}) pdfTable: ElementRef;
   constructor( private api: ApiProvider, private route: ActivatedRoute) {
     this.search = '';
-    this.customer_id = parseInt(this.route.snapshot.paramMap.get('customer_id'));
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
     this.getReceipts();
   }
 
-  ngOnInit() {
-    moment.locale('fr');
+  vide() {
+    console.log(this.per_page, 'a');
+    if (this.search === '' || this.search === undefined) {
+      this.encaissements = this.old_encaissements;
+      this.max_length = this.old_max_length;
+    }
   }
 
-  getReceipts() {
+  rechercher() {
+    this.page = 1;
     this.state = true;
-
+    this.encaissements = [];
     const opt = {
       _includes: 'bill.customer,user',
-      user_id: this.user.id,
-      'bill-fk': 'customer_id=' + this.customer_id,
-      should_paginate: false,
+      should_paginate: true,
       _sort: 'received_at',
-      _sortDir: 'desc'
+      _sortDir: 'desc',
+      per_page: this.per_page,
+      page: this.page,
+      per_page: this.per_page,
+      page: this.page
     };
+    if (this.search === '' || this.search === undefined) {
+      this.encaissements = this.old_encaissements;
+      this.max_length = this.old_max_length;
+    } else if (this.filtre === 'bill_id') {
+      opt['bill-fk'] = 'bvs_id-lk=' + this.search;
+    } else if (this.filtre === 'customer_id') {
+      opt['bill-fk'] = 'customer_id-lk=' + this.search;
+    } else {
+      opt[this.filtre] = this.search;
+    }
     this.api.Receipts.getList(opt).subscribe(b => {
       b.forEach((v, k) => {
         v.name = v.bill.customer.name;
+        this.montant += v.amount;
         v.bvs_id = v.bill.id;
         v.vendeur = v.user.name;
       });
       this.encaissements = b;
-      // console('b', b);
       this.state = false;
     }, q => {
       if (q.data.error.status_code === 500) {
@@ -60,6 +90,63 @@ export class EncaissementComponent implements OnInit {
         Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
+  }
+
+  ngOnInit() {
+    moment.locale('fr');
+  }
+
+  trackByIndex(index: number, obj: any): any {
+    return index;
+  }
+
+  onScrollDown(ev) {
+    this.getReceipts();
+  }
+
+  onUp(ev) {
+  }
+
+
+  getReceipts() {
+    if (!this.isLoadingBills && this.page <= this.last_page) {
+      this.isLoadingBills = true;
+
+      this.state = true;
+
+      const opt = {
+        _includes: 'bill.customer,user',
+        _sort: 'received_at',
+        should_paginate: true,
+        _sortDir: 'desc',
+        per_page: this.per_page,
+        page: this.page
+      };
+      this.api.Receipts.getList(opt).subscribe(b => {
+        this.last_page = b.metadata.last_page;
+        this.max_length = b.metadata.total;
+        this.old_max_length = this.max_length;
+        b.forEach((v, k) => {
+          v.bill.customer.name = v.bill.customer.name.trim();
+          v.name = v.bill.customer.name;
+          this.montant += v.amount;
+          v.bvs_id = v.bill.id;
+          v.vendeur = v.user.name;
+        });
+        this.encaissements = b;
+        this.old_encaissements = this.encaissements;
+        this.state = false;
+      }, q => {
+        if (q.data.error.status_code === 500) {
+          Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        } else if (q.data.error.status_code === 401) {
+          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+        } else {
+          this.state = false;
+          Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+        }
+      });
+    }
   }
 
   printReceipt(e) {
@@ -91,7 +178,7 @@ export class EncaissementComponent implements OnInit {
       doc.text('Client: ' + e.bill.customer.name.toUpperCase(), 6, 32);
       doc.setFontSize(6);
       doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 35);
-      doc.text('N° Facture: ' + e.bill.bvs_id, 6, 41);
+      doc.text('N° encaissement: ' + e.bill.bvs_id, 6, 41);
       doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 44);
       doc.text('Total encaissé: ' + this.api.formarPrice(d[0].total_amount) + 'FCFA', 6, 47);
       doc.text('Reste à payer: ' + this.api.formarPrice((e.bill.amount - d[0].total_amount)) + 'FCFA', 6, 50);
@@ -135,5 +222,20 @@ export class EncaissementComponent implements OnInit {
         Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
+  }
+
+  orderBy(text) {
+    if (text === this.order) {
+      this.encaissements = _.orderBy(this.encaissements, text).reverse();
+      this.order = '';
+    } else {
+      this.encaissements = _.orderBy(this.encaissements, text);
+      this.order = text;
+    }
+  }
+
+  show(newValue) {
+    this.per_page = newValue;
+    this.getReceipts();
   }
 }

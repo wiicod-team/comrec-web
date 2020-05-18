@@ -108,8 +108,8 @@ export class DashboardComponent implements OnInit {
 
   getReceipts() {
     const opt = {
-      'created_at-get': this.deb.format(this.date_format),
-      'created_at-let': this.fin.format(this.date_format),
+      'received_at-get': this.deb.format(this.date_format),
+      'received_at-let': this.fin.format(this.date_format),
       should_paginate: false
     };
     this.api.Receipts.getList(opt).subscribe(d => {
@@ -134,8 +134,8 @@ export class DashboardComponent implements OnInit {
       'user_id-gb': 'sum(amount) as total_amount',
       _sortDir: 'desc',
       _sort: ' total_amount',
-      'created_at-get': this.deb.format(this.date_format),
-      'created_at-let': this.fin.format(this.date_format),
+      'received_at-get': this.deb.format(this.date_format),
+      'received_at-let': this.fin.format(this.date_format),
       _includes: 'user',
       should_paginate: false
     };

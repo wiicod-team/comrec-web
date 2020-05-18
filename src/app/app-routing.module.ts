@@ -15,6 +15,7 @@ import {ResetComponent} from './reset/reset.component';
 import {ForgotComponent} from './forgot/forgot.component';
 import {CustomerUniverseComponent} from './customer-universe/customer-universe.component';
 import {CustomerDetailComponent} from './customer-detail/customer-detail.component';
+import {ReceiptsComponent} from './receipts/receipts.component';
 
 
 
@@ -41,6 +42,17 @@ const routes: Routes = [
         data: {
           permissions: {
             only: ['consult.customer-universe'],
+            redirectTo: '/403'
+          }
+        }*/
+      },
+      {
+        path : 'r',
+        component : ReceiptsComponent,
+        /*canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.dashboard'],
             redirectTo: '/403'
           }
         }*/

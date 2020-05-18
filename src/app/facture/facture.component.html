@@ -1,284 +1,286 @@
-<div *ngxPermissionsOnly="['consult.bill']">
-  <div class="row border-bottom bd-lightGray ml-2 mr-0" id="fac">
-    <div class="cell-md-4 d-flex flex-align-center">
-      <h3 class="dashboard-section-title  text-center text-left-md w-100">Factures</h3>
-    </div>
-
-    <div class="cell-2" *ngIf="state">
-      Chargement ...
-      <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
-    </div>
-
-    <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-      <ul class="breadcrumbs bg-transparent">
-        <li class="page-item"><a (click)="getBills(true)" class="page-link">Actualiser <span class="icon"><span
-          class="mif-refresh"></span></span></a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="m-3"
-       infinite-scroll
-       [infiniteScrollDistance]="scrollDistance"
-       [infiniteScrollUpDistance]="scrollUpDistance"
-       [infiniteScrollThrottle]="throttle"
-       (scrolled)="onScrollDown($event)"
-       (scrolledUp)="onUp($event)"
-       [infiniteScrollContainer]="'.main-panel'"
-       [alwaysCallback]="true"
-  >
-    <div class="row mt-2">
-      <div class="cell-2">
-        <m4-select prepend="<span class='mif-eye'></span>"
-                   (ngModelChange)="show($event)"
-                   [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '200': '200'}"></m4-select>
-      </div>
-      <div class="cell-2">
-        <m4-select prepend="<span class='mif-filter'></span>"
-                   [(ngModel)]="filtre"
-                   [options]="{ 'bvs_id-lk': 'N° facture', 'customer_id-lk': 'Code client', 'creation_date-lk': 'Date facture'}"></m4-select>
-      </div>
-      <div class="cell-3">
-        <m4-input [(ngModel)]="search"
-                  placeholder="Recherche"
-                  (ngModelChange)="vide()"
-                  [ngModelOptions]="{standalone: true}"
-                  [search-button]="true" (search-button-click)="rechercher()"></m4-input>
-      </div>
-      <div class="cell-2" *ngIf="selected_bill.length>0">
-        Total
+<div id="fac">
+  <div *ngxPermissionsOnly="['consult.bill']">
+    <div class="row border-bottom bd-lightGray ml-2 mr-0">
+      <div class="cell-md-4 d-flex flex-align-center">
+        <h3 class="dashboard-section-title  text-center text-left-md w-100">Factures</h3>
       </div>
 
-      <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2" (click)="avancer()">Avancer</button>
-      <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 " (click)="openBillModal()">Encaisser</button>
+      <div class="cell-2" *ngIf="state">
+        Chargement ...
+        <div data-role="progress" data-cls-back="bg-noir" data-type="line" data-small="true"></div>
+      </div>
 
+      <div class="d-flex flex-justify-center flex-justify-end-md flex-align-center" [ngClass]="{'cell-md-6' : state, 'cell-md-8' : !state}">
+        <ul class="breadcrumbs bg-transparent">
+          <li class="page-item"><a (click)="getBills(true)" class="page-link">Actualiser <span class="icon"><span
+            class="mif-refresh"></span></span></a></li>
+        </ul>
+      </div>
     </div>
 
-    <div
-      class="row mt-2 main-panel"
-      style="max-height: 490px; overflow-y: auto"
-
+    <div class="m-3"
+         infinite-scroll
+         [infiniteScrollDistance]="scrollDistance"
+         [infiniteScrollUpDistance]="scrollUpDistance"
+         [infiniteScrollThrottle]="throttle"
+         (scrolled)="onScrollDown($event)"
+         (scrolledUp)="onUp($event)"
+         [infiniteScrollContainer]="'.main-panel'"
+         [alwaysCallback]="true"
     >
-      <table class="table cell-border compact table-border"
-      >
-        <thead>
-        <tr>
-          <th data-sortable="true" (click)="orderBy('bvs_id')">N° Facture</th>
-          <th data-sortable="true" (click)="orderBy('creation_date')">Date</th>
-          <th data-sortable="true" (click)="orderBy('customer_id')">#Client</th>
-          <th data-sortable="true" (click)="orderBy('name')">Client</th>
-          <th data-sortable="true" (click)="orderBy('amount')">Montant</th>
-          <th data-sortable="true" (click)="orderBy('avance')">Avance</th>
-          <th data-sortable="true" (click)="orderBy('reste')">Reste</th>
-          <th data-sortable="true" (click)="orderBy('statut')">Statut</th>
-          <th *ngxPermissionsOnly="['advance.bill']">Selectionner</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!--tr *ngFor="let i of factures"-->
-        <tr
-          *ngFor="let i of factures;trackBy:trackByIndex |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
-          [ngClass]="{'bg-or':i.check==true}"
-        >
-          <td>{{i.bvs_id}}</td>
-          <td>{{i.creation_date}}</td>
-          <td>{{i.customer_id}}</td>
-          <td>{{i.name}}</td>
-          <td class="text-right">{{i.amount |priceFormat}}</td>
-          <td class="text-right">{{i.avance |priceFormat}}</td>
-          <td class="text-right">{{(i.reste) |priceFormat}}</td>
-          <td>{{i.statut}}</td>
-          <td *ngxPermissionsOnly="['advance.bill']">
-            <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
-              Sélectionner
-            </button>
-            <button class="button mini" (click)="billChecked(i,false)" *ngIf="i.check">Désélectionner</button>
-          </td>
-        </tr>
+      <div class="row mt-2">
+        <div class="cell-2">
+          <m4-select prepend="<span class='mif-eye'></span>"
+                     (ngModelChange)="show($event)"
+                     [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '200': '200'}"></m4-select>
+        </div>
+        <div class="cell-2">
+          <m4-select prepend="<span class='mif-filter'></span>"
+                     [(ngModel)]="filtre"
+                     [options]="{ 'bvs_id-lk': 'N° facture', 'customer_id-lk': 'Code client', 'creation_date-lk': 'Date facture'}"></m4-select>
+        </div>
+        <div class="cell-3">
+          <m4-input [(ngModel)]="search"
+                    placeholder="Recherche"
+                    (ngModelChange)="vide()"
+                    [ngModelOptions]="{standalone: true}"
+                    [search-button]="true" (search-button-click)="rechercher()"></m4-input>
+        </div>
+        <div class="cell-2" *ngIf="selected_bill.length>0">
+          T. : <strong>{{montant |priceFormat}} FCFA</strong>
+        </div>
 
-        </tbody>
-      </table>
-    </div>
+        <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2" (click)="avancer()">Avancer</button>
+        <button *ngxPermissionsOnly="['cash.bill']" class="button mr-2 " (click)="openBillModal()">Encaisser</button>
 
-    <div class="row">
-      <div class="cell-2">
-        <small>{{factures.length}} sur {{max_length}} Factures</small>
       </div>
-    </div>
 
-    <div class="dialog encaissementDialog" data-role="dialog" id="demoDialog1">
-      <div class="dialog-title">Encaissement</div>
-      <div class="dialog-content" *ngIf="selected_bill.length>0">
-        Souhaitez-vous encaisser les factures ci-dessous ?
-        <table class="table compact">
+      <div
+        class="row mt-2 main-panel"
+        style="max-height: 490px; overflow-y: auto"
+
+      >
+        <table class="table cell-border compact table-border"
+        >
           <thead>
           <tr>
-            <th>N° Facture</th>
-            <th>Date</th>
-            <th data-sortable="true">Montant</th>
-            <th data-sortable="true">Avance</th>
-            <th data-sortable="true">Reste</th>
+            <th data-sortable="true" (click)="orderBy('bvs_id')">N° Facture</th>
+            <th data-sortable="true" (click)="orderBy('creation_date')">Date</th>
+            <th data-sortable="true" (click)="orderBy('customer_id')">#Client</th>
+            <th data-sortable="true" (click)="orderBy('name')">Client</th>
+            <th data-sortable="true" (click)="orderBy('amount')">Montant</th>
+            <th data-sortable="true" (click)="orderBy('avance')">Avance</th>
+            <th data-sortable="true" (click)="orderBy('reste')">Reste</th>
+            <th data-sortable="true" (click)="orderBy('statut')">Statut</th>
+            <th *ngxPermissionsOnly="['advance.bill']">Selectionner</th>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let i of selected_bill">
+          <!--tr *ngFor="let i of factures"-->
+          <tr
+            *ngFor="let i of factures;trackBy:trackByIndex |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
+            [ngClass]="{'bg-or':i.check==true}"
+          >
             <td>{{i.bvs_id}}</td>
             <td>{{i.creation_date}}</td>
-            <td>{{i.amount|priceFormat}}</td>
-            <td>{{i.avance|priceFormat}}</td>
-            <td>{{i.amount - i.avance|priceFormat}}</td>
+            <td>{{i.customer_id}}</td>
+            <td>{{i.name}}</td>
+            <td class="text-right">{{i.amount |priceFormat}}</td>
+            <td class="text-right">{{i.avance |priceFormat}}</td>
+            <td class="text-right">{{(i.reste) |priceFormat}}</td>
+            <td>{{i.statut}}</td>
+            <td *ngxPermissionsOnly="['advance.bill']">
+              <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
+                Sélectionner
+              </button>
+              <button class="button mini" (click)="billChecked(i,false)" *ngIf="i.check">Désélectionner</button>
+            </td>
           </tr>
 
           </tbody>
         </table>
-        <div class="form-group">
-          <label>Entité</label>
-          <select [(ngModel)]="entite">
-            <option value="BDC">BVS Distribution</option>
-            <option value="BPC">BVS Production</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mode de paiement</label>
-          <select [(ngModel)]="payment_method">
-            <option value="Chèque">Chèque</option>
-            <option value="Espèce">Espèce</option>
-            <option value="Paiement mobile">Paiement mobile</option>
-            <option value="Virement">Virement</option>
-          </select>
-        </div>
-        <div *ngIf="payment_method == 'Chèque'">
-          <div class="form-group">
-            <label>Date</label>
-            <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
-                                [dialog-mode]="true"
-                                locale="fr-FR" format="%d/%m/%Y" size="100%"
-                                calendar-button-icon="<span class='mif-calendar'></span>"
-                                [show-header]="true"></m4-calendar-picker>
-          </div>
-          <div class="form-group">
-            <label>Banque</label>
-            <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
-          </div>
-          <div class="form-group">
-            <label>N° du chèque</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
-          </div>
-        </div>
-        <div *ngIf="payment_method == 'Virement'">
-          <div class="form-group">
-            <label>Reférence</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
-          </div>
-        </div>
+      </div>
 
-        <div *ngIf="payment_method == 'Espèce'">
-          <div class="form-group">
-            <label>Commentaire</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
-          </div>
-        </div>
-
-        <div *ngIf="payment_method == 'Paiement mobile'">
-          <div class="form-group">
-            <label>N° de la transaction</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="N° de la transaction"/>
-          </div>
-          <div class="form-group">
-            <label>Opérateur</label>
-            <input type="text" [(ngModel)]="commentaire2" placeholder="Opérateur"/>
-          </div>
+      <div class="row">
+        <div class="cell-2">
+          <small>{{factures.length}} sur {{max_length}} Factures</small>
         </div>
       </div>
-      <div class="dialog-content" *ngIf="selected_bill.length<=0">
-        Aucune facture selectionnée.
+
+      <div class="dialog encaissementDialog" data-role="dialog" id="demoDialog1">
+        <div class="dialog-title">Encaissement</div>
+        <div class="dialog-content" *ngIf="selected_bill.length>0">
+          Souhaitez-vous encaisser les factures ci-dessous ?
+          <table class="table compact">
+            <thead>
+            <tr>
+              <th>N° Facture</th>
+              <th>Date</th>
+              <th data-sortable="true">Montant</th>
+              <th data-sortable="true">Avance</th>
+              <th data-sortable="true">Reste</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let i of selected_bill">
+              <td>{{i.bvs_id}}</td>
+              <td>{{i.creation_date}}</td>
+              <td>{{i.amount|priceFormat}}</td>
+              <td>{{i.avance|priceFormat}}</td>
+              <td>{{i.amount - i.avance|priceFormat}}</td>
+            </tr>
+
+            </tbody>
+          </table>
+          <div class="form-group">
+            <label>Entité</label>
+            <select [(ngModel)]="entite">
+              <option value="BDC">BVS Distribution</option>
+              <option value="BPC">BVS Production</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mode de paiement</label>
+            <select [(ngModel)]="payment_method">
+              <option value="Chèque">Chèque</option>
+              <option value="Espèce">Espèce</option>
+              <option value="Paiement mobile">Paiement mobile</option>
+              <option value="Virement">Virement</option>
+            </select>
+          </div>
+          <div *ngIf="payment_method == 'Chèque'">
+            <div class="form-group">
+              <label>Date</label>
+              <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
+                                  [dialog-mode]="true"
+                                  locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                  calendar-button-icon="<span class='mif-calendar'></span>"
+                                  [show-header]="true"></m4-calendar-picker>
+            </div>
+            <div class="form-group">
+              <label>Banque</label>
+              <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
+            </div>
+            <div class="form-group">
+              <label>N° du chèque</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
+            </div>
+          </div>
+          <div *ngIf="payment_method == 'Virement'">
+            <div class="form-group">
+              <label>Reférence</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
+            </div>
+          </div>
+
+          <div *ngIf="payment_method == 'Espèce'">
+            <div class="form-group">
+              <label>Commentaire</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
+            </div>
+          </div>
+
+          <div *ngIf="payment_method == 'Paiement mobile'">
+            <div class="form-group">
+              <label>N° de la transaction</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="N° de la transaction"/>
+            </div>
+            <div class="form-group">
+              <label>Opérateur</label>
+              <input type="text" [(ngModel)]="commentaire2" placeholder="Opérateur"/>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-content" *ngIf="selected_bill.length<=0">
+          Aucune facture selectionnée.
+        </div>
+        <div class="dialog-actions text-right">
+          <button class="button bg-or fg-white" (click)="validerEncaissement()"
+                  *ngIf="selected_bill.length>0 && payment_method != ''">Oui
+          </button>
+          <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0" id="non">Non</button>
+          <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length<=0">Fermer</button>
+        </div>
       </div>
-      <div class="dialog-actions text-right">
-        <button class="button bg-or fg-white" (click)="validerEncaissement()"
-                *ngIf="selected_bill.length>0 && payment_method != ''">Oui
-        </button>
-        <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0" id="non">Non</button>
-        <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length<=0">Fermer</button>
+
+      <div class="dialog" data-role="dialog" id="avanceDialog1">
+        <div class="dialog-title">Avance de paiement sur facure {{facture.bvs_id}}</div>
+        <div class="dialog-content">
+          Combien souhaitez-vous avancer ?
+          <div class="form-group">
+            <label>Montant</label>
+            <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}"
+                   placeholder="Montant de l'avance"/>
+            <small class="text-muted">Reste à payer : {{facture.amount - facture.avance}} FCFA</small>
+          </div>
+          <div class="form-group">
+            <label>Entité</label>
+            <select [(ngModel)]="entite">
+              <option value="BDC">BVS Distribution</option>
+              <option value="BPC">BVS Production</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mode de paiement</label>
+            <select [(ngModel)]="payment_method">
+              <option value="Chèque">Chèque</option>
+              <option value="Espèce">Espèce</option>
+              <option value="Paiement mobile">Paiement mobile</option>
+              <option value="Virement">Virement</option>
+            </select>
+          </div>
+          <div *ngIf="payment_method == 'Chèque'">
+            <div class="form-group">
+              <label>Date</label>
+              <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
+                                  [dialog-mode]="true"
+                                  locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                  calendar-button-icon="<span class='mif-calendar'></span>"
+                                  [show-header]="true"></m4-calendar-picker>
+            </div>
+            <div class="form-group">
+              <label>Banque</label>
+              <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
+            </div>
+            <div class="form-group">
+              <label>N° du chèque</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
+            </div>
+          </div>
+
+          <div *ngIf="payment_method == 'Espèce'">
+            <div class="form-group">
+              <label>Commentaire</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
+            </div>
+          </div>
+          <div *ngIf="payment_method == 'Virement'">
+            <div class="form-group">
+              <label>Reférence</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
+            </div>
+          </div>
+
+          <div *ngIf="payment_method == 'Paiement mobile'">
+            <div class="form-group">
+              <label>N° de la transaction</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="N° de la transaction"/>
+            </div>
+            <div class="form-group">
+              <label>Opérateur</label>
+              <input type="text" [(ngModel)]="commentaire2" placeholder="Opérateur"/>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="dialog-actions text-right">
+          <button class="button bg-or fg-white" *ngIf="payment_method != '' && montant_avance>0" (click)="validerAvance()">Valider</button>
+          <button class="button primary js-dialog-close bg-noir" id="close">Fermer</button>
+        </div>
       </div>
     </div>
 
-    <div class="dialog" data-role="dialog" id="avanceDialog1">
-      <div class="dialog-title">Avance de paiement sur facure {{facture.bvs_id}}</div>
-      <div class="dialog-content">
-        Combien souhaitez-vous avancer ?
-        <div class="form-group">
-          <label>Montant</label>
-          <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}"
-                 placeholder="Montant de l'avance"/>
-          <small class="text-muted">Reste à payer : {{facture.amount - facture.avance}} FCFA</small>
-        </div>
-        <div class="form-group">
-          <label>Entité</label>
-          <select [(ngModel)]="entite">
-            <option value="BDC">BVS Distribution</option>
-            <option value="BPC">BVS Production</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mode de paiement</label>
-          <select [(ngModel)]="payment_method">
-            <option value="Chèque">Chèque</option>
-            <option value="Espèce">Espèce</option>
-            <option value="Paiement mobile">Paiement mobile</option>
-            <option value="Virement">Virement</option>
-          </select>
-        </div>
-        <div *ngIf="payment_method == 'Chèque'">
-          <div class="form-group">
-            <label>Date</label>
-            <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
-                                [dialog-mode]="true"
-                                locale="fr-FR" format="%d/%m/%Y" size="100%"
-                                calendar-button-icon="<span class='mif-calendar'></span>"
-                                [show-header]="true"></m4-calendar-picker>
-          </div>
-          <div class="form-group">
-            <label>Banque</label>
-            <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
-          </div>
-          <div class="form-group">
-            <label>N° du chèque</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
-          </div>
-        </div>
-
-        <div *ngIf="payment_method == 'Espèce'">
-          <div class="form-group">
-            <label>Commentaire</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
-          </div>
-        </div>
-        <div *ngIf="payment_method == 'Virement'">
-          <div class="form-group">
-            <label>Reférence</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
-          </div>
-        </div>
-
-        <div *ngIf="payment_method == 'Paiement mobile'">
-          <div class="form-group">
-            <label>N° de la transaction</label>
-            <input type="text" [(ngModel)]="commentaire1" placeholder="N° de la transaction"/>
-          </div>
-          <div class="form-group">
-            <label>Opérateur</label>
-            <input type="text" [(ngModel)]="commentaire2" placeholder="Opérateur"/>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div class="dialog-actions text-right">
-        <button class="button bg-or fg-white" *ngIf="payment_method != '' && montant_avance>0" (click)="validerAvance()">Valider</button>
-        <button class="button primary js-dialog-close bg-noir" id="close">Fermer</button>
-      </div>
-    </div>
   </div>
-
 </div>
