@@ -1,5 +1,5 @@
 <div *ngxPermissionsOnly="['consult.receipt']">
-  <div class="row border-bottom bd-lightGray ml-2" >
+  <div class="row border-bottom bd-lightGray ml-2 mr-0">
     <div class="cell-md-4 d-flex flex-align-center">
       <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
     </div>
@@ -45,7 +45,9 @@
           <td>{{i.amount |priceFormat}}</td>
           <td>{{i.payment_method}}</td>
           <td>{{i.vendeur}}</td>
-          <td><button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button></td>
+          <td>
+            <button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button>
+            </td>
         </tr>
 
         </tbody>

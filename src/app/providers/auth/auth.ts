@@ -2,7 +2,9 @@ import {Injectable} from '@angular/core';
 import {ApiProvider} from '../api/api';
 import * as _ from 'lodash';
 import {NgxPermissionsService, NgxRolesService} from 'ngx-permissions';
-
+import {Restangular} from 'ngx-restangular';
+import {Router} from '@angular/router';
+declare var Metro;
 /*
   Generated class for the AuthProvider provider.
 
@@ -40,7 +42,7 @@ export class AuthProvider {
           $auth.setToken(response.data);*/
           resolve(data);
         }, function(error) {
-          //console.log(error);
+          // console.log(error);
           /*if (error.status == 401) {
             var errors = error.data.errors;
             for (var key in errors) {
@@ -69,7 +71,7 @@ export class AuthProvider {
 
           resolve(data);
         }, function(error) {
-          //console.log(error);
+          // console.log(error);
 
           reject(error);
         });
@@ -111,7 +113,7 @@ export class AuthProvider {
 
           resolve(data);
         }, function(error) {
-          //console.log(error);
+          // console.log(error);
 
           reject(error);
         });
@@ -143,6 +145,14 @@ export class AuthProvider {
   loadPermissions() {
     this.api.me.get().subscribe((data) => {
       this.storeSession(data.body.data);
+    }, q => {
+      if (q.data.status_code === 500) {
+        Metro.notify.create('loadPermissions ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.status_code === 401) {
+
+      } else {
+        Metro.notify.create('loadPermissions ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
     });
 
   }

@@ -117,6 +117,6 @@ export function RestangularConfigFactory(RestangularProvider) {
 })
 export class AppModule {
   constructor(public auth: AuthProvider) {
-    this.auth.loadPermissions();
+
   }
 }

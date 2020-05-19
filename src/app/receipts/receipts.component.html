@@ -1,5 +1,5 @@
 <div *ngxPermissionsOnly="['consult.receipt']" style="margin-top: 52px">
-  <div class="row border-bottom bd-lightGray ml-2" >
+  <div class="row border-bottom bd-lightGray ml-2 mr-0">
     <div class="cell-md-4 d-flex flex-align-center">
       <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
     </div>
@@ -25,7 +25,7 @@
       <div class="cell-2">
         <m4-select prepend="<span class='mif-eye'></span>"
                    (ngModelChange)="show($event)"
-                   [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '200': '200'}"></m4-select>
+                   [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '1000000': 'Tout'}"></m4-select>
       </div>
       <div class="cell-2">
         <m4-select prepend="<span class='mif-filter'></span>"
@@ -47,7 +47,10 @@
         Total : <strong>{{montant |priceFormat}} FCFA</strong>
       </div>
 
-      <button *ngxPermissionsOnly="['advance.bill']" class="button ml-auto mr-2">Exporter</button>
+      <button *ngxPermissionsOnly="['advance.bill']"
+              data-role="hint"
+              data-hint-text="Exporter les données en csv"
+              class="button ml-auto mr-2" (click)="exportCsv()">Exporter</button>
 
     </div>
     <div class="row mt-2" style="max-height: 700px; overflow-y: auto">
@@ -68,7 +71,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of encaissements">
+        <tr *ngFor="let i of encaissements;trackBy:trackByIndex ">
           <td>{{i.id}}</td>
           <td>{{i.bill.bvs_id}}</td>
           <td>{{i.received_at}}</td>
@@ -78,7 +81,10 @@
           <td>{{i.payment_method}}</td>
           <td>{{i.user_id}}</td>
           <td>{{i.vendeur}}</td>
-          <td><button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button></td>
+          <td>
+            <button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button>
+            <button class="button mini bg-red fg-white" *ngxPermissionsOnly="['edit.receipt']" (click)="editReceipt(i)"><span class="mif-cross"></span></button>
+          </td>
         </tr>
 
         </tbody>

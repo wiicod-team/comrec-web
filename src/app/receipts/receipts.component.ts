@@ -57,8 +57,6 @@ export class ReceiptsComponent implements OnInit {
       _sort: 'received_at',
       _sortDir: 'desc',
       per_page: this.per_page,
-      page: this.page,
-      per_page: this.per_page,
       page: this.page
     };
     if (this.search === '' || this.search === undefined) {
@@ -109,10 +107,9 @@ export class ReceiptsComponent implements OnInit {
 
 
   getReceipts() {
+    this.state = true;
     if (!this.isLoadingBills && this.page <= this.last_page) {
       this.isLoadingBills = true;
-
-      this.state = true;
 
       const opt = {
         _includes: 'bill.customer,user',
@@ -136,6 +133,7 @@ export class ReceiptsComponent implements OnInit {
         this.encaissements = b;
         this.old_encaissements = this.encaissements;
         this.state = false;
+        this.isLoadingBills = false;
       }, q => {
         if (q.data.error.status_code === 500) {
           Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -237,5 +235,31 @@ export class ReceiptsComponent implements OnInit {
   show(newValue) {
     this.per_page = newValue;
     this.getReceipts();
+  }
+
+  editReceipt(i) {
+    console.log(i);
+  }
+
+  exportCsv() {
+    let csv = '#,Numéro facture,Date,#client,Client,Montant,Mode de paiement,#Vendeur,Vendeur\n';
+    this.encaissements.forEach(e => {
+      csv += e.id + ',' + e.bill.bvs_id + ',' + e.bill.customer_id + ',' + e.bill.customer.name + ',' + e.amount + ',' + e.payment_method + ',' + e.user_id + ',' + e.user.name;
+      csv += '\n';
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+      navigator.msSaveBlob(blob, 'BC_encaissements' + moment(new Date()).format('YYMMDDHHmmss'));
+    } else {
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'BC_encaissements' + moment(new Date()).format('YYMMDDHHmmss'));
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   }
 }

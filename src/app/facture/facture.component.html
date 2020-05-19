@@ -46,7 +46,7 @@
                     [ngModelOptions]="{standalone: true}"
                     [search-button]="true" (search-button-click)="rechercher()"></m4-input>
         </div>
-        <div class="cell-2" *ngIf="selected_bill.length>0">
+        <div class="cell-2" *ngIf="selected_bill.length>=0">
           T. : <strong>{{montant |priceFormat}} FCFA</strong>
         </div>
 
@@ -111,27 +111,29 @@
         <div class="dialog-title">Encaissement</div>
         <div class="dialog-content" *ngIf="selected_bill.length>0">
           Souhaitez-vous encaisser les factures ci-dessous ?
-          <table class="table compact">
-            <thead>
-            <tr>
-              <th>N° Facture</th>
-              <th>Date</th>
-              <th data-sortable="true">Montant</th>
-              <th data-sortable="true">Avance</th>
-              <th data-sortable="true">Reste</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let i of selected_bill">
-              <td>{{i.bvs_id}}</td>
-              <td>{{i.creation_date}}</td>
-              <td>{{i.amount|priceFormat}}</td>
-              <td>{{i.avance|priceFormat}}</td>
-              <td>{{i.amount - i.avance|priceFormat}}</td>
-            </tr>
+          <div style="max-height: 200px; overflow-y: auto">
+            <table class="table compact">
+              <thead>
+              <tr>
+                <th>N° Facture</th>
+                <th>Date</th>
+                <th data-sortable="true">Montant</th>
+                <th data-sortable="true">Avance</th>
+                <th data-sortable="true">Reste</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let i of selected_bill">
+                <td>{{i.bvs_id}}</td>
+                <td>{{i.creation_date}}</td>
+                <td>{{i.amount|priceFormat}}</td>
+                <td>{{i.avance|priceFormat}}</td>
+                <td>{{i.amount - i.avance|priceFormat}}</td>
+              </tr>
 
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
           <div class="form-group">
             <label>Entité</label>
             <select [(ngModel)]="entite">

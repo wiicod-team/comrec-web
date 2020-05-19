@@ -3,7 +3,8 @@ import {ApiProvider} from '../providers/api/api';
 import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
 import * as _ from 'lodash';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {NgxRolesService} from 'ngx-permissions';
 
 declare var Metro;
 
@@ -42,7 +43,7 @@ export class FactureComponent implements OnInit {
   customer_id = 0;
   private state_montant: false;
 
-  constructor(private api: ApiProvider, private route: ActivatedRoute) {
+  constructor(private api: ApiProvider, private route: ActivatedRoute, private router: Router) {
     this.entite = 'BDC';
     this.customer_id = parseInt(this.route.snapshot.paramMap.get('customer_id'));
     this.api.checkUser();
@@ -52,7 +53,6 @@ export class FactureComponent implements OnInit {
 
   async ngOnInit() {
     this.state = true;
-    this.selected_bill = [];
     if (this.customer_id === 0) {
       document.getElementById('fac').style.marginTop = '52px';
     }
@@ -62,6 +62,7 @@ export class FactureComponent implements OnInit {
 
   vide() {
     console.log(this.per_page);
+    this.selected_bill = [];
     if (this.search === '' || this.search === undefined) {
       this.factures = this.old_facture;
       this.max_length = this.old_max_length;
@@ -212,11 +213,19 @@ export class FactureComponent implements OnInit {
               keepOpen: true,
               width: 500
             });
-          } else if (q.data.error.status_code === 401) {
-            Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {
-              cls: 'alert',
-              keepOpen: true,
-              width: 300
+          }  else if (q.data.error.status_code === 401) {
+            Metro.dialog.create({
+              title: 'Session expirée',
+              content: '<div>Votre session a expiré, veuillez vous reconnecter afin de pouvoir continuer.</div>',
+              actions: [
+                {
+                  caption: 'Reconnexion',
+                  cls: 'js-dialog-close bg-noir fg-white',
+                  onclick: () => {
+                    this.router.navigate(['/login']);
+                  }
+                }
+              ]
             });
           } else {
             Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {
@@ -250,21 +259,25 @@ export class FactureComponent implements OnInit {
     this.payment_method = '';
     this.commentaire1 = '';
     this.commentaire2 = '';
-    const f = this.selected_bill;
+
     // console.log(f);
-    if (f.length >= 1) {
+    if (this.selected_bill.length > 0) {
+      console.log(this.selected_bill);
       Metro.dialog.open('#demoDialog1');
-    } else if (f.length === 0) {
+    } else {
       // pas de factures selectionnées
       Metro.notify.create('Pas de facture selectionnée', 'Absence de facture', {cls: 'bg-gris'});
     }
   }
 
   billChecked(bill, val) {
+    if (this.montant === 0) {
+      console.log(this.montant, this.selected_bill.length);
+      this.selected_bill = [];
+    }
     bill.check = val;
     if (val) {
       this.montant += (bill.amount - bill.avance);
-      console.log(bill);
       this.selected_bill.push(bill);
     } else {
       this.montant -= (bill.amount - bill.avance);
@@ -346,14 +359,10 @@ export class FactureComponent implements OnInit {
     this.commentaire1 = '';
     this.commentaire2 = '';
     this.montant_avance = 0;
-    const f = this.selected_bill;
-    // console.log(f);
-    if (f.length >= 1 && f.length < 2) {
-      // ok
-      this.facture = f[0];
+    if (this.selected_bill.length >= 1 && this.selected_bill.length < 2) {
+      this.facture = this.selected_bill[0];
       Metro.dialog.open('#avanceDialog1');
-      this.facture = f[0];
-    } else if (f.length === 0) {
+    } else if (this.selected_bill.length === 0) {
       // pas de factures selectionnées
       Metro.notify.create('Pas de facture selectionnée', 'Absence de facture', {cls: 'bg-gris'});
     } else {

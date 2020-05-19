@@ -57,7 +57,7 @@ export class ApiProvider {
       // rien
       // verification si le mot de passe a été reset
       if (!JSON.parse(localStorage.getItem('user')).has_reset_password) {
-        this.router.navigate(['/reset',JSON.parse(localStorage.getItem('user')).id]);
+        this.router.navigate(['/reset', JSON.parse(localStorage.getItem('user')).id]);
       }
     }
   }
