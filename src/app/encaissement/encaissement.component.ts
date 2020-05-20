@@ -28,6 +28,7 @@ export class EncaissementComponent implements OnInit {
 
   ngOnInit() {
     moment.locale('fr');
+    console.log(moment(new Date()).utc().utcOffset(1).format('YYYY-MM-DD HH:mm:ss'));
   }
 
   getReceipts() {
@@ -84,7 +85,7 @@ export class EncaissementComponent implements OnInit {
       doc.text('Tél.: 690 404 180/89', 6, 14);
       // info sur le vendeur
       doc.text('Encaissé le : ' + e.received_at, 6, 20);
-      doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
+      doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 23);
       // Client vendeur
       doc.text('ENC-: ' + e.id, 6, 29);
       doc.setFontSize(5);
@@ -125,7 +126,7 @@ export class EncaissementComponent implements OnInit {
           }
         }
       }
-      doc.save( 'bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
+      doc.save( 'bvs_avance_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

@@ -213,7 +213,9 @@
             <label>Montant</label>
             <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}"
                    placeholder="Montant de l'avance"/>
-            <small class="text-muted">Reste à payer : {{facture.amount - facture.avance}} FCFA</small>
+            <small class="text-muteds">Reste à payer : <strong>{{facture.amount - facture.avance |priceFormat}}</strong> FCFA</small>
+            <br>
+            <small *ngIf="montant_avance > (facture.amount - facture.avance)" class="fg-red">Montant de l'avance supérieur à la somme à payer</small>
           </div>
           <div class="form-group">
             <label>Entité</label>
@@ -278,7 +280,7 @@
         </div>
 
         <div class="dialog-actions text-right">
-          <button class="button bg-or fg-white" *ngIf="payment_method != '' && montant_avance>0" (click)="validerAvance()">Valider</button>
+          <button class="button bg-or fg-white" *ngIf="payment_method != '' && montant_avance>0 && montant_avance <= (facture.amount - facture.avance)" (click)="validerAvance()">Valider</button>
           <button class="button primary js-dialog-close bg-noir" id="close">Fermer</button>
         </div>
       </div>

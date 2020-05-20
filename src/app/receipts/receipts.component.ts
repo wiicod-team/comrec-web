@@ -40,7 +40,6 @@ export class ReceiptsComponent implements OnInit {
   }
 
   vide() {
-    console.log(this.per_page, 'a');
     if (this.search === '' || this.search === undefined) {
       this.encaissements = this.old_encaissements;
       this.max_length = this.old_max_length;
@@ -169,7 +168,7 @@ export class ReceiptsComponent implements OnInit {
       doc.text('Tél.: 690 404 180/89', 6, 14);
       // info sur le vendeur
       doc.text('Encaissé le : ' + e.received_at, 6, 20);
-      doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
+      doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 23);
       // Client vendeur
       doc.text('ENC-: ' + e.id, 6, 29);
       doc.setFontSize(5);
@@ -210,7 +209,7 @@ export class ReceiptsComponent implements OnInit {
           }
         }
       }
-      doc.save( 'bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
+      doc.save( 'bvs_avance_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -238,7 +237,7 @@ export class ReceiptsComponent implements OnInit {
   }
 
   editReceipt(i) {
-    console.log(i);
+    Metro.toast.create('Fonctionnalité encours d\'implémentation');
   }
 
   exportCsv() {
@@ -250,12 +249,12 @@ export class ReceiptsComponent implements OnInit {
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     if (navigator.msSaveBlob) { // IE 10+
-      navigator.msSaveBlob(blob, 'BC_encaissements' + moment(new Date()).format('YYMMDDHHmmss'));
+      navigator.msSaveBlob(blob, 'BC_encaissements' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss'));
     } else {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', 'BC_encaissements' + moment(new Date()).format('YYMMDDHHmmss'));
+      link.setAttribute('download', 'BC_encaissements' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss'));
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();

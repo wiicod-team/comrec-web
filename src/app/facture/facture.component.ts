@@ -288,32 +288,37 @@ export class FactureComponent implements OnInit {
   validerEncaissement() {
     if (this.checkNote()) {
       document.getElementById('non').click();
-      this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
+      this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       this.state = true;
       // actualisation
       let i = 0;
       this.selected_bill.forEach(f => {
         if (this.payment_method === 'Chèque') {
-          f.received_at = moment(new Date(this.commentaire3)).format('DD-MM-YYYY');
+          f.received_at = moment(new Date(this.commentaire3)).utcOffset(1).format('DD-MM-YYYY');
         } else {
-          f.received_at = moment(new Date()).format('DD-MM-YYYY hh:mm:ss');
+          f.received_at = moment(new Date()).utcOffset(1).format('DD-MM-YYYY HH:mm:ss');
         }
         f.status = 'paid';
         f.put().subscribe(d => {
           const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite;
-          this.api.Receipts.post({
+          let opt1 = {
             bill_id: f.id,
             amount: f.amount - f.avance,
             note,
+            received_at : moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'),
             payment_method: this.payment_method,
             user_id: this.user.id
-          }).subscribe(da => {
+          };
+          if (this.payment_method === 'Chèque') {
+            opt1.received_at = moment(new Date(this.commentaire3)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
+          }
+          this.api.Receipts.post(opt1).subscribe(da => {
             i++;
             Metro.notify.create('Facture ' + f.bvs_id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
             if (i === this.selected_bill.length) {
               // impression
               const e = {
-                created_at: da.body.created_at,
+                received_at: da.body.received_at,
                 vendeur_id: this.user.id,
                 vendeur: this.user.name,
                 client: f.name,
@@ -375,17 +380,17 @@ export class FactureComponent implements OnInit {
     if (this.checkNote()) {
       document.getElementById('close').click();
       this.state = true;
-      this.commentaire3 = moment(new Date(this.commentaire3)).format('DD/MM/YYYY');
+      this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       const opt = {
         amount: this.montant_avance,
         note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite,
         payment_method: this.payment_method,
         bill_id: this.facture.id,
         user_id: this.user.id,
-        received_at: moment(new Date()).format('DD-MM-YYYY hh:mm:ss')
+        received_at: moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss')
       };
       if (this.payment_method === 'Chèque') {
-        opt.received_at = moment(new Date(this.commentaire3)).format('DD-MM-YYYY');
+        opt.received_at = moment(new Date(this.commentaire3)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
       }
       this.api.Receipts.post(opt).subscribe(d => {
         Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
@@ -399,7 +404,7 @@ export class FactureComponent implements OnInit {
               const e = {
                 id: datap.body.id,
                 note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
-                created_at: data.body.created_at,
+                received_at: data.body.received_at,
                 vendeur_id: this.user.id,
                 vendeur: this.user.name,
                 bill_id: this.facture.bvs_id,
@@ -459,7 +464,7 @@ export class FactureComponent implements OnInit {
           const e = {
             id: d.body.id,
             note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
-            created_at: d.body.created_at,
+            received_at: d.body.received_at,
             vendeur_id: this.user.id,
             vendeur: this.user.name,
             bill_id: this.facture.bvs_id,
@@ -540,8 +545,8 @@ export class FactureComponent implements OnInit {
     doc.text('Montée BBR - BASSA', 6, 11);
     doc.text('Tél.: 690 404 180/89', 6, 14);
     // info sur le vendeur
-    doc.text('Avancé le : ' + e.created_at, 6, 17);
-    doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 20);
+    doc.text('Avancé le : ' + e.received_at, 6, 17);
+    doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 20);
     // Client vendeur
     doc.text('ENC-' + e.id, 6, 23);
     doc.setFontSize(5);
@@ -567,7 +572,7 @@ export class FactureComponent implements OnInit {
       doc.text('Opérateur: ' + this.commentaire2, 6, 49);
     }
 
-    doc.save('bvs_avance_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
+    doc.save('bvs_avance_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
     this.commentaire1 = '';
     this.commentaire2 = '';
@@ -589,8 +594,8 @@ export class FactureComponent implements OnInit {
     doc.text('Montée BBR - BASSA', 6, 11);
     doc.text('Tél.: 690 404 180/89', 6, 14);
     // info sur le vendeur
-    doc.text('Encaissé le : ' + e.created_at, 6, 20);
-    doc.text('Imprimé le : ' + moment(new Date()).format('YYYY-MM-DD HH:mm'), 6, 23);
+    doc.text('Encaissé le : ' + e.received_at, 6, 20);
+    doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 23);
     // Client vendeur
     doc.text('ENC-' + e.id, 6, 29);
     doc.setFontSize(5);
@@ -624,7 +629,7 @@ export class FactureComponent implements OnInit {
       doc.text('Opérateur: ' + this.commentaire2, 6, x + 12);
     }
 
-    doc.save('bvs_encaissement_' + moment(new Date()).format('YYMMDDHHmmss') + '.pdf');
+    doc.save('bvs_encaissement_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
     this.commentaire1 = '';
     this.commentaire2 = '';
