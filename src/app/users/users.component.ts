@@ -70,7 +70,7 @@ export class UsersComponent implements OnInit {
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
     });
-    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles'}).subscribe(data => {
+    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles', 'roles-fk': 'id=1'}).subscribe(data => {
       data.forEach(v => {
         if (v.status === 'enable') {
           v.compte_statut = true;
