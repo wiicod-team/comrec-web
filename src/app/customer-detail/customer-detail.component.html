@@ -37,10 +37,10 @@
       </div>
       <div class="cell-4">
         <div class="icon-box border bd-default">
-          <div class="icon bg-gris fg-noir"><span class="mif-thumbs-up"></span></div>
+          <div class="icon bg-gris fg-noir"><span class="mif-file-pdf"></span></div>
           <div class="content p-4">
-            <div class="text-upper">{{customer.echue | priceFormat}} / {{customer.bills}}</div>
-            <div class="text-upper text-bold text-lead">Factures echues</div>
+            <div class="text-upper">{{customer.echue | priceFormat}} Factures echues</div>
+            <div class="text-upper">{{customer.bills-customer.echue | priceFormat}} Factures non echues</div>
           </div>
         </div>
       </div>

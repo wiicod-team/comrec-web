@@ -31,6 +31,7 @@ import {PriceFormatPipe} from './pipe/price-format';
 import { CustomerUniverseComponent } from './customer-universe/customer-universe.component';
 import { CustomerDetailComponent } from './customer-detail/customer-detail.component';
 import { ReceiptsComponent } from './receipts/receipts.component';
+import {LimitToPipe} from './pipe/limit-to';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -89,6 +90,7 @@ export function RestangularConfigFactory(RestangularProvider) {
     CustomersComponent,
     FilterPipe,
     StatutPipe,
+    LimitToPipe,
     PriceFormatPipe,
     Page404Component,
     Page403Component,
@@ -116,7 +118,4 @@ export function RestangularConfigFactory(RestangularProvider) {
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(public auth: AuthProvider) {
-
-  }
 }

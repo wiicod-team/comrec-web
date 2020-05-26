@@ -246,9 +246,13 @@ export class UsersComponent implements OnInit {
 
   saveUser() {
     this.new.password = 'password';
+    this.new.bvs_id = this.new.username;
     this.api.Users.post(this.new).subscribe(d => {
       this.users.push(d.body);
-      this.users = _.orderBy(this.users, 'name');
+      this.api.RoleUsers.post({user_id: d.body.id, role_id: 1, user_type: 'App\\User'}).subscribe(da => {
+        this.users = _.orderBy(this.users, 'name');
+        Metro.toast.create('Utilisateur créé');
+      });
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('saveUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

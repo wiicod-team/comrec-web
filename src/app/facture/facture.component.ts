@@ -103,11 +103,12 @@ export class FactureComponent implements OnInit {
               avance += vvv.amount;
             });
             vv.avance = avance;
-            if (vv.status === 'pending') {
-              vv.statut = 'Echue';
-              this.factures.push(vv);
-            } else if (vv.status === 'new') {
+            if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+              // facture non echue
               vv.statut = 'Non echue';
+              this.factures.push(vv);
+            } else {
+              vv.statut = 'Echue';
               this.factures.push(vv);
             }
           });
@@ -171,7 +172,6 @@ export class FactureComponent implements OnInit {
         page: this.page
       };
 
-      console.log(this.per_page);
       if (this.customer_id === 0) {
         delete opt.customer_id;
       }
@@ -189,11 +189,12 @@ export class FactureComponent implements OnInit {
             });
             vv.avance = avance;
             vv.reste = vv.amount - vv.avance;
-            if (vv.status === 'pending') {
-              vv.statut = 'Echue';
-              this.factures.push(vv);
-            } else if (vv.status === 'new') {
+            if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+              // facture non echue
               vv.statut = 'Non echue';
+              this.factures.push(vv);
+            } else {
+              vv.statut = 'Echue';
               this.factures.push(vv);
             }
           });
@@ -301,7 +302,7 @@ export class FactureComponent implements OnInit {
         f.status = 'paid';
         f.put().subscribe(d => {
           const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite;
-          let opt1 = {
+          const opt1 = {
             bill_id: f.id,
             amount: f.amount - f.avance,
             note,
@@ -649,5 +650,12 @@ export class FactureComponent implements OnInit {
   show(newValue) {
     this.per_page = newValue;
     this.getBills(true);
+  }
+
+  getX3Bills() {
+    this.api.X3.getList().subscribe( d => {
+      console.log(d);
+    })
+    // https://api-izis.bvs-sas.com/api/retrieve-bills
   }
 }

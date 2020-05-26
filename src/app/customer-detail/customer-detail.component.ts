@@ -64,6 +64,7 @@ export class CustomerDetailComponent implements OnInit {
       this.getEchues(id);
       this.getCustomerBillCount(id);
       this.getDebt(id);
+      this.router.navigate(['/s/detail-client/' + id + '/facture/' + id]);
       Metro.activity.close(load);
     });
   }
@@ -88,7 +89,15 @@ export class CustomerDetailComponent implements OnInit {
   }
 
   getEchues(id) {
-    this.api.Bills.getList({should_paginate: false, _agg: 'count', customer_id: id, status: 'pending'}).subscribe(d => {
+    const opt = {
+      should_paginate: false,
+      _agg: 'count',
+      customer_id: id,
+      status: 'pending',
+      'creation_date-let': moment(new Date()).add('days', -30).format('YYYY-MM-DD HH:mm:ss')
+    };
+    console.log(opt);
+    this.api.Bills.getList(opt).subscribe(d => {
       this.customer.echue = d[0].value;
     }, q => {
       if (q.data.error.status_code === 500) {

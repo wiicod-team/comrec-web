@@ -84,7 +84,7 @@
           <h5 class="text-center">Details du recouvrement</h5>
           <div class="mt-6" *ngFor="let item of sellers">
             <div class="clear">
-              <div class="place-left">{{item.user.name}}</div>
+              <div class="place-left">{{item.user.name |limitTo:18}}</div>
               <div class="place-right"><strong>{{item.total_amount |priceFormat}}</strong> FCFA</div>
             </div>
           </div>

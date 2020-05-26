@@ -11,6 +11,10 @@
       </div>
 
       <div class="d-flex flex-justify-center flex-justify-end-md flex-align-center" [ngClass]="{'cell-md-6' : state, 'cell-md-8' : !state}">
+
+        <ul class="breadcrumbs bg-transparent">
+          <li class="page-item"><a *ngxPermissionsOnly="['load.bills']" (click)="getX3Bills()" class="page-link">Charger factures </a></li>
+        </ul>
         <ul class="breadcrumbs bg-transparent">
           <li class="page-item"><a (click)="getBills(true)" class="page-link">Actualiser <span class="icon"><span
             class="mif-refresh"></span></span></a></li>
