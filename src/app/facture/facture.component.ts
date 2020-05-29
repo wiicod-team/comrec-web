@@ -289,15 +289,17 @@ export class FactureComponent implements OnInit {
   validerEncaissement() {
     if (this.checkNote()) {
       document.getElementById('non').click();
+      const x = this.commentaire3;
       this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       this.state = true;
       // actualisation
       let i = 0;
       this.selected_bill.forEach(f => {
         if (this.payment_method === 'Chèque') {
-          f.received_at = moment(new Date(this.commentaire3)).utcOffset(1).format('DD-MM-YYYY');
+          console.log(this.commentaire3, moment(new Date(x)).format('YYYY-MM-DD'));
+          f.received_at = moment(new Date(x)).format('YYYY-MM-DD HH:mm:ss');
         } else {
-          f.received_at = moment(new Date()).utcOffset(1).format('DD-MM-YYYY HH:mm:ss');
+          f.received_at = moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
         }
         f.status = 'paid';
         f.put().subscribe(d => {
@@ -311,7 +313,7 @@ export class FactureComponent implements OnInit {
             user_id: this.user.id
           };
           if (this.payment_method === 'Chèque') {
-            opt1.received_at = moment(new Date(this.commentaire3)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
+            opt1.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
           }
           this.api.Receipts.post(opt1).subscribe(da => {
             i++;
@@ -381,6 +383,7 @@ export class FactureComponent implements OnInit {
     if (this.checkNote()) {
       document.getElementById('close').click();
       this.state = true;
+      const x = this.commentaire3;
       this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       const opt = {
         amount: this.montant_avance,
@@ -391,8 +394,9 @@ export class FactureComponent implements OnInit {
         received_at: moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss')
       };
       if (this.payment_method === 'Chèque') {
-        opt.received_at = moment(new Date(this.commentaire3)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
+        opt.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
       }
+      console.log(opt);
       this.api.Receipts.post(opt).subscribe(d => {
         Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
         if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
