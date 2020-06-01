@@ -12,8 +12,6 @@ declare var Metro;
 export class CustomerDetailComponent implements OnInit {
   search = '';
   factures = [];
-  old_facture = [];
-  selected_bill = [];
   display = 'none';
   user;
   state = false;
@@ -44,6 +42,7 @@ export class CustomerDetailComponent implements OnInit {
     this.user = JSON.parse(localStorage.getItem('user'));
     const id = this.route.snapshot.paramMap.get('i');
     this.getCustomer(id);
+    //this.getDebt(id);
   }
 
   ngOnInit(): void {
@@ -70,13 +69,27 @@ export class CustomerDetailComponent implements OnInit {
   }
 
   getDebt(id) {
-    this.api.Bills.getList({_agg: 'sum|amount', should_paginate: false, customer_id: id}).subscribe(d => {
-      this.api.Receipts.getList({_agg: 'sum|amount', _includes: 'bill', 'bill-fk': 'customer_id=' + id, should_paginate: false}).subscribe(da => {
-        this.dette = d[0].value - da[0].value;
-        if (this.dette > 0) {
-          this.customer.status = 'insolvent';
-        }
+    const opt = {
+      _includes: 'receipts',
+      should_paginate: false,
+      'status-in': 'new,pending',
+      customer_id: id
+    };
+    this.api.Bills.getList(opt).subscribe( d => {
+      let de = 0;
+      d.forEach(v => {
+        de += v.amount;
       });
+      let sum_r = 0;
+      d.forEach(v => {
+        v.receipts.forEach(r => {
+          sum_r += r.amount;
+        });
+      });
+      this.dette = de - sum_r;
+      if (this.dette > 0) {
+        this.customer.status = 'insolvent';
+      }
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getDebt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -96,7 +109,6 @@ export class CustomerDetailComponent implements OnInit {
       status: 'pending',
       'creation_date-let': moment(new Date()).add('days', -30).format('YYYY-MM-DD HH:mm:ss')
     };
-    console.log(opt);
     this.api.Bills.getList(opt).subscribe(d => {
       this.customer.echue = d[0].value;
     }, q => {
