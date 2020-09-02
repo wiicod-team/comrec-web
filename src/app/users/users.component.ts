@@ -167,11 +167,11 @@ export class UsersComponent implements OnInit {
             Metro.notify.create(v.display_name + ' attribué à l\'utilisateur', 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
-              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              Metro.notify.create('updateUser 170' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
             } else if (q.data.error.status_code === 401) {
               Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
             } else {
-              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              Metro.notify.create('updateUser 174' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
             }
           });
         } else if (v.action === 'supprimer') {
@@ -184,11 +184,11 @@ export class UsersComponent implements OnInit {
             Metro.notify.create(v.display_name + ' supprimé chez l\'utilisateur', 'Succes', {cls: 'bg-or fg-white', timeout: 5000});
           }, q => {
             if (q.data.error.status_code === 500) {
-              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              Metro.notify.create('updateUser 187' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
             } else if (q.data.error.status_code === 401) {
               Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
             } else {
-              Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+              Metro.notify.create('updateUser 191' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
             }
           });
         }
@@ -196,6 +196,9 @@ export class UsersComponent implements OnInit {
       this.getUsers();
     }
     if (bool) {
+      if (u.settings === undefined || u.settings === null) {
+        u.settings = [];
+      }
       u.put().subscribe(p => {
         this.getUsers();
         Metro.notify.create(text, 'Succes', {cls: 'bg-or fg-white'});
@@ -203,11 +206,11 @@ export class UsersComponent implements OnInit {
         this.reset = false;
       }, q => {
         if (q.data.error.status_code === 500) {
-          Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          Metro.notify.create('updateUser 206' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
         } else if (q.data.error.status_code === 401) {
           Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
         } else {
-          Metro.notify.create('updateUser ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+          Metro.notify.create('updateUser 210' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
         }
       });
     }

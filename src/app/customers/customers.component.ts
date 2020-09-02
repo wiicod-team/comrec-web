@@ -157,6 +157,7 @@ export class CustomersComponent implements OnInit {
         }
         this.isLoadingBills = false;
         this.page++;
+        console.log(this.customers);
       }, q => {
         if (q.data.error.status_code === 500) {
           Metro.notify.create('getCustomers ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
