@@ -148,7 +148,6 @@ const routes: Routes = [
       },
     ]
   },
-  {path : 'reset/:i', component : ResetComponent},
   {path : 'forgot', component : ForgotComponent},
   {path : 'login', component : LoginComponent},
   { path: '',
