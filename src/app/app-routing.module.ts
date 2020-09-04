@@ -148,7 +148,7 @@ const routes: Routes = [
       },
     ]
   },
-  {path : 'forgot', component : ForgotComponent},
+  {path : 'reset/:i', component : ResetComponent},
   {path : 'login', component : LoginComponent},
   { path: '',
     redirectTo: '/login',
