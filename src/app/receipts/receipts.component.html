@@ -47,7 +47,7 @@
         Total : <strong>{{montant |priceFormat}} FCFA</strong>
       </div>
 
-      <button *ngxPermissionsOnly="['advance.bill']"
+      <button *ngxPermissionsOnly="['export.data']"
               data-role="hint"
               data-hint-text="Exporter les données en csv"
               class="button ml-auto mr-2" (click)="exportCsv()">Exporter</button>

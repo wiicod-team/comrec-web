@@ -41,7 +41,7 @@
         </td>
         <td *ngIf="i.name != 'comrec.user'">
           <button *ngxPermissionsOnly="['edit.role']" class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
-          <button *ngxPermissionsOnly="['delete.role']" class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button>
+          <div *ngIf="i.name!='super.administrator'"><button *ngxPermissionsOnly="['delete.role']" class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button></div>
         </td>
         <td *ngIf="i.name == 'comrec.user'">
 

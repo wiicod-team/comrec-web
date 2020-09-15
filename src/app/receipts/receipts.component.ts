@@ -237,7 +237,20 @@ export class ReceiptsComponent implements OnInit {
   }
 
   editReceipt(i) {
-    Metro.toast.create('Fonctionnalité encours d\'implémentation');
+    //Metro.toast.create('Fonctionnalité encours d\'implémentation');
+    // suppression du receipt et modification de la facture à echue
+    console.log(i);
+    i.remove().subscribe(d => {
+      //recuperation des factures
+      this.api.Bills.get(i.bill_id).subscribe(da => {
+        da.id = da.body.id;
+        da.status = 'pending';
+        da.put().subscribe(a => {
+          console.log(a);
+          this.getReceipts();
+        });
+      });
+    });
   }
 
   exportCsv() {

@@ -86,7 +86,7 @@
             [ngClass]="{'bg-or':i.check==true}"
           >
             <td>{{i.bvs_id}}</td>
-            <td>{{i.creation_date}}</td>
+            <td>{{i.creation_date|limitTo:10}}</td>
             <td>{{i.customer_id}}</td>
             <td>{{i.name}}</td>
             <td class="text-right">{{i.amount |priceFormat}}</td>
@@ -94,10 +94,13 @@
             <td class="text-right">{{(i.reste) |priceFormat}}</td>
             <td>{{i.statut}}</td>
             <td *ngxPermissionsOnly="['advance.bill']">
-              <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
-                Sélectionner
-              </button>
-              <button class="button mini" (click)="billChecked(i,false)" *ngIf="i.check">Désélectionner</button>
+              <div *ngIf="i.status == 'new' || i.status=='pending'">
+                <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
+                  Sélectionner
+                </button>
+                <button class="button mini" (click)="billChecked(i,false)" *ngIf="i.check">Désélectionner</button>
+              </div>
+
             </td>
           </tr>
 

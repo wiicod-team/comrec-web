@@ -75,8 +75,12 @@
         </thead>
         <tbody>
         <tr>
-          <td>{{user.username}}</td>
-          <td>{{user.name}}</td>
+          <td>
+            <input type="text" [(ngModel)]="user.username" placeholder="Nom d'utilisateur"/>
+          </td>
+          <td>
+            <input type="text" [(ngModel)]="user.name" placeholder="Nom d'utilisateur"/>
+          </td>
           <td>
             <span *ngFor="let r of user.roles">{{r.display_name}},</span>
           </td>

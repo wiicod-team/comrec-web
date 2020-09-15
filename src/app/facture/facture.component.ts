@@ -167,7 +167,7 @@ export class FactureComponent implements OnInit {
         should_paginate: true,
         _sort: 'creation_date',
         _sortDir: 'desc',
-        'status-in': 'new,pending',
+        //'status-not_in': 'paid',
         per_page: this.per_page,
         page: this.page
       };

@@ -64,7 +64,7 @@ export class CustomersComponent implements OnInit {
     } else {
       this.state = true;
       this.page = 1;
-      //console.log(this.search);
+      // console.log(this.search);
       this.customers = [];
 
       const opt = {
@@ -157,7 +157,7 @@ export class CustomersComponent implements OnInit {
         }
         this.isLoadingBills = false;
         this.page++;
-        console.log(this.customers);
+        //console.log(this.customers);
       }, q => {
         if (q.data.error.status_code === 500) {
           Metro.notify.create('getCustomers ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});

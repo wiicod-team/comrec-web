@@ -13,6 +13,7 @@ export class UsersComponent implements OnInit {
   new;
   user_roles: any[];
   edit_role: boolean;
+  edit_user: boolean;
   search;
   reset: boolean;
   active: boolean;
@@ -147,12 +148,13 @@ export class UsersComponent implements OnInit {
     if (u.compte_statut && u.status === 'disable') {
       u.status = 'enable';
       text += '-Compte activé-';
-      bool = true;
     } else if (!u.compte_statut && u.status === 'enable') {
       u.status = 'disable';
       text += '-Compte Désactivé-';
-      bool = true;
     }
+    u.username = this.user.username;
+    u.name = this.user.name;
+    bool = true;
     if (this.edit_role) {
       let i = 0;
       this.roles.forEach((v, k) => {
