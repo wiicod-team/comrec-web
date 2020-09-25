@@ -278,10 +278,10 @@ export class FactureComponent implements OnInit {
     }
     bill.check = val;
     if (val) {
-      this.montant += (bill.amount - bill.avance);
+      this.montant += (bill.amount);
       this.selected_bill.push(bill);
     } else {
-      this.montant -= (bill.amount - bill.avance);
+      this.montant -= (bill.amount);
       this.selected_bill.splice(this.selected_bill.indexOf(bill), 1);
     }
   }

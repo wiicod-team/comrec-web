@@ -156,6 +156,12 @@ export class ReceiptsComponent implements OnInit {
   }
 
   printReceipt(e) {
+    let p = 0;
+    if (e.bill.amount - e.amount > 0) {
+      p = e.bill.amount - e.amount;
+    } else if (e.bill.amount - e.amount < 0) {
+      p = e.bill.amount;
+    }
     const opt = {
       bill_id: e.bill.id,
       should_paginate: false,
@@ -187,7 +193,7 @@ export class ReceiptsComponent implements OnInit {
       doc.text('N° encaissement: ' + e.bill.bvs_id, 6, 41);
       doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 44);
       doc.text('Total encaissé: ' + this.api.formarPrice(d[0].total_amount) + 'FCFA', 6, 47);
-      doc.text('Reste à payer: ' + this.api.formarPrice(e.bill.amount) + 'FCFA', 6, 50);
+      doc.text('Reste à payer: ' + this.api.formarPrice(p) + 'FCFA', 6, 50);
       doc.text('Mode de paiement: ' + d[0].payment_method, 6, 56);
       doc.text('Commentaire', 6, 59);
       let index = 0;

@@ -70,7 +70,7 @@ export class CustomerDetailComponent implements OnInit {
 
   getDebt(id) {
     const opt = {
-      _includes: 'receipts',
+      //_includes: 'receipts',
       should_paginate: false,
       'status-not_in': 'paid',
       customer_id: id
@@ -81,11 +81,11 @@ export class CustomerDetailComponent implements OnInit {
         de += v.amount;
       });
       let sum_r = 0;
-      d.forEach(v => {
+      /*d.forEach(v => {
         v.receipts.forEach(r => {
           sum_r += r.amount;
         });
-      });
+      });*/
       this.dette = de - sum_r;
       if (this.dette > 0) {
         this.customer.status = 'insolvent';

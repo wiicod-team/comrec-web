@@ -5,18 +5,17 @@
     </div>
 
     <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-      <ul class="breadcrumbs bg-transparent">
+      <ul class="breadcrumbs bg-transparent hide">
         <li class="page-item"><a (click)="getCustomer(customer.id)" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
       </ul>
+      <div class="buttongroup">
+        <button class="button bg-noir fg-white ml-auto mr-2" routerLink="/s/detail-client/{{customer.id}}/facture/{{customer.id}}">Factures</button>
+        <button class="button bg-noir fg-white mr-1" routerLink="/s/detail-client/{{customer.id}}/encaissement/{{customer.id}}">Encaissements</button>
+      </div>
     </div>
   </div>
 
   <div class="container-fluid">
-    <div class="row text-right">
-      <button class="button bg-noir fg-white ml-auto mr-2" routerLink="/s/detail-client/{{customer.id}}/facture/{{customer.id}}">Factures</button>
-      <button class="button bg-noir fg-white mr-1" routerLink="/s/detail-client/{{customer.id}}/encaissement/{{customer.id}}">Encaissements</button>
-    </div>
-
     <div class="row mt-2">
       <div class="cell-4">
         <div class="icon-box border bd-or">
@@ -26,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div class="cell-4">
+      <div class="cell-4" *ngIf="dette>0">
         <div class="icon-box border bd-default">
           <div class="icon bg-red fg-black"><span class="mif-dollars"></span></div>
           <div class="content p-4">
@@ -35,6 +34,17 @@
           </div>
         </div>
       </div>
+
+      <div class="cell-4" *ngIf="dette<1">
+        <div class="icon-box border bd-default">
+          <div class="icon bg-or fg-black"><span class="mif-dollars"></span></div>
+          <div class="content p-4">
+            <div class="text-upper fg-or text-bold">{{dette | priceFormat}} FCFA</div>
+            <div class="text-upper text-bold text-lead">Aucune dette</div>
+          </div>
+        </div>
+      </div>
+
       <div class="cell-4">
         <div class="icon-box border bd-default">
           <div class="icon bg-gris fg-noir"><span class="mif-file-pdf"></span></div>
