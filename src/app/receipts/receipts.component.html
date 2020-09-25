@@ -1,32 +1,21 @@
 <div *ngxPermissionsOnly="['consult.receipt']" style="margin-top: 52px">
-  <div class="row border-bottom bd-lightGray ml-2 mr-0">
-    <div class="cell-md-4 d-flex flex-align-center">
-      <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements</h3>
+  <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+    <div class="cell-md-6 d-flex flex-align-center">
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements <small>{{today}}</small></h3>
     </div>
 
-    <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
-      <ul class="breadcrumbs bg-transparent">
-        <li class="page-item"><a (click)="getReceipts()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
-      </ul>
+    <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+
+      <div class="buttongroup">
+        <button class="button"><a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
+        <button class="button"><a (click)="init(now,now)" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></button>
+      </div>
     </div>
   </div>
 
   <div class="m-3"
-       infinite-scroll
-       [infiniteScrollDistance]="scrollDistance"
-       [infiniteScrollUpDistance]="scrollUpDistance"
-       [infiniteScrollThrottle]="throttle"
-       (scrolled)="onScrollDown($event)"
-       (scrolledUp)="onUp($event)"
-       [infiniteScrollContainer]="'.main-panel'"
-       [alwaysCallback]="true"
   >
     <div class="row mt-2">
-      <div class="cell-2">
-        <m4-select prepend="<span class='mif-eye'></span>"
-                   (ngModelChange)="show($event)"
-                   [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '1000000': 'Tout'}"></m4-select>
-      </div>
       <div class="cell-2">
         <m4-select prepend="<span class='mif-filter'></span>"
                    [(ngModel)]="filtre"
@@ -53,8 +42,8 @@
               class="button ml-auto mr-2" (click)="exportCsv()">Exporter</button>
 
     </div>
-    <div class="row mt-2" style="max-height: 700px; overflow-y: auto">
-      <table class="table cell-border compact table-border main-panel"
+    <div class="row mt-2 main-panel" style="max-height: 490px; overflow-y: auto">
+      <table class="table cell-border compact table-border"
       >
         <thead>
         <tr>
@@ -71,7 +60,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of encaissements;trackBy:trackByIndex ">
+        <tr *ngFor="let i of encaissements">
           <td>{{i.id}}</td>
           <td>{{i.bill.bvs_id}}</td>
           <td>{{i.received_at}}</td>
@@ -93,8 +82,37 @@
 
     <div class="row">
       <div class="cell-2">
-        <small>{{encaissements.length}} sur {{max_length}} Factures</small>
+        <small>{{encaissements.length}} Encaissements</small>
       </div>
+    </div>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="periodDialog">
+    <div class="dialog-title">Période</div>
+    <div class="dialog-content">
+      <div class="row">
+        <div class="cell-6">
+          <div class="label">Du</div>
+          <m4-calendar-picker [(ngModel)]="from" cls-calendar="compact"
+                              [dialog-mode]="false"
+                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
+        <div class="cell-6">
+          <div class="label">Au</div>
+          <m4-calendar-picker [(ngModel)]="to" cls-calendar="compact"
+                              [dialog-mode]="false"
+                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" (click)="validate()">Valider</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
     </div>
   </div>
 

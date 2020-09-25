@@ -15,7 +15,7 @@
         <ul class="breadcrumbs bg-transparent">
           <li class="page-item"><a *ngxPermissionsOnly="['load.bills']" (click)="getX3Bills()" class="page-link">Charger factures </a></li>
         </ul>
-        <ul class="breadcrumbs bg-transparent">
+        <ul class="breadcrumbs bg-transparent hide">
           <li class="page-item"><a (click)="getBills(true)" class="page-link">Actualiser <span class="icon"><span
             class="mif-refresh"></span></span></a></li>
         </ul>
@@ -89,9 +89,9 @@
             <td>{{i.creation_date|limitTo:10}}</td>
             <td>{{i.customer_id}}</td>
             <td>{{i.name}}</td>
-            <td class="text-right">{{i.amount |priceFormat}}</td>
+            <td class="text-right">{{(i.amount+i.avance) |priceFormat}}</td>
             <td class="text-right">{{i.avance |priceFormat}}</td>
-            <td class="text-right">{{(i.reste) |priceFormat}}</td>
+            <td class="text-right">{{(i.amount) |priceFormat}}</td>
             <td>{{i.statut}}</td>
             <td *ngxPermissionsOnly="['advance.bill']">
               <div *ngIf="i.status == 'new' || i.status=='pending'">

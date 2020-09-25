@@ -12,7 +12,8 @@ declare var Metro;
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  users_count;
+  dette: number;
+  bill_count;
   customers_count;
   receipts_count;
   date_format = 'Y-M-D';
@@ -72,13 +73,17 @@ export class DashboardComponent implements OnInit {
     this.getBestSeller();
     this.getReceipts();
     this.getCustomersCount();
-    this.getUsersCount();
+    this.getBillsCount();
   }
 
-  getUsersCount() {
+  getBillsCount() {
 
-    this.api.Users.getList({should_paginate: false, _agg: 'count'}).subscribe(d => {
-      this.users_count = d[0].value;
+    this.api.Bills.getList({should_paginate: false, 'status-not_in': 'paid'}).subscribe(d => {
+      //console.log(d);
+      this.bill_count = d.length;
+      this.dette = _.reduce(d, (a, b) => {
+        return a + b.amount;
+      }, 0);
       Metro.activity.close(this.load);
     }, q => {
       if (q.data.error.status_code === 500) {

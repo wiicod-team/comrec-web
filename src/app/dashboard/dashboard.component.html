@@ -19,8 +19,8 @@
         <div class="icon-box border bd-noir">
           <div class="icon bg-noir fg-white"><span class="mif-user"></span></div>
           <div class="content p-4">
-            <div class="text-upper">Vendeurs</div>
-            <div class="text-upper text-bold text-lead">{{users_count |priceFormat}}</div>
+            <div class="text-upper">Factures</div>
+            <div class="text-upper text-bold text-lead">{{bill_count |priceFormat}}</div>
           </div>
         </div>
       </div>
@@ -60,7 +60,7 @@
         <div class="more-info-box bg-or fg-noir">
           <div class="content">
             <h2 class="text-bold mb-0">{{sum_receipt |priceFormat}} FCFA</h2>
-            <div class="text-upper">Recouvré</div>
+            <div class="text-upper">Recouvré sur {{dette|priceFormat}} FCFA</div>
           </div>
           <div class="icon">
             <span class="mif-money fg-noir"></span>

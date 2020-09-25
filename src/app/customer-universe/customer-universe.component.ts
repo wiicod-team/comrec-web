@@ -124,6 +124,10 @@ export class CustomerUniverseComponent implements OnInit {
         page: this.page
       };
 
+      if (this.user.username === 'root') {
+        delete opt['users-fk'];
+      }
+
       this.api.Customers.getList(opt).subscribe(data => {
         this.last_page = data.metadata.last_page;
         this.max_length = data.metadata.total;

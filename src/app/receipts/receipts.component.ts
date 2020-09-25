@@ -16,26 +16,44 @@ export class ReceiptsComponent implements OnInit {
   encaissements = [];
   old_encaissements = [];
   user;
+  from;
+  date_format = 'Y-M-D';
+  today = 'du jour';
+  now = new Date();
+  to;
+  deb;
+  fin;
   max_length = 0;
   old_max_length = 0;
   search;
   order = '';
-  page = 1;
-  last_page = 10000000;
   montant = 0;
   filtre = 'bill_id';
-  per_page = 25;
   state = false;
   isLoadingBills = false;
-  throttle = 30;
-  scrollDistance = 1;
-  scrollUpDistance = 2;
 
   @ViewChild('pdfTable', {static: false}) pdfTable: ElementRef;
   constructor( private api: ApiProvider, private route: ActivatedRoute) {
+    this.from = new Date();
+    this.to = new Date();
+    const date = new Date();
+    const j = date.getDay();
+    let d = j % 7;
+    let f = 6 - j % 7;
+    if (d === 0) {
+      d = 7;
+      f = -1;
+    }
     this.search = '';
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
+    this.init(moment(new Date()), moment(new Date()));
+  }
+
+  init(deb, fin) {
+    this.montant = 0;
+    this.deb = moment(deb);
+    this.fin = moment(fin);
     this.getReceipts();
   }
 
@@ -47,16 +65,13 @@ export class ReceiptsComponent implements OnInit {
   }
 
   rechercher() {
-    this.page = 1;
+    this.montant = 0;
     this.state = true;
     this.encaissements = [];
     const opt = {
       _includes: 'bill.customer,user',
-      should_paginate: true,
       _sort: 'received_at',
       _sortDir: 'desc',
-      per_page: this.per_page,
-      page: this.page
     };
     if (this.search === '' || this.search === undefined) {
       this.encaissements = this.old_encaissements;
@@ -93,35 +108,28 @@ export class ReceiptsComponent implements OnInit {
     moment.locale('fr');
   }
 
-  trackByIndex(index: number, obj: any): any {
-    return index;
-  }
-
-  onScrollDown(ev) {
-    this.getReceipts();
-  }
-
-  onUp(ev) {
-  }
-
-
   getReceipts() {
+    this.montant = 0;
     this.state = true;
-    if (!this.isLoadingBills && this.page <= this.last_page) {
+    if (!this.isLoadingBills) {
       this.isLoadingBills = true;
+      let load = Metro.activity.open({
+        type: 'metro',
+        overlayColor: '#fff',
+        overlayAlpha: 1,
+        text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
+        overlayClickClose: true
+      });
 
       const opt = {
         _includes: 'bill.customer,user',
         _sort: 'received_at',
-        should_paginate: true,
+        should_paginate: false,
+        'received_at-get': this.deb.format(this.date_format),
+        'received_at-let': this.fin.format(this.date_format),
         _sortDir: 'desc',
-        per_page: this.per_page,
-        page: this.page
       };
       this.api.Receipts.getList(opt).subscribe(b => {
-        this.last_page = b.metadata.last_page;
-        this.max_length = b.metadata.total;
-        this.old_max_length = this.max_length;
         b.forEach((v, k) => {
           v.bill.customer.name = v.bill.customer.name.trim();
           v.name = v.bill.customer.name;
@@ -133,6 +141,7 @@ export class ReceiptsComponent implements OnInit {
         this.old_encaissements = this.encaissements;
         this.state = false;
         this.isLoadingBills = false;
+        Metro.activity.close(load);
       }, q => {
         if (q.data.error.status_code === 500) {
           Metro.notify.create('getReceipts ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -178,7 +187,7 @@ export class ReceiptsComponent implements OnInit {
       doc.text('N° encaissement: ' + e.bill.bvs_id, 6, 41);
       doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 44);
       doc.text('Total encaissé: ' + this.api.formarPrice(d[0].total_amount) + 'FCFA', 6, 47);
-      doc.text('Reste à payer: ' + this.api.formarPrice((e.bill.amount - d[0].total_amount)) + 'FCFA', 6, 50);
+      doc.text('Reste à payer: ' + this.api.formarPrice(e.bill.amount) + 'FCFA', 6, 50);
       doc.text('Mode de paiement: ' + d[0].payment_method, 6, 56);
       doc.text('Commentaire', 6, 59);
       let index = 0;
@@ -231,11 +240,6 @@ export class ReceiptsComponent implements OnInit {
     }
   }
 
-  show(newValue) {
-    this.per_page = newValue;
-    this.getReceipts();
-  }
-
   editReceipt(i) {
     //Metro.toast.create('Fonctionnalité encours d\'implémentation');
     // suppression du receipt et modification de la facture à echue
@@ -273,5 +277,16 @@ export class ReceiptsComponent implements OnInit {
       link.click();
       document.body.removeChild(link);
     }
+  }
+
+  period() {
+    Metro.dialog.open('#periodDialog');
+  }
+
+  validate() {
+    this.from = new Date(this.from);
+    this.to = new Date(this.to);
+    this.today = 'du ' + moment(this.from).format('DD/MM/YYYY') + ' au ' + moment(this.to).format('DD/MM/YYYY');
+    this.init(this.from, this.to);
   }
 }

@@ -35,8 +35,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of users | filter:{ id: search, username: search, name: search} : false" [ngClass]="{'dark':i.check==true}">
-          <td>{{i.id}}</td>
+        <tr *ngFor="let i of users | filter:{ bvs_id: search, username: search, name: search} : false" [ngClass]="{'dark':i.check==true}">
+          <td>{{i.bvs_id}}</td>
           <td>{{i.username}}</td>
           <td>{{i.name}}</td>
           <td>
@@ -66,6 +66,7 @@
       >
         <thead>
         <tr>
+          <th data-sortable="true">#</th>
           <th data-sortable="true">Identifiant</th>
           <th data-sortable="true" data-name="client">Nom</th>
           <th data-sortable="true" data-name="client">Rôles</th>
@@ -75,6 +76,9 @@
         </thead>
         <tbody>
         <tr>
+          <td>
+            <input type="text" [(ngModel)]="user.bvs_id" placeholder="#"/>
+          </td>
           <td>
             <input type="text" [(ngModel)]="user.username" placeholder="Nom d'utilisateur"/>
           </td>

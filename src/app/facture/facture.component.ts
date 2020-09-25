@@ -20,7 +20,7 @@ export class FactureComponent implements OnInit {
   montant = 0;
   old_facture = [];
   selected_bill = [];
-  filtre = 'bvs_id-lf';
+  filtre = 'bvs_id-lk';
   order = '';
   display = 'none';
   user;
@@ -83,7 +83,7 @@ export class FactureComponent implements OnInit {
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
-        'status-in': 'new,pending',
+        'status-not_in': 'paid',
         per_page: this.per_page,
         page: this.page
       };
@@ -167,7 +167,7 @@ export class FactureComponent implements OnInit {
         should_paginate: true,
         _sort: 'creation_date',
         _sortDir: 'desc',
-        //'status-not_in': 'paid',
+        'status-not_in': 'paid',
         per_page: this.per_page,
         page: this.page
       };
@@ -560,7 +560,7 @@ export class FactureComponent implements OnInit {
     doc.setFontSize(6);
     doc.text('N° Facture: ' + e.bill_id, 6, 31);
     doc.text('Avance: ' + this.api.formarPrice(e.avance) + ' FCFA', 6, 34);
-    doc.text('Reste: ' + this.api.formarPrice((e.amount - e.avance - this.facture.avance)) + ' FCFA', 6, 37);
+    doc.text('Reste: ' + this.api.formarPrice((e.amount - e.avance)) + ' FCFA', 6, 37);
     doc.text('Mode de paiement: ' + e.payment_method, 6, 40);
     doc.text('Commentaires', 6, 43);
 
@@ -586,7 +586,7 @@ export class FactureComponent implements OnInit {
   }
 
   printEncaissement(e, bills) {
-    const doc = new jsPDF('P', 'mm', [130, 200]);
+    const doc = new jsPDF('P', 'mm', [130, 200 + (bills.length * 3)]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
     if (this.entite === 'BDC') {

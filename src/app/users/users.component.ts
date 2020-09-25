@@ -22,6 +22,7 @@ export class UsersComponent implements OnInit {
     phone: string;
     email: string;
     id: number,
+    bvs_id: number,
     name: string,
     username: string
     status: string,
@@ -41,6 +42,7 @@ export class UsersComponent implements OnInit {
     this.search = '';
     this.user = {
       id: 0,
+      bvs_id: 0,
       name: '',
       email: '',
       phone: '',
@@ -71,7 +73,7 @@ export class UsersComponent implements OnInit {
       text: '<div class=\'mt-2 text-small\'>Chargement des données...</div>',
       overlayClickClose: true
     });
-    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles', 'roles-fk': 'id=1'}).subscribe(data => {
+    this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles'}).subscribe(data => {
       data.forEach(v => {
         if (v.status === 'enable') {
           v.compte_statut = true;
@@ -143,7 +145,6 @@ export class UsersComponent implements OnInit {
       u.password = 'password';
       u.settings = [];
       text += '-Mot de passe reinitialisé-';
-      bool = true;
     }
     if (u.compte_statut && u.status === 'disable') {
       u.status = 'enable';
@@ -154,6 +155,7 @@ export class UsersComponent implements OnInit {
     }
     u.username = this.user.username;
     u.name = this.user.name;
+    u.bvs_id = this.user.bvs_id;
     bool = true;
     if (this.edit_role) {
       let i = 0;

@@ -72,7 +72,7 @@ export class CustomerDetailComponent implements OnInit {
     const opt = {
       _includes: 'receipts',
       should_paginate: false,
-      'status-in': 'new,pending',
+      'status-not_in': 'paid',
       customer_id: id
     };
     this.api.Bills.getList(opt).subscribe( d => {

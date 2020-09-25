@@ -42,6 +42,10 @@ export class EncaissementComponent implements OnInit {
       _sort: 'received_at',
       _sortDir: 'desc'
     };
+
+    if (this.user.id === 1) { // admin
+      delete opt.user_id;
+    }
     this.api.Receipts.getList(opt).subscribe(b => {
       b.forEach((v, k) => {
         v.name = v.bill.customer.name;
@@ -95,7 +99,7 @@ export class EncaissementComponent implements OnInit {
       doc.text('N° Facture: ' + e.bill.bvs_id, 6, 41);
       doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 44);
       doc.text('Total encaissé: ' + this.api.formarPrice(d[0].total_amount) + 'FCFA', 6, 47);
-      doc.text('Reste à payer: ' + this.api.formarPrice((e.bill.amount - d[0].total_amount)) + 'FCFA', 6, 50);
+      doc.text('Reste à payer: ' + this.api.formarPrice(e.bill.amount) + 'FCFA', 6, 50);
       doc.text('Mode de paiement: ' + d[0].payment_method, 6, 56);
       doc.text('Commentaire', 6, 59);
       let index = 0;
