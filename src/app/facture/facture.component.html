@@ -133,9 +133,9 @@
               <tr *ngFor="let i of selected_bill">
                 <td>{{i.bvs_id}}</td>
                 <td>{{i.creation_date}}</td>
-                <td>{{i.amount|priceFormat}}</td>
+                <td>{{i.amount + i.avance|priceFormat}}</td>
                 <td>{{i.avance|priceFormat}}</td>
-                <td>{{i.amount - i.avance|priceFormat}}</td>
+                <td>{{i.amount|priceFormat}}</td>
               </tr>
 
               </tbody>
@@ -205,7 +205,7 @@
         </div>
         <div class="dialog-actions text-right">
           <button class="button bg-or fg-white" (click)="validerEncaissement()"
-                  *ngIf="selected_bill.length>0 && payment_method != ''">Oui
+                  >Oui
           </button>
           <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length>0" id="non">Non</button>
           <button class="button primary js-dialog-close bg-noir" *ngIf="selected_bill.length<=0">Fermer</button>
@@ -220,9 +220,9 @@
             <label>Montant</label>
             <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}"
                    placeholder="Montant de l'avance"/>
-            <small class="text-muteds">Reste à payer : <strong>{{facture.amount - facture.avance |priceFormat}}</strong> FCFA</small>
+            <small class="text-muteds">Reste à payer : <strong>{{facture.amount |priceFormat}}</strong> FCFA</small>
             <br>
-            <small *ngIf="montant_avance > (facture.amount - facture.avance)" class="fg-red">Montant de l'avance supérieur à la somme à payer</small>
+            <small *ngIf="montant_avance > (facture.amount)" class="fg-red">Montant de l'avance supérieur à la somme à payer</small>
           </div>
           <div class="form-group">
             <label>Entité</label>
@@ -287,7 +287,7 @@
         </div>
 
         <div class="dialog-actions text-right">
-          <button class="button bg-or fg-white" *ngIf="payment_method != '' && montant_avance>0 && montant_avance <= (facture.amount - facture.avance)" (click)="validerAvance()">Valider</button>
+          <button class="button bg-or fg-white"  (click)="validerAvance()">Valider</button>
           <button class="button primary js-dialog-close bg-noir" id="close">Fermer</button>
         </div>
       </div>

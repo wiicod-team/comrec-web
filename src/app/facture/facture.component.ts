@@ -306,7 +306,7 @@ export class FactureComponent implements OnInit {
           const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite;
           const opt1 = {
             bill_id: f.id,
-            amount: f.amount - f.avance,
+            amount: f.amount,
             note,
             received_at : moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'),
             payment_method: this.payment_method,
@@ -613,7 +613,7 @@ export class FactureComponent implements OnInit {
     let a = 0;
     bills.forEach((v, k) => {
       doc.text(v.bvs_id, 6, x);
-      a += (v.amount - v.avance);
+      a += (v.amount);
       x += 3;
     });
 

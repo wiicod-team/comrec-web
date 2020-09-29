@@ -264,20 +264,20 @@ export class ReceiptsComponent implements OnInit {
   }
 
   exportCsv() {
-    let csv = '#,Numéro facture,Date,#client,Client,Montant,Mode de paiement,#Vendeur,Vendeur\n';
+    let csv = '#,Facture,Date,Code client,Client,Montant,Mode de paiement,Code vendeur,Vendeur\n';
     this.encaissements.forEach(e => {
-      csv += e.id + ',' + e.bill.bvs_id + ',' + e.bill.customer_id + ',' + e.bill.customer.name + ',' + e.amount + ',' + e.payment_method + ',' + e.user_id + ',' + e.user.name;
+      csv += e.id + ',' + e.bill.bvs_id + ',' + e.created_at + ',' + e.bill.customer_id + ',' + e.bill.customer.name + ',' + e.amount + ',' + e.payment_method + ',' + e.user_id + ',' + e.user.name;
       csv += '\n';
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     if (navigator.msSaveBlob) { // IE 10+
-      navigator.msSaveBlob(blob, 'BC_encaissements' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss'));
+      navigator.msSaveBlob(blob, 'BC_encaissements' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.csv');
     } else {
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', 'BC_encaissements' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss'));
+      link.setAttribute('download', 'BC_encaissements' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.csv');
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();

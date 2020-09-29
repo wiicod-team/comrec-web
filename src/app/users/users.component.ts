@@ -66,6 +66,8 @@ export class UsersComponent implements OnInit {
   }
 
   getUsers() {
+    let c = 0;
+    let f = 0;
     const load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
@@ -74,6 +76,7 @@ export class UsersComponent implements OnInit {
       overlayClickClose: true
     });
     this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles'}).subscribe(data => {
+      console.log(data.length);
       data.forEach(v => {
         if (v.status === 'enable') {
           v.compte_statut = true;
@@ -83,15 +86,18 @@ export class UsersComponent implements OnInit {
         if (v.has_reset_password) {
           v.pass = 'Modifié';
           v.reset_password = false;
+          c++;
         } else {
           v.pass = 'A modifier';
           v.reset_password = false;
+          f++;
         }
         if (v.settings !== null && v.settings.length > 0 && v.settings[0].ask_for_reset) {
           v.pass = 'A initialiser';
         }
       });
       this.users = data;
+      console.log(c,f);
       this.users = _.orderBy(this.users, 'name');
       Metro.activity.close(load);
     }, q => {
