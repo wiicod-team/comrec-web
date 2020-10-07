@@ -33,7 +33,7 @@ export class FactureComponent implements OnInit {
   max_length = 0;
   old_max_length = 0;
   last_page = 10000000;
-  facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number } = {id: 0};
+  facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number, reste?: number } = {id: 0};
   payment_method = '';
   commentaire1 = '';
   commentaire2 = '';
@@ -83,26 +83,42 @@ export class FactureComponent implements OnInit {
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
-        'status-not_in': 'paid',
+        //'status-not_in': 'paid',
         per_page: this.per_page,
         page: this.page
       };
       if (this.customer_id === 0) {
         delete opt.customer_id;
       }
-      opt[this.filtre] = this.search;
+      opt[this.filtre] = this.search.trim();
 
       this.api.Bills.getList(opt).subscribe(
         d => {
+          console.log(d, 'aaze', opt);
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           d.forEach((vv, kk) => {
             let avance = 0;
             vv.name = vv.customer.name.trim();
+            vv.receipts = _.sortBy(vv.receipts, 'received_at').reverse();
+            console.log(vv.receipts, 'az');
             vv.receipts.forEach((vvv, kkk) => {
               avance += vvv.amount;
             });
             vv.avance = avance;
+            if (vv.receipts.length > 0) {
+              const date_r = moment(vv.receipts[0].received_at).add('hour', 2);
+              const date_n = moment(new Date());
+              // si date de reception supérieure à la date d'encaissement d'une heure
+              if (date_r > date_n) {
+                // même jour
+                vv.reste = vv.amount - vv.receipts[0].amount;
+              } else {
+                vv.reste = vv.amount;
+              }
+            } else {
+              vv.reste = vv.amount;
+            }
             if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
               // facture non echue
               vv.statut = 'Non echue';
@@ -178,17 +194,32 @@ export class FactureComponent implements OnInit {
 
       this.api.Bills.getList(opt).subscribe(
         d => {
+          // console.log(d);
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           this.old_max_length = this.max_length;
           d.forEach((vv, kk) => {
             let avance = 0;
             vv.name = vv.customer.name;
+            vv.receipts = _.sortBy(vv.receipts, 'received_at');
             vv.receipts.forEach((vvv, kkk) => {
               avance += vvv.amount;
             });
             vv.avance = avance;
-            vv.reste = vv.amount - vv.avance;
+            if (vv.receipts.length > 0) {
+              const date_r = moment(vv.receipts[0].received_at).add('hour', 2);
+              const date_n = moment(new Date());
+              // si date de reception supérieure à la date d'encaissement d'une heure
+              if (date_r > date_n) {
+                // même jour
+                vv.reste = vv.amount - vv.receipts[0].amount;
+              } else {
+                vv.reste = vv.amount;
+              }
+            } else {
+              vv.reste = vv.amount;
+            }
+
             if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
               // facture non echue
               vv.statut = 'Non echue';
@@ -369,6 +400,7 @@ export class FactureComponent implements OnInit {
     this.montant_avance = 0;
     if (this.selected_bill.length >= 1 && this.selected_bill.length < 2) {
       this.facture = this.selected_bill[0];
+      console.log(this.facture);
       Metro.dialog.open('#avanceDialog1');
     } else if (this.selected_bill.length === 0) {
       // pas de factures selectionnées
@@ -396,10 +428,9 @@ export class FactureComponent implements OnInit {
       if (this.payment_method === 'Chèque') {
         opt.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
       }
-      console.log(opt);
       this.api.Receipts.post(opt).subscribe(d => {
         Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
-        if (this.montant_avance >= (this.facture.amount - this.facture.avance)) {
+        if (this.montant_avance >= (this.facture.amount)) {
           // modification du statut de la facture
           this.api.Bills.get(this.facture.id).subscribe(data => {
             data.status = 'paid';
@@ -414,6 +445,7 @@ export class FactureComponent implements OnInit {
                 vendeur: this.user.name,
                 bill_id: this.facture.bvs_id,
                 client: this.facture.name,
+                reste: this.facture.reste - this.montant_avance,
                 payment_method: this.payment_method,
                 avance: this.montant_avance,
                 amount: this.facture.amount
@@ -476,6 +508,7 @@ export class FactureComponent implements OnInit {
             client: this.facture.name,
             avance: this.montant_avance,
             payment_method: this.payment_method,
+            reste: this.facture.reste - this.montant_avance,
             amount: this.facture.amount
           };
           this.printAvance(e);
@@ -659,7 +692,7 @@ export class FactureComponent implements OnInit {
   getX3Bills() {
     this.api.X3.getList().subscribe( d => {
       console.log(d);
-    })
+    });
     // https://api-izis.bvs-sas.com/api/retrieve-bills
   }
 }

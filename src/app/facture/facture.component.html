@@ -36,7 +36,7 @@
         <div class="cell-2">
           <m4-select prepend="<span class='mif-eye'></span>"
                      (ngModelChange)="show($event)"
-                     [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '200': '200'}"></m4-select>
+                     [(ngModel)]="per_page" [options]="{ '25': '25', '50': '50', '100': '100', '200': '200', '500':'500'}"></m4-select>
         </div>
         <div class="cell-2">
           <m4-select prepend="<span class='mif-filter'></span>"
@@ -72,7 +72,7 @@
             <th data-sortable="true" (click)="orderBy('creation_date')">Date</th>
             <th data-sortable="true" (click)="orderBy('customer_id')">#Client</th>
             <th data-sortable="true" (click)="orderBy('name')">Client</th>
-            <th data-sortable="true" (click)="orderBy('amount')">Montant</th>
+            <!--th data-sortable="true" (click)="orderBy('amount')">Montant</th-->
             <th data-sortable="true" (click)="orderBy('avance')">Avance</th>
             <th data-sortable="true" (click)="orderBy('reste')">Reste</th>
             <th data-sortable="true" (click)="orderBy('statut')">Statut</th>
@@ -80,7 +80,7 @@
           </tr>
           </thead>
           <tbody>
-          <!--tr *ngFor="let i of factures"-->
+          <!--tr *ngFor="let i of factures"<td class="text-right">{{(i.amount+i.avance) |priceFormat}}</td>-->
           <tr
             *ngFor="let i of factures;trackBy:trackByIndex |filter:{ id: search, name: search, creation_date: search, amount: search, status: search } : false"
             [ngClass]="{'bg-or':i.check==true}"
@@ -89,9 +89,9 @@
             <td>{{i.creation_date|limitTo:10}}</td>
             <td>{{i.customer_id}}</td>
             <td>{{i.name}}</td>
-            <td class="text-right">{{(i.amount+i.avance) |priceFormat}}</td>
+            <!--td class="text-right">{{(i.amount) |priceFormat}}</td-->
             <td class="text-right">{{i.avance |priceFormat}}</td>
-            <td class="text-right">{{(i.amount) |priceFormat}}</td>
+            <td class="text-right">{{(i.reste) |priceFormat}}</td>
             <td>{{i.statut}}</td>
             <td *ngxPermissionsOnly="['advance.bill']">
               <div *ngIf="i.status == 'new' || i.status=='pending'">
@@ -124,7 +124,6 @@
               <tr>
                 <th>N° Facture</th>
                 <th>Date</th>
-                <th data-sortable="true">Montant</th>
                 <th data-sortable="true">Avance</th>
                 <th data-sortable="true">Reste</th>
               </tr>
@@ -133,9 +132,8 @@
               <tr *ngFor="let i of selected_bill">
                 <td>{{i.bvs_id}}</td>
                 <td>{{i.creation_date}}</td>
-                <td>{{i.amount + i.avance|priceFormat}}</td>
                 <td>{{i.avance|priceFormat}}</td>
-                <td>{{i.amount|priceFormat}}</td>
+                <td>{{i.reste|priceFormat}}</td>
               </tr>
 
               </tbody>
@@ -218,11 +216,11 @@
           Combien souhaitez-vous avancer ?
           <div class="form-group">
             <label>Montant</label>
-            <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.amount-facture.avance}}"
+            <input type="number" [(ngModel)]="montant_avance" min="0" max="{{facture.reste}}"
                    placeholder="Montant de l'avance"/>
-            <small class="text-muteds">Reste à payer : <strong>{{facture.amount |priceFormat}}</strong> FCFA</small>
+            <small class="text-muteds">Reste à payer : <strong>{{facture.reste |priceFormat}}</strong> FCFA</small>
             <br>
-            <small *ngIf="montant_avance > (facture.amount)" class="fg-red">Montant de l'avance supérieur à la somme à payer</small>
+            <small *ngIf="montant_avance > (facture.reste)" class="fg-red">Montant de l'avance supérieur à la somme à payer</small>
           </div>
           <div class="form-group">
             <label>Entité</label>

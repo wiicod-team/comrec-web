@@ -24,6 +24,8 @@ export class UsersComponent implements OnInit {
     id: number,
     bvs_id: number,
     name: string,
+    entity: string,
+    network: string,
     username: string
     status: string,
     has_reset_password: boolean,
@@ -47,6 +49,8 @@ export class UsersComponent implements OnInit {
       email: '',
       phone: '',
       username: '',
+      entity: '',
+      network: '',
       status: '',
       has_reset_password: false,
       compte_statut: false,
@@ -76,7 +80,7 @@ export class UsersComponent implements OnInit {
       overlayClickClose: true
     });
     this.api.Users.getList({should_paginate: false, _sort: 'name', _sortDir: 'asc', _includes: 'roles'}).subscribe(data => {
-      console.log(data.length);
+      //console.log(data);
       data.forEach(v => {
         if (v.status === 'enable') {
           v.compte_statut = true;
@@ -97,7 +101,6 @@ export class UsersComponent implements OnInit {
         }
       });
       this.users = data;
-      console.log(c,f);
       this.users = _.orderBy(this.users, 'name');
       Metro.activity.close(load);
     }, q => {
@@ -145,7 +148,6 @@ export class UsersComponent implements OnInit {
     delete u.email;
     delete u.phone;
     let text = '';
-    let bool = false;
     if (u.reset_password) {
       u.has_reset_password = false;
       u.password = 'password';
@@ -160,9 +162,11 @@ export class UsersComponent implements OnInit {
       text += '-Compte Désactivé-';
     }
     u.username = this.user.username;
+    u.entity = this.user.entity;
+    u.network = this.user.network;
     u.name = this.user.name;
     u.bvs_id = this.user.bvs_id;
-    bool = true;
+    const bool = true;
     if (this.edit_role) {
       let i = 0;
       this.roles.forEach((v, k) => {
@@ -209,8 +213,10 @@ export class UsersComponent implements OnInit {
       if (u.settings === undefined || u.settings === null) {
         u.settings = [];
       }
+      //console.log(u);
       u.put().subscribe(p => {
-        this.getUsers();
+        console.log(p);
+        //this.getUsers();
         Metro.notify.create(text, 'Succes', {cls: 'bg-or fg-white'});
         this.active = false;
         this.reset = false;
@@ -244,6 +250,8 @@ export class UsersComponent implements OnInit {
       id: 0,
       name: '',
       username: '',
+      network: '',
+      entity: '',
       status: '',
       has_reset_password: false,
       compte_statut: false,

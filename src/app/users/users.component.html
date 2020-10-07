@@ -28,6 +28,8 @@
           <th data-sortable="true" data-sort-dir="asc" data-name="facture">#</th>
           <th data-sortable="true">Identifiant</th>
           <th data-sortable="true" data-name="client">Nom</th>
+          <th data-sortable="true" data-name="entity">Entité</th>
+          <th data-sortable="true" data-name="network">Réseau</th>
           <th data-sortable="true" data-name="client">Rôles</th>
           <th data-sortable="true" data-name="client">Statut</th>
           <th data-sortable="true">Statut mot de passe</th>
@@ -39,6 +41,8 @@
           <td>{{i.bvs_id}}</td>
           <td>{{i.username}}</td>
           <td>{{i.name}}</td>
+          <td>{{i.entity}}</td>
+          <td>{{i.network}}</td>
           <td>
             <span *ngFor="let r of i.roles">{{r.display_name}}, </span>
           </td>
@@ -66,30 +70,43 @@
       >
         <thead>
         <tr>
-          <th data-sortable="true">#</th>
           <th data-sortable="true">Identifiant</th>
           <th data-sortable="true" data-name="client">Nom</th>
-          <th data-sortable="true" data-name="client">Rôles</th>
-          <th data-sortable="true" data-name="client">Statut</th>
-          <th data-sortable="true">Statut mot de passe</th>
+          <th data-sortable="true" data-name="client">Entité</th>
+          <th data-sortable="true" data-name="client">Réseau</th>
         </tr>
         </thead>
         <tbody>
         <tr>
           <td>
-            <input type="text" [(ngModel)]="user.bvs_id" placeholder="#"/>
-          </td>
-          <td>
             <input type="text" [(ngModel)]="user.username" placeholder="Nom d'utilisateur"/>
           </td>
           <td>
-            <input type="text" [(ngModel)]="user.name" placeholder="Nom d'utilisateur"/>
+            <input type="text" [(ngModel)]="user.name" placeholder="Noms et prénoms"/>
           </td>
           <td>
-            <span *ngFor="let r of user.roles">{{r.display_name}},</span>
+            <select [(ngModel)]="user.entity">
+              <option value="BDC - Centre">BDC - Centre</option>
+              <option value="BDC - Littoral">BDC - Littoral</option>
+              <option value="BDC - Ouest">BDC - Ouest</option>
+              <option value="BDC - Nord">BDC - Nord</option>
+              <option value="BPC - Centre">BPC - Centre</option>
+              <option value="BPC - Littoral">BPC - Littoral</option>
+              <option value="BPC - Ouest">BPC - Ouest</option>
+              <option value="BPC - Nord">BPC - Nord</option>
+            </select>
           </td>
-          <td>{{user.status |status}}</td>
-          <td>{{user.pass}}</td>
+          <td>
+            <select [(ngModel)]="user.network">
+              <option value="IND Traditional Trade">IND Traditional Trade</option>
+              <option value="OFF GMS & BP">OFF GMS & BP</option>
+              <option value="OFF Stations Services">OFF Stations Services</option>
+              <option value="ON Monde de la nuit">ON Monde de la nuit</option>
+              <option value="ON CHR">ON CHR</option>
+              <option value="DIR Boutique">DIR Boutique</option>
+              <option value="SPIDER LION">SPIDER LION</option>
+            </select>
+          </td>
         </tr>
 
         </tbody>

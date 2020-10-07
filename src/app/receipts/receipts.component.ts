@@ -77,11 +77,11 @@ export class ReceiptsComponent implements OnInit {
       this.encaissements = this.old_encaissements;
       this.max_length = this.old_max_length;
     } else if (this.filtre === 'bill_id') {
-      opt['bill-fk'] = 'bvs_id-lk=' + this.search;
+      opt['bill-fk'] = 'bvs_id-lk=' + this.search.trim();
     } else if (this.filtre === 'customer_id') {
-      opt['bill-fk'] = 'customer_id-lk=' + this.search;
+      opt['bill-fk'] = 'customer_id-lk=' + this.search.trim();
     } else {
-      opt[this.filtre] = this.search;
+      opt[this.filtre] = this.search.trim();
     }
     this.api.Receipts.getList(opt).subscribe(b => {
       b.forEach((v, k) => {
@@ -130,12 +130,14 @@ export class ReceiptsComponent implements OnInit {
         _sortDir: 'desc',
       };
       this.api.Receipts.getList(opt).subscribe(b => {
+        //console.log(b);
         b.forEach((v, k) => {
           v.bill.customer.name = v.bill.customer.name.trim();
           v.name = v.bill.customer.name;
           this.montant += v.amount;
           v.bvs_id = v.bill.id;
           v.vendeur = v.user.name;
+          v.entite = v.note.split('|')[v.note.split('|').length - 1];
         });
         this.encaissements = b;
         this.old_encaissements = this.encaissements;
@@ -256,7 +258,7 @@ export class ReceiptsComponent implements OnInit {
         da.id = da.body.id;
         da.status = 'pending';
         da.put().subscribe(a => {
-          console.log(a);
+          Metro.toast.create('Encaissement annulé');
           this.getReceipts();
         });
       });
@@ -264,9 +266,10 @@ export class ReceiptsComponent implements OnInit {
   }
 
   exportCsv() {
-    let csv = '#,Facture,Date,Code client,Client,Montant,Mode de paiement,Code vendeur,Vendeur\n';
+    let csv = '#,Facture,Date,Client,Montant,Mode de paiement,Entite,Vendeur,Reseau\n';
     this.encaissements.forEach(e => {
-      csv += e.id + ',' + e.bill.bvs_id + ',' + e.created_at + ',' + e.bill.customer_id + ',' + e.bill.customer.name + ',' + e.amount + ',' + e.payment_method + ',' + e.user_id + ',' + e.user.name;
+      csv += e.id + ',' + e.bill.bvs_id + ',' + e.created_at + ',' + e.bill.customer.name + ',' + e.amount + ','
+        + e.payment_method + ',' + e.entite + ',' + e.user.name + ',' + e.user.network;
       csv += '\n';
     });
 

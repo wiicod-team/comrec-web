@@ -47,29 +47,27 @@
       >
         <thead>
         <tr>
-          <th data-sortable="true" (click)="orderBy('id')">#</th>
           <th data-sortable="true" (click)="orderBy('bill.bvs_id')">N° Facture</th>
           <th data-sortable="true" (click)="orderBy('received_at')">Date</th>
-          <th data-sortable="true" (click)="orderBy('bill.customer_id')">#Client</th>
           <th data-sortable="true" (click)="orderBy('bill.customer.name')">Client</th>
           <th data-sortable="true" (click)="orderBy('amount')">Montant</th>
           <th data-sortable="true" (click)="orderBy('payment_method')">Mode de paiement</th>
-          <th data-sortable="true" (click)="orderBy('user_id')">#Vendeur</th>
-          <th data-sortable="true" (click)="orderBy('vendeur')">Vendeur</th>
+          <th data-sortable="true" (click)="orderBy('note')">Entité</th>
+          <th data-sortable="true" (click)="orderBy('user_id')">Vendeur</th>
+          <th data-sortable="true" (click)="orderBy('vendeur')">Commentaire</th>
           <th data-sortable="true">Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let i of encaissements">
-          <td>{{i.id}}</td>
           <td>{{i.bill.bvs_id}}</td>
           <td>{{i.received_at}}</td>
-          <td>{{i.bill.customer.id}}</td>
           <td>{{i.bill.customer.name}}</td>
           <td>{{i.amount |priceFormat}}</td>
           <td>{{i.payment_method}}</td>
-          <td>{{i.user_id}}</td>
+          <td>{{i.entite}}</td>
           <td>{{i.vendeur}}</td>
+          <td>{{i.note}}</td>
           <td>
             <button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button>
             <button class="button mini bg-red fg-white" *ngxPermissionsOnly="['edit.receipt']" (click)="editReceipt(i)"><span class="mif-cross"></span></button>
