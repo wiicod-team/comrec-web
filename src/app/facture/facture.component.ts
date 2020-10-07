@@ -83,7 +83,7 @@ export class FactureComponent implements OnInit {
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
-        //'status-not_in': 'paid',
+        'status-not_in': 'paid',
         per_page: this.per_page,
         page: this.page
       };
