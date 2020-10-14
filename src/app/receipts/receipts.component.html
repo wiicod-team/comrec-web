@@ -70,7 +70,7 @@
           <td>{{i.note}}</td>
           <td>
             <button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button>
-            <button class="button mini bg-red fg-white" *ngxPermissionsOnly="['edit.receipt']" (click)="editReceipt(i)"><span class="mif-cross"></span></button>
+            <button class="button mini bg-red fg-white" *ngxPermissionsOnly="['edit.receipt']" (click)="openDeleteModal(i)"><span class="mif-cross"></span></button>
           </td>
         </tr>
 
@@ -110,6 +110,28 @@
 
     <div class="dialog-actions text-right">
       <button class="button js-dialog-close bg-or fg-white" (click)="validate()">Valider</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
+    </div>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="deleteDialog">
+    <div class="dialog-title">Annulation d'encaissement </div>
+    <div class="dialog-content">
+      <p style="font-weight: bold;">Voulez-vous annuler cet encaissement ?</p>
+
+      <div>N° Facture: {{r.bill.bvs_id}} </div>
+      <div>Date: {{r.received_at}}</div>
+      <div>Client: {{r.bill.customer.name}}</div>
+      <div>Montant: {{r.amount |priceFormat}}</div>
+      <div>Mode de paiement: {{r.payment_method}}</div>
+      <div>Entité: {{r.entite}}</div>
+      <div>Vendeur: {{r.vendeur}}</div>
+      <div>Commentaire: {{r.note}}</div>
+
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" (click)="cancelReceipt()">Valider</button>
       <button class="button primary js-dialog-close bg-noir">Fermer</button>
     </div>
   </div>

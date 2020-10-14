@@ -16,19 +16,12 @@ export class CustomerDetailComponent implements OnInit {
   user;
   state = false;
   dette = 0;
-  isLoadingBills = false;
-  throttle = 30;
-  scrollDistance = 1;
-  scrollUpDistance = 2;
   page = 1;
-  max_length = 0;
-  old_max_length = 0;
   last_page = 10000000;
   facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number } = {id: 0};
-  commentaire;
-  montant_avance;
   customer = {
     id: 0,
+    bvs_id: 0,
     name: '',
     email: 'x@x.a',
     status: '',

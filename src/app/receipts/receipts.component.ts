@@ -31,6 +31,17 @@ export class ReceiptsComponent implements OnInit {
   filtre = 'bill_id';
   state = false;
   isLoadingBills = false;
+  r = {
+    bill: { bvs_id: 0, customer: {name: ''} },
+    received_at: '',
+    bill_id: '',
+    entite: '',
+    vendeur: '',
+    note: '',
+    payment_method: '',
+    amount: 0,
+    remove: ()=>{}
+  };
 
   @ViewChild('pdfTable', {static: false}) pdfTable: ElementRef;
   constructor( private api: ApiProvider, private route: ActivatedRoute) {
@@ -248,13 +259,16 @@ export class ReceiptsComponent implements OnInit {
     }
   }
 
-  editReceipt(i) {
-    //Metro.toast.create('Fonctionnalité encours d\'implémentation');
+  openDeleteModal(i) {
+    this.r = i;
+    Metro.dialog.open('#deleteDialog');
+  }
+
+  cancelReceipt() {
+    console.log(this.r);
     // suppression du receipt et modification de la facture à echue
-    console.log(i);
-    i.remove().subscribe(d => {
-      //recuperation des factures
-      this.api.Bills.get(i.bill_id).subscribe(da => {
+    this.r.remove().subscribe(d => {
+      this.api.Bills.get(this.r.bill_id).subscribe(da => {
         da.id = da.body.id;
         da.status = 'pending';
         da.put().subscribe(a => {

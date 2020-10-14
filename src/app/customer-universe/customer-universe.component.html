@@ -48,8 +48,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
-          <td>{{i.id}}</td>
+        <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ bvs_id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
+          <td>{{i.bvs_id}}</td>
           <td>{{i.name}}</td>
           <td>{{i.sale_network}}</td>
           <td>{{i.username}}</td>

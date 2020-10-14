@@ -90,18 +90,19 @@ export class FactureComponent implements OnInit {
       if (this.customer_id === 0) {
         delete opt.customer_id;
       }
-      opt[this.filtre] = this.search.trim();
-
+      if (this.filtre === 'customer_bvs_id') {
+        opt['customer-fk'] = 'bvs_id=' + this.search.trim();
+      } else {
+        opt[this.filtre] = this.search.trim();
+      }
       this.api.Bills.getList(opt).subscribe(
         d => {
-          console.log(d, 'aaze', opt);
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           d.forEach((vv, kk) => {
             let avance = 0;
             vv.name = vv.customer.name.trim();
             vv.receipts = _.sortBy(vv.receipts, 'received_at').reverse();
-            console.log(vv.receipts, 'az');
             vv.receipts.forEach((vvv, kkk) => {
               avance += vvv.amount;
             });

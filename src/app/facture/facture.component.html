@@ -41,7 +41,7 @@
         <div class="cell-2">
           <m4-select prepend="<span class='mif-filter'></span>"
                      [(ngModel)]="filtre"
-                     [options]="{ 'bvs_id-lk': 'N° facture', 'customer_id-lk': 'Code client', 'creation_date-lk': 'Date facture'}"></m4-select>
+                     [options]="{ 'bvs_id-lk': 'N° facture', 'customer_bvs_id': 'Code client', 'creation_date-lk': 'Date facture'}"></m4-select>
         </div>
         <div class="cell-3">
           <m4-input [(ngModel)]="search"
@@ -87,7 +87,7 @@
           >
             <td>{{i.bvs_id}}</td>
             <td>{{i.creation_date|limitTo:10}}</td>
-            <td>{{i.customer_id}}</td>
+            <td>{{i.customer.bvs_id}}</td>
             <td>{{i.name}}</td>
             <!--td class="text-right">{{(i.amount) |priceFormat}}</td-->
             <td class="text-right">{{i.avance |priceFormat}}</td>
