@@ -4,7 +4,7 @@
       <h3 class="dashboard-section-title  text-center text-left-md w-100">Dashboard <small>{{today}}</small></h3>
     </div>
 
-    <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+    <div class="cell-md-6 d-fh3> flex-justify-center flex-justify-end-md flex-align-center">
 
       <div class="buttongroup">
         <button class="button"><a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
@@ -17,7 +17,7 @@
     <div class="row mt-2">
       <div class="cell-lg-4 cell-sm-6 mt-2">
         <div class="icon-box border bd-noir">
-          <div class="icon bg-noir fg-white"><span class="mif-user"></span></div>
+          <div class="icon bg-noir fg-white"><span class="mif-file-pdf"></span></div>
           <div class="content p-4">
             <div class="text-upper">Factures</div>
             <div class="text-upper text-bold text-lead">{{bill_count |priceFormat}}</div>
@@ -101,7 +101,7 @@
           <div class="label">Du</div>
           <m4-calendar-picker [(ngModel)]="from" cls-calendar="compact"
                               [dialog-mode]="false"
-                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              locale="en-US" format="%d/%m/%Y" size="100%"
                               calendar-button-icon="<span class='mif-calendar'></span>"
                               [show-header]="true"></m4-calendar-picker>
         </div>
@@ -109,7 +109,7 @@
           <div class="label">Au</div>
           <m4-calendar-picker [(ngModel)]="to" cls-calendar="compact"
                               [dialog-mode]="false"
-                              locale="fr-FR" format="%d/%m/%Y" size="100%"
+                              locale="en-US" format="%d/%m/%Y" size="100%"
                               calendar-button-icon="<span class='mif-calendar'></span>"
                               [show-header]="true"></m4-calendar-picker>
         </div>

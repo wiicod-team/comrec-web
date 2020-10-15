@@ -31,22 +31,33 @@ export class ReceiptsComponent implements OnInit {
   filtre = 'bill_id';
   state = false;
   isLoadingBills = false;
-  r = {
-    bill: { bvs_id: 0, customer: {name: ''} },
-    received_at: '',
-    bill_id: '',
-    entite: '',
-    vendeur: '',
-    note: '',
-    payment_method: '',
-    amount: 0,
-    remove: ()=>{}
+  r: {
+    bill: { bvs_id: number, customer: {name: string} },
+    received_at: string,
+    bill_id: string,
+    entite: string,
+    vendeur: string,
+    note: string,
+    payment_method: string,
+    amount: number,
+    remove(): any
   };
 
   @ViewChild('pdfTable', {static: false}) pdfTable: ElementRef;
   constructor( private api: ApiProvider, private route: ActivatedRoute) {
     this.from = new Date();
     this.to = new Date();
+    this.r = {
+      bill: { bvs_id: 0, customer: {name: ''} },
+      received_at: '',
+      bill_id: '',
+      entite: '',
+      vendeur: '',
+      note: '',
+      payment_method: '',
+      amount: 0,
+      remove: () => {}
+    }
     const date = new Date();
     const j = date.getDay();
     let d = j % 7;
