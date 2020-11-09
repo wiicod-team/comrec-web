@@ -3,6 +3,7 @@ import {ApiProvider} from '../providers/api/api';
 import {ActivatedRoute, Router} from '@angular/router';
 import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
+import * as _ from 'lodash';
 declare var Metro;
 @Component({
   selector: 'app-customer-detail',
@@ -63,23 +64,34 @@ export class CustomerDetailComponent implements OnInit {
 
   getDebt(id) {
     const opt = {
-      //_includes: 'receipts',
+      _includes: 'receipts',
       should_paginate: false,
-      'status-not_in': 'paid',
       customer_id: id
     };
     this.api.Bills.getList(opt).subscribe( d => {
-      let de = 0;
-      d.forEach(v => {
-        de += v.amount;
-      });
-      let sum_r = 0;
-      /*d.forEach(v => {
-        v.receipts.forEach(r => {
-          sum_r += r.amount;
+      d.forEach((v, k) => {
+        let avance = 0;
+        v.receipts = _.sortBy(v.receipts, 'received_at');
+        v.receipts.forEach((vv, kk) => {
+          avance += vv.amount;
         });
-      });*/
-      this.dette = de - sum_r;
+        v.avance = avance;
+        if (v.receipts.length > 0) {
+          const date_r = moment(v.receipts[0].received_at).add('hour', 2);
+          const date_n = moment(new Date());
+          // si date de reception supérieure à la date d'encaissement d'une heure
+          if (date_r > date_n) {
+            // même jour
+            v.reste = v.amount - v.receipts[0].amount;
+          } else {
+            v.reste = v.amount;
+          }
+        } else {
+          v.reste = v.amount;
+        }
+
+        this.dette += v.reste;
+      });
       if (this.dette > 0) {
         this.customer.status = 'insolvent';
       }

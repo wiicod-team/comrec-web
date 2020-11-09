@@ -54,7 +54,8 @@
           <td>{{i.sale_network}}</td>
           <td>{{i.username}}</td>
           <td *ngxPermissionsOnly="['link.customer']">
-            <button class="button mini" (click)="oepnLink(i)"><span class="mif-pencil"></span></button>
+            <button class="button mini" (click)="openLink(i)"><span class="mif-pencil"></span></button>
+            <button class="button mini hide" ><span class="mif-pencil"></span></button>
           </td>
         </tr>
 

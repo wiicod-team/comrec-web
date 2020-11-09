@@ -94,7 +94,7 @@
             <td class="text-right">{{(i.reste) |priceFormat}}</td>
             <td>{{i.statut}}</td>
             <td *ngxPermissionsOnly="['advance.bill']">
-              <div *ngIf="i.status == 'new' || i.status=='pending'">
+              <div *ngIf="i.reste >0 && i.avance != i.reste">
                 <button class="button mini bg-noir fg-white" (click)="billChecked(i,true)" *ngIf="!i.check">
                   Sélectionner
                 </button>

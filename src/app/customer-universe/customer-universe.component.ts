@@ -44,6 +44,7 @@ export class CustomerUniverseComponent implements OnInit {
       overlayClickClose: true
     });
     this.getCustomers(true);
+    Metro.activity.close(this.load);
   }
 
 
@@ -61,7 +62,6 @@ export class CustomerUniverseComponent implements OnInit {
     } else {
       this.state = true;
       this.page = 1;
-      //console.log(this.search);
       this.customers = [];
 
       const opt = {

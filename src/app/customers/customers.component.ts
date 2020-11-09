@@ -185,7 +185,7 @@ export class CustomersComponent implements OnInit {
 
   onUp(ev) {}
 
-  oepnLink(c) {
+  openLink(c) {
     this.customer = c;
     if (c.users.length > 0) {
       c.users.forEach(v => {
@@ -200,6 +200,16 @@ export class CustomersComponent implements OnInit {
     }
     Metro.dialog.open('#linkDialog1');
   }
+
+  /*editCustomer(i) {
+    console.log(i);
+    delete i.email;
+    delete i.phone;
+    i.name = 'PARTICULIER CASH AND CARRY';
+    i.put().subscribe(d => {
+      console.log(d);
+    });
+  }*/
 
   setUser(r) {
     if (r.check) {

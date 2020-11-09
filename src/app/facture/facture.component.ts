@@ -83,7 +83,7 @@ export class FactureComponent implements OnInit {
         should_paginate: true,
         _sort: 'created_at',
         _sortDir: 'desc',
-        'status-not_in': 'paid',
+        // 'status-not_in': 'paid',
         per_page: this.per_page,
         page: this.page
       };
@@ -97,6 +97,7 @@ export class FactureComponent implements OnInit {
       }
       this.api.Bills.getList(opt).subscribe(
         d => {
+          console.log(d);
           this.last_page = d.metadata.last_page;
           this.max_length = d.metadata.total;
           d.forEach((vv, kk) => {
@@ -117,16 +118,30 @@ export class FactureComponent implements OnInit {
               } else {
                 vv.reste = vv.amount;
               }
+              console.log(vv.amount, vv.receipts[0].amount, vv.reste);
             } else {
               vv.reste = vv.amount;
             }
-            if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
-              // facture non echue
-              vv.statut = 'Non echue';
-              this.factures.push(vv);
+            if (vv.reste !== 0) {
+              if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+                // facture non echue
+                vv.statut = 'Non echue';
+                this.factures.push(vv);
+              } else {
+                vv.statut = 'Echue';
+                this.factures.push(vv);
+              }
             } else {
-              vv.statut = 'Echue';
-              this.factures.push(vv);
+              if (vv.status !== 'paid') {
+                if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+                  // facture non echue
+                  vv.statut = 'Non echue';
+                  this.factures.push(vv);
+                } else {
+                  vv.statut = 'Echue';
+                  this.factures.push(vv);
+                }
+              }
             }
           });
           this.isLoadingBills = false;
@@ -184,7 +199,7 @@ export class FactureComponent implements OnInit {
         should_paginate: true,
         _sort: 'creation_date',
         _sortDir: 'desc',
-        'status-not_in': 'paid',
+        // 'status-not_in': 'paid',
         per_page: this.per_page,
         page: this.page
       };
@@ -221,13 +236,31 @@ export class FactureComponent implements OnInit {
               vv.reste = vv.amount;
             }
 
-            if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
-              // facture non echue
-              vv.statut = 'Non echue';
-              this.factures.push(vv);
+            if (vv.reste !== 0) {
+              if (vv.reste === vv.avance && vv.status === 'paid') {
+
+              } else {
+                if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+                  // facture non echue
+                  vv.statut = 'Non echue';
+                  this.factures.push(vv);
+                } else {
+                  vv.statut = 'Echue';
+                  this.factures.push(vv);
+                }
+              }
+
             } else {
-              vv.statut = 'Echue';
-              this.factures.push(vv);
+              if (vv.status !== 'paid') {
+                if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+                  // facture non echue
+                  vv.statut = 'Non echue';
+                  this.factures.push(vv);
+                } else {
+                  vv.statut = 'Echue';
+                  this.factures.push(vv);
+                }
+              }
             }
           });
           this.old_facture = this.factures;

@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   constructor(private api: ApiProvider, private router: Router) {
+    console.log(moment(this.now));
     this.api.checkUser();
     this.from = new Date();
     this.to = new Date();
