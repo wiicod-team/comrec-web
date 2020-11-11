@@ -210,11 +210,11 @@ export class FactureComponent implements OnInit {
 
       this.api.Bills.getList(opt).subscribe(
         d => {
-          // console.log(d);
-          this.last_page = d.metadata.last_page;
-          this.max_length = d.metadata.total;
-          this.old_max_length = this.max_length;
-          d.forEach((vv, kk) => {
+           console.log(d);
+           this.last_page = d.metadata.last_page;
+           this.max_length = d.metadata.total;
+           this.old_max_length = this.max_length;
+           d.forEach((vv, kk) => {
             let avance = 0;
             vv.name = vv.customer.name;
             vv.receipts = _.sortBy(vv.receipts, 'received_at');
@@ -235,10 +235,10 @@ export class FactureComponent implements OnInit {
             } else {
               vv.reste = vv.amount;
             }
-
+            console.log(vv.reste, 'reste');
             if (vv.reste !== 0) {
               if (vv.reste === vv.avance && vv.status === 'paid') {
-
+                this.max_length--;
               } else {
                 if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
                   // facture non echue
@@ -260,18 +260,21 @@ export class FactureComponent implements OnInit {
                   vv.statut = 'Echue';
                   this.factures.push(vv);
                 }
+              } else {
+                this.max_length--;
               }
+
             }
           });
-          this.old_facture = this.factures;
-          if (s) {
+           this.old_facture = this.factures;
+           if (s) {
             Metro.activity.close(load);
             this.state = false;
           } else {
             this.state = false;
           }
-          this.isLoadingBills = false;
-          this.page++;
+           this.isLoadingBills = false;
+           this.page++;
         }, q => {
           if (q.data.error.status_code === 500) {
             Metro.notify.create('getBills ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {

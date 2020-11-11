@@ -25,7 +25,6 @@
         <m4-input [(ngModel)]="search"
                   placeholder="Client"
                   (ngModelChange)="vide()"
-                  (focusout)="rechercher()"
                   [ngModelOptions]="{standalone: true}"
                   [search-button]="true" (search-button-click)="rechercher()"></m4-input>
       </div>

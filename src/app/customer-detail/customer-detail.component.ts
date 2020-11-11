@@ -77,7 +77,7 @@ export class CustomerDetailComponent implements OnInit {
         });
         v.avance = avance;
         if (v.receipts.length > 0) {
-          const date_r = moment(v.receipts[0].received_at).add('hour', 2);
+          const date_r = moment(v.receipts[0].received_at).add('hour', 2); // 1heure gmt et 1 heure pour le decalage entre les facture
           const date_n = moment(new Date());
           // si date de reception supérieure à la date d'encaissement d'une heure
           if (date_r > date_n) {
@@ -89,8 +89,11 @@ export class CustomerDetailComponent implements OnInit {
         } else {
           v.reste = v.amount;
         }
-
-        this.dette += v.reste;
+        if (this.customer.bills === 0) {
+          this.dette = 0;
+        } else {
+          this.dette += v.reste;
+        }
       });
       if (this.dette > 0) {
         this.customer.status = 'insolvent';
