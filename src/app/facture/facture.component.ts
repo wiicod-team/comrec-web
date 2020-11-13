@@ -39,9 +39,8 @@ export class FactureComponent implements OnInit {
   commentaire2 = '';
   commentaire3: any;
   montant_avance;
-  per_page = 25;
+  per_page = 100;
   customer_id = 0;
-  private state_montant: false;
 
   constructor(private api: ApiProvider, private route: ActivatedRoute, private router: Router) {
     this.entite = 'BDC';
@@ -61,7 +60,7 @@ export class FactureComponent implements OnInit {
   }
 
   vide() {
-    //console.log(this.per_page);
+    // console.log(this.per_page);
     this.selected_bill = [];
     if (this.search === '' || this.search === undefined) {
       this.factures = this.old_facture;
@@ -157,7 +156,7 @@ export class FactureComponent implements OnInit {
 
     // console.log(f);
     if (this.selected_bill.length > 0) {
-      //console.log(this.selected_bill);
+      // console.log(this.selected_bill);
       Metro.dialog.open('#demoDialog1');
     } else {
       // pas de factures selectionnées
@@ -167,7 +166,7 @@ export class FactureComponent implements OnInit {
 
   billChecked(bill, val) {
     if (this.montant === 0) {
-      //console.log(this.montant, this.selected_bill.length);
+      // console.log(this.montant, this.selected_bill.length);
       this.selected_bill = [];
     }
     bill.check = val;
@@ -190,7 +189,7 @@ export class FactureComponent implements OnInit {
       let i = 0;
       this.selected_bill.forEach(f => {
         if (this.payment_method === 'Chèque') {
-          //console.log(this.commentaire3, moment(new Date(x)).format('YYYY-MM-DD'));
+          // console.log(this.commentaire3, moment(new Date(x)).format('YYYY-MM-DD'));
           f.received_at = moment(new Date(x)).format('YYYY-MM-DD HH:mm:ss');
         } else {
           f.received_at = moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
@@ -263,7 +262,7 @@ export class FactureComponent implements OnInit {
     this.montant_avance = 0;
     if (this.selected_bill.length >= 1 && this.selected_bill.length < 2) {
       this.facture = this.selected_bill[0];
-      //console.log(this.facture);
+      // console.log(this.facture);
       Metro.dialog.open('#avanceDialog1');
     } else if (this.selected_bill.length === 0) {
       // pas de factures selectionnées
@@ -559,7 +558,103 @@ export class FactureComponent implements OnInit {
     // https://api-izis.bvs-sas.com/api/retrieve-bills
   }
 
-  handleBills(opt){
+  handleBills(opt) {
+    this.api.Bills.getList(opt).subscribe(
+      d => {
+        console.log(d);
+        this.last_page = d.metadata.last_page;
+        this.max_length = d.metadata.total;
+        this.old_max_length = this.max_length;
+        d.forEach((vv, kk) => {
+          let avance = 0;
+          vv.name = vv.customer.name.trim();
+          vv.receipts = _.sortBy(vv.receipts, 'received_at').reverse();
+          vv.receipts.forEach((vvv, kkk) => {
+            avance += vvv.amount;
+          });
+          vv.avance = avance;
+          if (vv.receipts.length > 0) {
+            const date_r = moment(vv.receipts[0].received_at).add('hour', 2);
+            const date_n = moment(new Date());
+            // si date de reception supérieure à la date d'encaissement d'une heure
+            if (date_r > date_n) {
+              // même jour
+              vv.reste = vv.amount - vv.receipts[0].amount;
+            } else {
+              vv.reste = vv.amount;
+            }
+          } else {
+            vv.reste = vv.amount;
+          }
+          if (vv.status === 'paid') {
+            vv.statut = 'Payée';
+          } else if (vv.status === 'remain') {
+            vv.statut = 'Avoir';
+          } else {
+            if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+              vv.statut = 'Non echue';
+            } else {
+              vv.statut = 'Echue';
+            }
+            this.factures.push(vv);
+          }
+
+          /*if (vv.reste !== 0) {
+            if (vv.reste === vv.avance && vv.status === 'paid') {
+              this.max_length--;
+            } else {
+              if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+                // facture non echue
+                vv.statut = 'Non echue';
+                this.factures.push(vv);
+              } else {
+                vv.statut = 'Echue';
+                this.factures.push(vv);
+              }
+            }
+          } else {
+            if (vv.status !== 'paid') {
+              if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
+                // facture non echue
+                vv.statut = 'Non echue';
+                this.factures.push(vv);
+              } else {
+                vv.statut = 'Echue';
+                this.factures.push(vv);
+              }
+            } else {
+              this.max_length--;
+            }
+          }*/
+        });
+        this.isLoadingBills = false;
+        this.page++;
+        this.state = false;
+      }, q => {
+        if (q.data.error.status_code === 500) {
+          Metro.notify.create('getBills ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {
+            cls: 'alert',
+            keepOpen: true,
+            width: 500
+          });
+        } else if (q.data.error.status_code === 401) {
+          Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {
+            cls: 'alert',
+            keepOpen: true,
+            width: 300
+          });
+        } else {
+          Metro.notify.create('getBills ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {
+            cls: 'alert',
+            keepOpen: true,
+            width: 500
+          });
+        }
+      }
+    );
+  }
+
+  oldHandleBills(opt) {
     this.api.Bills.getList(opt).subscribe(
       d => {
         this.last_page = d.metadata.last_page;
