@@ -16,14 +16,18 @@ declare var Metro;
 export class FactureComponent implements OnInit {
   search = '';
   factures = [];
+  users = [];
+  sellers = [];
   entite: string;
   montant = 0;
   old_facture = [];
   selected_bill = [];
   filtre = 'bvs_id-lk';
   order = '';
+  user_name = '';
   display = 'none';
   user;
+  user_id;
   state = false;
   isLoadingBills = false;
   throttle = 30;
@@ -54,9 +58,13 @@ export class FactureComponent implements OnInit {
     this.state = true;
     if (this.customer_id === 0) {
       document.getElementById('fac').style.marginTop = '52px';
+    } else {
+      this.user_id = this.user.id;
+      this.user_name = this.user.name;
     }
     // this.userCustomerIds = await this.getUserCustomerIds(this.user.id);
     this.getBills(false);
+    this.getUsers();
   }
 
   vide() {
@@ -149,6 +157,23 @@ export class FactureComponent implements OnInit {
   onUp(ev) {
   }
 
+  getUsers() {
+    const x = {};
+    const opt = {
+      should_paginate: false,
+      _includes: 'roles'
+    };
+    this.api.Users.getList(opt).subscribe(d => {
+      this.sellers = d;
+      d.forEach(v => {
+        if (v.roles !== undefined && v.roles.find(a => a.name === 'vendeurs.bvs') !== undefined) {
+          x[v.id] = v.name;
+        }
+      });
+      this.users = x;
+    });
+  }
+
   openBillModal() {
     this.payment_method = '';
     this.commentaire1 = '';
@@ -181,6 +206,9 @@ export class FactureComponent implements OnInit {
 
   validerEncaissement() {
     if (this.checkNote()) {
+      if (this.customer_id === 0) {
+        this.user_name = this.sellers.find(i => i.id == this.user_id).name;
+      }
       document.getElementById('non').click();
       const x = this.commentaire3;
       this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
@@ -203,7 +231,7 @@ export class FactureComponent implements OnInit {
             note,
             received_at : moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'),
             payment_method: this.payment_method,
-            user_id: this.user.id
+            user_id: this.user_id
           };
           if (this.payment_method === 'Chèque') {
             opt1.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
@@ -215,8 +243,8 @@ export class FactureComponent implements OnInit {
               // impression
               const e = {
                 received_at: da.body.received_at,
-                vendeur_id: this.user.id,
-                vendeur: this.user.name,
+                vendeur_id: this.user_id,
+                vendeur: this.user_name,
                 client: f.name,
                 note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
                 payment_method: this.payment_method,
@@ -275,6 +303,9 @@ export class FactureComponent implements OnInit {
 
   validerAvance() {
     if (this.checkNote()) {
+      if (this.customer_id === 0) {
+        this.user_name = this.sellers.find(i => i.id == this.user_id).name;
+      }
       document.getElementById('close').click();
       this.state = true;
       const x = this.commentaire3;
@@ -284,7 +315,7 @@ export class FactureComponent implements OnInit {
         note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite,
         payment_method: this.payment_method,
         bill_id: this.facture.id,
-        user_id: this.user.id,
+        user_id: this.user_id,
         received_at: moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss')
       };
       if (this.payment_method === 'Chèque') {
@@ -303,8 +334,8 @@ export class FactureComponent implements OnInit {
                 id: datap.body.id,
                 note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
                 received_at: data.body.received_at,
-                vendeur_id: this.user.id,
-                vendeur: this.user.name,
+                vendeur_id: this.user_id,
+                vendeur: this.user_name,
                 bill_id: this.facture.bvs_id,
                 client: this.facture.name,
                 reste: this.facture.reste - this.montant_avance,
@@ -364,8 +395,8 @@ export class FactureComponent implements OnInit {
             id: d.body.id,
             note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
             received_at: d.body.received_at,
-            vendeur_id: this.user.id,
-            vendeur: this.user.name,
+            vendeur_id: this.user_id,
+            vendeur: this.user_name,
             bill_id: this.facture.bvs_id,
             client: this.facture.name,
             avance: this.montant_avance,
@@ -402,7 +433,7 @@ export class FactureComponent implements OnInit {
   }
 
   checkNote() {
-    if (this.payment_method !== '') {
+    if (this.payment_method !== '' && this.user_id !== undefined) {
       if (this.payment_method === 'Espèce' && this.commentaire1 !== '') {
         return true;
       } else if (this.payment_method === 'Espèce' && this.commentaire1 === '') {
@@ -561,7 +592,6 @@ export class FactureComponent implements OnInit {
   handleBills(opt) {
     this.api.Bills.getList(opt).subscribe(
       d => {
-        console.log(d);
         this.last_page = d.metadata.last_page;
         this.max_length = d.metadata.total;
         this.old_max_length = this.max_length;

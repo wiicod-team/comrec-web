@@ -98,7 +98,7 @@ export function RestangularConfigFactory(RestangularProvider) {
     ForgotComponent,
     CustomerUniverseComponent,
     CustomerDetailComponent,
-    ReceiptsComponent
+    ReceiptsComponent,
   ],
   imports: [
     BrowserModule,

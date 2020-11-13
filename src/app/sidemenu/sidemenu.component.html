@@ -28,6 +28,14 @@
             <span class="caption">Encaissements</span>
           </a>
         </li>
+
+        <li *ngxPermissionsOnly="['consult.bill']">
+          <a routerLink="/admin/f/0">
+            <span class="icon"><span class="mif-coins"></span></span>
+            <span class="caption">Comptabilité</span>
+          </a>
+        </li>
+
         <li *ngxPermissionsOnly="['consult.billsss']">
           <a routerLink="/s/facture">
             <span class="icon"><span class="mif-file-pdf"></span></span>
@@ -97,7 +105,7 @@
         </div>
       </div>
 
-      <div id="content-wrapper" class="content-inner h-100" style="overflow-y: auto"  *ngxPermissionsOnly="['comrec.permission']">
+      <div id="content-wrapper" class="content-inner h-100" style="overflow-y: auto;"  *ngxPermissionsOnly="['comrec.permission']">
         <router-outlet></router-outlet>
 
       </div>

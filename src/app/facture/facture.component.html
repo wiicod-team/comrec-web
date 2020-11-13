@@ -139,44 +139,59 @@
               </tbody>
             </table>
           </div>
-          <div class="form-group">
-            <label>Entité</label>
-            <select [(ngModel)]="entite">
-              <option value="BDC">BVS Distribution</option>
-              <option value="BPC">BVS Production</option>
-            </select>
+          <div class="form-group" *ngIf="customer_id == 0">
+            <label>Vendeur</label>
+            <m4-select
+              [options]="users"
+              [(ngModel)]="user_id"></m4-select>
           </div>
-          <div class="form-group">
-            <label>Mode de paiement</label>
-            <select [(ngModel)]="payment_method">
-              <option value="Chèque">Chèque</option>
-              <option value="Espèce">Espèce</option>
-              <option value="Paiement mobile">Paiement mobile</option>
-              <option value="Virement">Virement</option>
-            </select>
+
+          <div class="row">
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Entité</label>
+                <select [(ngModel)]="entite">
+                  <option value="BDC">BVS Distribution</option>
+                  <option value="BPC">BVS Production</option>
+                </select>
+              </div>
+            </div>
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Mode de paiement</label>
+                <select [(ngModel)]="payment_method">
+                  <option value="Chèque">Chèque</option>
+                  <option value="Espèce">Espèce</option>
+                  <option value="Paiement mobile">Paiement mobile</option>
+                  <option value="Virement">Virement</option>
+                </select>
+              </div>
+            </div>
           </div>
+
           <div *ngIf="payment_method == 'Chèque'">
-            <div class="form-group">
-              <label>Date</label>
-              <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
-                                  [dialog-mode]="true"
-                                  locale="fr-FR" format="%d/%m/%Y" size="100%"
-                                  calendar-button-icon="<span class='mif-calendar'></span>"
-                                  [show-header]="true"></m4-calendar-picker>
+            <div class="row">
+              <div class="cell-6">
+                <div class="form-group">
+                  <label>Date</label>
+                  <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
+                                      [dialog-mode]="true"
+                                      locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                      calendar-button-icon="<span class='mif-calendar'></span>"
+                                      [show-header]="true"></m4-calendar-picker>
+                </div>
+              </div>
+              <div class="cell-6">
+                <div class="form-group">
+                  <label>Banque</label>
+                  <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Banque</label>
-              <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
-            </div>
+
             <div class="form-group">
               <label>N° du chèque</label>
               <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>
-            </div>
-          </div>
-          <div *ngIf="payment_method == 'Virement'">
-            <div class="form-group">
-              <label>Reférence</label>
-              <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
             </div>
           </div>
 
@@ -184,6 +199,12 @@
             <div class="form-group">
               <label>Commentaire</label>
               <input type="text" [(ngModel)]="commentaire1" placeholder="Commentaire"/>
+            </div>
+          </div>
+          <div *ngIf="payment_method == 'Virement'">
+            <div class="form-group">
+              <label>Reférence</label>
+              <input type="text" [(ngModel)]="commentaire1" placeholder="Référence"/>
             </div>
           </div>
 
@@ -198,6 +219,7 @@
             </div>
           </div>
         </div>
+
         <div class="dialog-content" *ngIf="selected_bill.length<=0">
           Aucune facture selectionnée.
         </div>
@@ -222,35 +244,57 @@
             <br>
             <small *ngIf="montant_avance > (facture.reste)" class="fg-red">Montant de l'avance supérieur à la somme à payer</small>
           </div>
-          <div class="form-group">
-            <label>Entité</label>
-            <select [(ngModel)]="entite">
-              <option value="BDC">BVS Distribution</option>
-              <option value="BPC">BVS Production</option>
-            </select>
+
+          <div class="form-group" *ngIf="customer_id == 0">
+            <label>Vendeur</label>
+            <m4-select
+                       [options]="users"
+                       [(ngModel)]="user_id"></m4-select>
           </div>
-          <div class="form-group">
-            <label>Mode de paiement</label>
-            <select [(ngModel)]="payment_method">
-              <option value="Chèque">Chèque</option>
-              <option value="Espèce">Espèce</option>
-              <option value="Paiement mobile">Paiement mobile</option>
-              <option value="Virement">Virement</option>
-            </select>
+
+          <div class="row">
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Entité</label>
+                <select [(ngModel)]="entite">
+                  <option value="BDC">BVS Distribution</option>
+                  <option value="BPC">BVS Production</option>
+                </select>
+              </div>
+            </div>
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Mode de paiement</label>
+                <select [(ngModel)]="payment_method">
+                  <option value="Chèque">Chèque</option>
+                  <option value="Espèce">Espèce</option>
+                  <option value="Paiement mobile">Paiement mobile</option>
+                  <option value="Virement">Virement</option>
+                </select>
+              </div>
+            </div>
           </div>
+
           <div *ngIf="payment_method == 'Chèque'">
-            <div class="form-group">
-              <label>Date</label>
-              <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
-                                  [dialog-mode]="true"
-                                  locale="fr-FR" format="%d/%m/%Y" size="100%"
-                                  calendar-button-icon="<span class='mif-calendar'></span>"
-                                  [show-header]="true"></m4-calendar-picker>
+            <div class="row">
+              <div class="cell-6">
+                <div class="form-group">
+                  <label>Date</label>
+                  <m4-calendar-picker [(ngModel)]="commentaire3" cls-calendar="compact"
+                                      [dialog-mode]="true"
+                                      locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                      calendar-button-icon="<span class='mif-calendar'></span>"
+                                      [show-header]="true"></m4-calendar-picker>
+                </div>
+              </div>
+              <div class="cell-6">
+                <div class="form-group">
+                  <label>Banque</label>
+                  <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Banque</label>
-              <input type="text" [(ngModel)]="commentaire2" placeholder="Banque"/>
-            </div>
+
             <div class="form-group">
               <label>N° du chèque</label>
               <input type="text" [(ngModel)]="commentaire1" placeholder="N° du chèque"/>

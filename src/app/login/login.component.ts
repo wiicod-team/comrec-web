@@ -33,15 +33,13 @@ export class LoginComponent implements OnInit {
       Metro.notify.create('Mot de passe absent', 'Erreur de connexion', {cls: 'warning'});
     } else {
       this.auth.login({username: this.username, password: this.password}).then(rep => {
-        // console(rep);
         // @ts-ignore
         this.user = rep.user;
-
         if (!this.user.has_reset_password) {
           this.router.navigate(['/reset', this.user.id]);
         } else {
           // redirection vers facture
-          this.router.navigate(['/s/univers-client']);
+          this.router.navigate(['/s']);
         }
 
 
