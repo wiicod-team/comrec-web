@@ -16,7 +16,7 @@ declare var Metro;
 export class FactureComponent implements OnInit {
   search = '';
   factures = [];
-  users = [];
+  users = {};
   sellers = [];
   entite: string;
   montant = 0;
@@ -216,9 +216,10 @@ export class FactureComponent implements OnInit {
       // actualisation
       let i = 0;
       this.selected_bill.forEach(f => {
-        if (this.payment_method === 'Chèque') {
+        if (this.payment_method === 'Chèque' || this.payment_method === 'Traite') {
           // console.log(this.commentaire3, moment(new Date(x)).format('YYYY-MM-DD'));
-          f.received_at = moment(new Date(x)).format('YYYY-MM-DD HH:mm:ss');
+          // f.received_at = moment(new Date(x)).format('YYYY-MM-DD HH:mm:ss');
+          f.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
         } else {
           f.received_at = moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
         }
@@ -233,8 +234,9 @@ export class FactureComponent implements OnInit {
             payment_method: this.payment_method,
             user_id: this.user_id
           };
-          if (this.payment_method === 'Chèque') {
-            opt1.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
+          if (this.payment_method === 'Chèque' || this.payment_method === 'Traite') {
+            // opt1.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
+            opt1.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
           }
           this.api.Receipts.post(opt1).subscribe(da => {
             i++;
@@ -309,6 +311,7 @@ export class FactureComponent implements OnInit {
       document.getElementById('close').click();
       this.state = true;
       const x = this.commentaire3;
+      console.log(moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'));
       this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       const opt = {
         amount: this.montant_avance,
@@ -318,8 +321,8 @@ export class FactureComponent implements OnInit {
         user_id: this.user_id,
         received_at: moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss')
       };
-      if (this.payment_method === 'Chèque') {
-        opt.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
+      if (this.payment_method === 'Chèque' || this.payment_method === 'Traite') {
+        opt.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
       }
       this.api.Receipts.post(opt).subscribe(d => {
         Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
@@ -346,6 +349,7 @@ export class FactureComponent implements OnInit {
               this.printAvance(e);
               this.montant = 0;
             }, q => {
+              console.log('C');
               if (q.data.error.status_code === 500) {
                 Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {
                   cls: 'alert',
@@ -442,6 +446,11 @@ export class FactureComponent implements OnInit {
       } else if (this.payment_method === 'Virement' && this.commentaire1 !== '') {
         return true;
       } else if (this.payment_method === 'Virement' && this.commentaire1 === '') {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.payment_method === 'Traite' && this.commentaire1 !== '' && this.commentaire2 !== '' && this.commentaire3 !== '') {
+        return true;
+      } else if (this.payment_method === 'Traite' && (this.commentaire1 === '' || this.commentaire2 === '' || this.commentaire3 === '')) {
         Metro.toast.create('Merci de remplir tous les champs', null, 5000);
         return false;
       } else if (this.payment_method === 'Chèque' && this.commentaire1 !== '' && this.commentaire2 !== '' && this.commentaire3 !== '') {
@@ -628,6 +637,7 @@ export class FactureComponent implements OnInit {
             }
             this.factures.push(vv);
           }
+          //console.log(this.factures);
 
           /*if (vv.reste !== 0) {
             if (vv.reste === vv.avance && vv.status === 'paid') {
@@ -764,5 +774,12 @@ export class FactureComponent implements OnInit {
         }
       }
     );
+  }
+
+  editFacture(fa) {
+    console.log(fa);
+    // fa.amount = 43310;
+    // fa.put();
+    // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
 }

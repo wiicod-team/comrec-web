@@ -71,6 +71,7 @@ export class CustomerUniverseComponent implements OnInit {
         _sort: 'name',
         _sortDir: 'asc',
         per_page: this.per_page,
+        'users-fk': 'user_id=' + this.user.id,
         page: this.page
       };
 
