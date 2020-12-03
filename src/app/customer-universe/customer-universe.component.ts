@@ -17,7 +17,7 @@ export class CustomerUniverseComponent implements OnInit {
   user_id;
   customer;
   page = 1;
-  per_page = 20;
+  per_page = 100;
   max_length = 0;
   old_max_length = 0;
   last_page = 10000000;
@@ -76,6 +76,7 @@ export class CustomerUniverseComponent implements OnInit {
       };
 
       this.api.Customers.getList(opt).subscribe(data => {
+        console.log(opt,data);
         this.last_page = data.metadata.last_page;
         this.max_length = data.metadata.total;
         data.forEach((v, k) => {

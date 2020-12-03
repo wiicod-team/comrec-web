@@ -109,8 +109,8 @@
       </div>
 
       <div class="row">
-        <div class="cell-2">
-          <small>{{factures.length}} sur {{max_length}} Factures</small>
+        <div class="cell-5">
+          <small>{{factures.length}} factures. <span *ngIf="max_length>500">Defilez vers le bas pour en voir plus.</span></small>
         </div>
       </div>
 

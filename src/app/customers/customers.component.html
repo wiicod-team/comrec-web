@@ -25,7 +25,7 @@
         <m4-input [(ngModel)]="search"
                   placeholder="Client"
                   (ngModelChange)="vide()"
-                  (focusout)="rechercher()"
+                  (focusout)="{}"
                   [ngModelOptions]="{standalone: true}"
                   [search-button]="true" (search-button-click)="rechercher()"></m4-input>
       </div>
@@ -41,6 +41,7 @@
         <thead>
         <tr>
           <th data-sortable="true" data-sort-dir="asc" data-name="facture">#</th>
+          <th data-sortable="true" data-sort-dir="asc" data-name="facture">Code</th>
           <th data-sortable="true">Nom</th>
           <th data-sortable="true" data-name="client">Réseau</th>
           <th data-sortable="true">Vendeur</th>
@@ -49,6 +50,7 @@
         </thead>
         <tbody>
         <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
+          <td>{{i.id}}</td>
           <td>{{i.bvs_id}}</td>
           <td>{{i.name}}</td>
           <td>{{i.sale_network}}</td>

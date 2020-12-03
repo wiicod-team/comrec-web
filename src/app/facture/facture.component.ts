@@ -43,7 +43,7 @@ export class FactureComponent implements OnInit {
   commentaire2 = '';
   commentaire3: any;
   montant_avance;
-  per_page = 100;
+  per_page = 500;
   customer_id = 0;
 
   constructor(private api: ApiProvider, private route: ActivatedRoute, private router: Router) {
@@ -601,6 +601,7 @@ export class FactureComponent implements OnInit {
   handleBills(opt) {
     this.api.Bills.getList(opt).subscribe(
       d => {
+        //console.log(d);
         this.last_page = d.metadata.last_page;
         this.max_length = d.metadata.total;
         this.old_max_length = this.max_length;
@@ -629,6 +630,7 @@ export class FactureComponent implements OnInit {
             vv.statut = 'Payée';
           } else if (vv.status === 'remain') {
             vv.statut = 'Avoir';
+            this.factures.push(vv);
           } else {
             if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
               vv.statut = 'Non echue';
@@ -778,8 +780,8 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-    // fa.amount = 43310;
-    // fa.put();
+    //fa.amount = 404906;
+    //fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
 }

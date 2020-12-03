@@ -27,6 +27,7 @@ export class CustomerDetailComponent implements OnInit {
     email: 'x@x.a',
     status: '',
     echue: 0,
+    remain: 0,
     bills: 0,
     sale_network: ''
   };
@@ -36,7 +37,7 @@ export class CustomerDetailComponent implements OnInit {
     this.user = JSON.parse(localStorage.getItem('user'));
     const id = this.route.snapshot.paramMap.get('i');
     this.getCustomer(id);
-    //this.getDebt(id);
+    // this.getDebt(id);
   }
 
   ngOnInit(): void {
@@ -54,7 +55,7 @@ export class CustomerDetailComponent implements OnInit {
     });
     this.api.Customers.get(id).subscribe(d => {
       this.customer = d.body;
-      this.getEchues(id);
+      this.getBillStatus(id);
       this.getCustomerBillCount(id);
       this.getDebt(id);
       this.router.navigate(['/s/detail-client/' + id + '/facture/' + id]);
@@ -66,6 +67,7 @@ export class CustomerDetailComponent implements OnInit {
     const opt = {
       _includes: 'receipts',
       should_paginate: false,
+      'status-in': 'new,pending,remain',
       customer_id: id
     };
     this.api.Bills.getList(opt).subscribe( d => {
@@ -109,8 +111,8 @@ export class CustomerDetailComponent implements OnInit {
     });
   }
 
-  getEchues(id) {
-    const opt = {
+  getBillStatus(id) {
+    let opt = {
       should_paginate: false,
       _agg: 'count',
       customer_id: id,
@@ -119,6 +121,25 @@ export class CustomerDetailComponent implements OnInit {
     };
     this.api.Bills.getList(opt).subscribe(d => {
       this.customer.echue = d[0].value;
+    }, q => {
+      if (q.data.error.status_code === 500) {
+        Metro.notify.create('getEchues ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      } else if (q.data.error.status_code === 401) {
+        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
+      } else {
+        Metro.notify.create('getEchues ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
+      }
+    });
+
+    opt = {
+      should_paginate: false,
+      _agg: 'count',
+      customer_id: id,
+      status: 'remain',
+      'creation_date-let': moment(new Date()).add('days', -30).format('YYYY-MM-DD HH:mm:ss')
+    };
+    this.api.Bills.getList(opt).subscribe(d => {
+      this.customer.remain = d[0].value;
     }, q => {
       if (q.data.error.status_code === 500) {
         Metro.notify.create('getEchues ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -143,4 +164,5 @@ export class CustomerDetailComponent implements OnInit {
       }
     });
   }
+
 }
