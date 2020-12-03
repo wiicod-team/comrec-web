@@ -19,7 +19,7 @@ export class CustomersComponent implements OnInit {
   user_id;
   customer;
   page = 1;
-  per_page = 25;
+  per_page = 100;
   max_length = 0;
   old_max_length = 0;
   last_page = 10000000;
@@ -268,16 +268,7 @@ export class CustomersComponent implements OnInit {
             }
           });
         }
-        if (index === this.users.length) {
-          this.load = Metro.activity.open({
-            type: 'metro',
-            overlayColor: '#fff',
-            overlayAlpha: 1,
-            text: '<div class=\'mt-2 text-small\'>Actualisation des données...</div>',
-            overlayClickClose: true
-          });
-          this.getCustomers(true);
-        }
+        this.getCustomers(true);
       });
     }
   }
