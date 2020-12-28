@@ -601,7 +601,7 @@ export class FactureComponent implements OnInit {
   handleBills(opt) {
     this.api.Bills.getList(opt).subscribe(
       d => {
-        //console.log(d);
+        console.log(d);
         this.last_page = d.metadata.last_page;
         this.max_length = d.metadata.total;
         this.old_max_length = this.max_length;
@@ -628,6 +628,7 @@ export class FactureComponent implements OnInit {
           }
           if (vv.status === 'paid') {
             vv.statut = 'Payée';
+            //this.factures.push(vv);
           } else if (vv.status === 'remain') {
             vv.statut = 'Avoir';
             this.factures.push(vv);
@@ -781,7 +782,8 @@ export class FactureComponent implements OnInit {
   editFacture(fa) {
     console.log(fa);
     //fa.amount = 404906;
-    //fa.put();
+    fa.status = 'pending';
+    fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
 }
