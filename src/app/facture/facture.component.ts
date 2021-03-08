@@ -592,7 +592,7 @@ export class FactureComponent implements OnInit {
   }
 
   getX3Bills() {
-    this.api.X3.getList().subscribe( d => {
+    this.api.X3.getList({per_page: 100}).subscribe( d => {
       console.log(d);
     });
     // https://api-izis.bvs-sas.com/api/retrieve-bills
@@ -628,7 +628,7 @@ export class FactureComponent implements OnInit {
           }
           if (vv.status === 'paid') {
             vv.statut = 'Payée';
-            //this.factures.push(vv);
+            this.factures.push(vv);
           } else if (vv.status === 'remain') {
             vv.statut = 'Avoir';
             this.factures.push(vv);
@@ -781,8 +781,8 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-    //fa.amount = 404906;
-    fa.status = 'pending';
+    //fa.amount = 767484;
+    fa.status = 'paid';
     fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
