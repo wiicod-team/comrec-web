@@ -626,22 +626,33 @@ export class FactureComponent implements OnInit {
           } else {
             vv.reste = vv.amount;
           }
-          if (vv.status === 'paid') {
+          if (vv.reste > 0 && vv.avance !== vv.reste) {
+            vv.bool = 1;
+          } else {
+            vv.bool = 0;
+          }
+          if (vv.status === 'paid' && vv.bool === 0) {
             vv.statut = 'Payée';
+            vv.ordre = 3;
+            this.factures.push(vv);
+          } else if (vv.status === 'paid' && vv.bool === 1) {
+            vv.statut = 'Echue';
+            vv.ordre = 2;
             this.factures.push(vv);
           } else if (vv.status === 'remain') {
             vv.statut = 'Avoir';
+            vv.ordre = 4;
             this.factures.push(vv);
           } else {
             if (moment(vv.creation_date).add('days', '30') > moment(new Date())) {
               vv.statut = 'Non echue';
+              vv.ordre = 1;
             } else {
               vv.statut = 'Echue';
+              vv.ordre = 2;
             }
             this.factures.push(vv);
           }
-          //console.log(this.factures);
-
           /*if (vv.reste !== 0) {
             if (vv.reste === vv.avance && vv.status === 'paid') {
               this.max_length--;
@@ -670,6 +681,8 @@ export class FactureComponent implements OnInit {
             }
           }*/
         });
+        // order by bool
+        this.factures = _.sortBy(this.factures, 'ordre');
         this.isLoadingBills = false;
         this.page++;
         this.state = false;
@@ -781,8 +794,8 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-    //fa.amount = 767484;
-    fa.status = 'paid';
+    // fa.amount = 767484;
+    fa.status = 'pending';
     fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
