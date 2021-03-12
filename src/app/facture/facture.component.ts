@@ -632,7 +632,7 @@ export class FactureComponent implements OnInit {
             vv.bool = 0;
           }
           if (vv.status === 'paid' && vv.bool === 0) {
-            vv.statut = 'Payée';
+            vv.statut = 'Payée';//
             vv.ordre = 3;
             this.factures.push(vv);
           } else if (vv.status === 'paid' && vv.bool === 1) {
