@@ -7,7 +7,7 @@
     <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
 
       <div class="buttongroup">
-        <button class="button"><a (click)="period()" class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
+        <button (click)="period()" class="button"><a class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
       </div>
     </div>
   </div>
@@ -36,8 +36,6 @@
       </div>
 
       <button *ngxPermissionsOnly="['export.data']"
-              data-role="hint"
-              data-hint-text="Exporter les données en csv"
               class="button ml-auto mr-2" (click)="exportCsv()">Exporter</button>
 
     </div>
@@ -46,6 +44,7 @@
       >
         <thead>
         <tr>
+          <th data-sortable="true" (click)="orderBy('id')">N°</th>
           <th data-sortable="true" (click)="orderBy('bill.bvs_id')">N° Facture</th>
           <th data-sortable="true" (click)="orderBy('received_at')">Date</th>
           <th data-sortable="true" (click)="orderBy('bill.customer.name')">Client</th>
@@ -59,6 +58,7 @@
         </thead>
         <tbody>
         <tr *ngFor="let i of encaissements">
+          <td>{{i.id}}</td>
           <td>{{i.bill.bvs_id}}</td>
           <td>{{i.received_at}}</td>
           <td>{{i.bill.customer.name}}</td>
