@@ -43,10 +43,12 @@ export class FactureComponent implements OnInit {
   commentaire2 = '';
   commentaire3: any;
   montant_avance;
+  today = new Date();
   per_page = 500;
   customer_id = 0;
 
   constructor(private api: ApiProvider, private route: ActivatedRoute, private router: Router) {
+    //console.log(moment(this.today).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss'));
     this.entite = 'BDC';
     this.customer_id = parseInt(this.route.snapshot.paramMap.get('customer_id'));
     this.api.checkUser();
@@ -220,6 +222,9 @@ export class FactureComponent implements OnInit {
           // console.log(this.commentaire3, moment(new Date(x)).format('YYYY-MM-DD'));
           // f.received_at = moment(new Date(x)).format('YYYY-MM-DD HH:mm:ss');
           f.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
+          if (this.commentaire3 < this.today) {
+            f.received_at = moment(this.today).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss')
+          }
         } else {
           f.received_at = moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
         }
@@ -306,12 +311,12 @@ export class FactureComponent implements OnInit {
   validerAvance() {
     if (this.checkNote()) {
       if (this.customer_id === 0) {
-        this.user_name = this.sellers.find(i => i.id == this.user_id).name;
+        this.user_name = this.sellers.find(i => i.id === this.user_id).name;
       }
       document.getElementById('close').click();
       this.state = true;
       const x = this.commentaire3;
-      console.log(moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'));
+      //console.log(moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'));
       this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       const opt = {
         amount: this.montant_avance,
@@ -323,6 +328,9 @@ export class FactureComponent implements OnInit {
       };
       if (this.payment_method === 'Chèque' || this.payment_method === 'Traite') {
         opt.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
+        if (this.commentaire3 < this.today) {
+          opt.received_at = moment(this.today).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss')
+        }
       }
       this.api.Receipts.post(opt).subscribe(d => {
         Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
@@ -437,7 +445,7 @@ export class FactureComponent implements OnInit {
   }
 
   checkNote() {
-    if (this.payment_method !== '' && this.user_id !== undefined) {
+    if (this.payment_method !== '' && this.user_id !== undefined && this.entite !== undefined) {
       if (this.payment_method === 'Espèce' && this.commentaire1 !== '') {
         return true;
       } else if (this.payment_method === 'Espèce' && this.commentaire1 === '') {
@@ -465,7 +473,7 @@ export class FactureComponent implements OnInit {
         return false;
       }
     } else {
-      Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+      Metro.toast.create('Merci de remplir tous les champs et de selectionner l\'entité', null, 5000);
       return false;
     }
   }
@@ -601,7 +609,7 @@ export class FactureComponent implements OnInit {
   handleBills(opt) {
     this.api.Bills.getList(opt).subscribe(
       d => {
-        console.log(d);
+        //console.log(d);
         this.last_page = d.metadata.last_page;
         this.max_length = d.metadata.total;
         this.old_max_length = this.max_length;
@@ -632,7 +640,7 @@ export class FactureComponent implements OnInit {
             vv.bool = 0;
           }
           if (vv.status === 'paid' && vv.bool === 0) {
-            vv.statut = 'Payée';//
+            vv.statut = 'Payée';
             vv.ordre = 3;
             this.factures.push(vv);
           } else if (vv.status === 'paid' && vv.bool === 1) {
@@ -794,7 +802,7 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-    // fa.amount = 767484;
+    fa.amount = 6778939;
     fa.status = 'pending';
     fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
