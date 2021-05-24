@@ -212,25 +212,15 @@ export class FactureComponent implements OnInit {
         this.user_name = this.sellers.find(i => i.id == this.user_id).name;
       }
       document.getElementById('non').click();
-      const x = this.commentaire3;
-      this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
+      this.commentaire3 = moment(this.commentaire3);
       this.state = true;
       // actualisation
       let i = 0;
       this.selected_bill.forEach(f => {
-        if (this.payment_method === 'Chèque' || this.payment_method === 'Traite') {
-          // console.log(this.commentaire3, moment(new Date(x)).format('YYYY-MM-DD'));
-          // f.received_at = moment(new Date(x)).format('YYYY-MM-DD HH:mm:ss');
-          f.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
-          if (this.commentaire3 < this.today) {
-            f.received_at = moment(this.today).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss')
-          }
-        } else {
-          f.received_at = moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
-        }
+        f.received_at = moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
         f.status = 'paid';
         f.put().subscribe(d => {
-          const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite;
+          const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY') + '|' + this.entite;
           const opt1 = {
             bill_id: f.id,
             amount: f.amount,
@@ -239,10 +229,6 @@ export class FactureComponent implements OnInit {
             payment_method: this.payment_method,
             user_id: this.user_id
           };
-          if (this.payment_method === 'Chèque' || this.payment_method === 'Traite') {
-            // opt1.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
-            opt1.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
-          }
           this.api.Receipts.post(opt1).subscribe(da => {
             i++;
             Metro.notify.create('Facture ' + f.bvs_id + ' encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
@@ -253,10 +239,11 @@ export class FactureComponent implements OnInit {
                 vendeur_id: this.user_id,
                 vendeur: this.user_name,
                 client: f.name,
-                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY'),
                 payment_method: this.payment_method,
                 id: da.body.id
               };
+              console.log(e);
               this.printEncaissement(e, this.selected_bill);
               // arret du loading
               this.state = false;
@@ -311,27 +298,19 @@ export class FactureComponent implements OnInit {
   validerAvance() {
     if (this.checkNote()) {
       if (this.customer_id === 0) {
-        this.user_name = this.sellers.find(i => i.id === this.user_id).name;
+        this.user_name = this.sellers.find(i => i.id == this.user_id).name;
       }
       document.getElementById('close').click();
       this.state = true;
-      const x = this.commentaire3;
-      //console.log(moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'));
-      this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
+      this.commentaire3 = moment(this.commentaire3);
       const opt = {
         amount: this.montant_avance,
-        note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite,
+        note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY') + '|' + this.entite,
         payment_method: this.payment_method,
         bill_id: this.facture.id,
         user_id: this.user_id,
         received_at: moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss')
       };
-      if (this.payment_method === 'Chèque' || this.payment_method === 'Traite') {
-        opt.received_at = moment(new Date(x)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
-        if (this.commentaire3 < this.today) {
-          opt.received_at = moment(this.today).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss')
-        }
-      }
       this.api.Receipts.post(opt).subscribe(d => {
         Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
         if (this.montant_avance >= (this.facture.amount)) {
@@ -343,7 +322,7 @@ export class FactureComponent implements OnInit {
               this.state = false;
               const e = {
                 id: datap.body.id,
-                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY'),
                 received_at: data.body.received_at,
                 vendeur_id: this.user_id,
                 vendeur: this.user_name,
@@ -445,6 +424,7 @@ export class FactureComponent implements OnInit {
   }
 
   checkNote() {
+    console.log(this.entite);
     if (this.payment_method !== '' && this.user_id !== undefined && this.entite !== undefined) {
       if (this.payment_method === 'Espèce' && this.commentaire1 !== '') {
         return true;
@@ -514,14 +494,14 @@ export class FactureComponent implements OnInit {
     } else if (e.payment_method === 'Chèque') {
       doc.text('N° Chèque: ' + this.commentaire1, 6, 46);
       doc.text('Banque: ' + this.commentaire2, 6, 49);
-      doc.text('Date: ' + this.commentaire3, 6, 52);
+      doc.text('Date: ' + this.commentaire3.format('DD/MM/YYYY'), 6, 52);
     } else {
       doc.text('N° Transaction: ' + this.commentaire1, 6, 46);
       doc.text('Opérateur: ' + this.commentaire2, 6, 49);
     }
 
     doc.save('bvs_avance_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
-    this.getBills(true);
+    this.getBills(false);
     this.commentaire1 = '';
     this.commentaire2 = '';
     this.payment_method = '';
@@ -571,14 +551,14 @@ export class FactureComponent implements OnInit {
     } else if (e.payment_method === 'Chèque') {
       doc.text('N° Chèque: ' + this.commentaire1, 6, x + 9);
       doc.text('Banque: ' + this.commentaire2, 6, x + 12);
-      doc.text('Date: ' + this.commentaire3, 6, x + 15);
+      doc.text('Date: ' + this.commentaire3.format('DD/MM/YYYY'), 6, x + 15);
     } else {
       doc.text('N° Transaction: ' + this.commentaire1, 6, x + 9);
       doc.text('Opérateur: ' + this.commentaire2, 6, x + 12);
     }
 
     doc.save('bvs_encaissement_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
-    this.getBills(true);
+    this.getBills(false);
     this.commentaire1 = '';
     this.commentaire2 = '';
     this.payment_method = '';
@@ -802,7 +782,7 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-    fa.amount = 6778939;
+    //fa.amount = 6778939;
     fa.status = 'pending';
     fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
