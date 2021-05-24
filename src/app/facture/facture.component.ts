@@ -48,7 +48,7 @@ export class FactureComponent implements OnInit {
   customer_id = 0;
 
   constructor(private api: ApiProvider, private route: ActivatedRoute, private router: Router) {
-    //console.log(moment(this.today).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss'));
+    //console.log(moment(this.today).format('YYYY-MM-DD') + '' +  moment(new Date()).utcOffset(1).format('HH:mm:ss'));
     this.entite = 'BDC';
     this.customer_id = parseInt(this.route.snapshot.paramMap.get('customer_id'));
     this.api.checkUser();
