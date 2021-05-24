@@ -245,7 +245,7 @@ export class FactureComponent implements OnInit {
               };
               console.log(e);
               this.printEncaissement(e, this.selected_bill);
-              // arret du loading
+              // arret du loading je push encore
               this.state = false;
               this.montant = 0;
             }
