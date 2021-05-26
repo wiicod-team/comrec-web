@@ -614,7 +614,7 @@ export class FactureComponent implements OnInit {
           } else {
             vv.reste = vv.amount;
           }
-          if (vv.reste > 0 && vv.avance !== vv.reste) {
+          if (vv.reste > 0 /*&& vv.avance !== vv.reste*/) {
             vv.bool = 1;
           } else {
             vv.bool = 0;
