@@ -291,10 +291,10 @@ export class ReceiptsComponent implements OnInit {
   }
 
   exportCsv() {
-    let csv = '#,Facture,Date,Client,Montant,Mode de paiement,Entite,Vendeur,Reseau\n';
+    let csv = '#,.Facture,.Date,.Client,.Montant,.Mode de paiement,.Entite,.Vendeur,.Reseau,.Commentaire\n';
     this.encaissements.forEach(e => {
-      csv += e.id + ',' + e.bill.bvs_id + ',' + e.created_at + ',' + e.bill.customer.name + ',' + e.amount + ','
-        + e.payment_method + ',' + e.entite + ',' + e.user.name + ',' + e.user.network;
+      csv += e.id + ',.' + e.bill.bvs_id + ',.' + e.created_at + ',.' + e.bill.customer.name + ',.' + e.amount + ',.'
+        + e.payment_method + ',.' + e.entite + ',.' + e.user.name + ',.' + e.user.network + ',.' + e.note;
       csv += '\n';
     });
 

@@ -589,7 +589,6 @@ export class FactureComponent implements OnInit {
   handleBills(opt) {
     this.api.Bills.getList(opt).subscribe(
       d => {
-        //console.log(d);
         this.last_page = d.metadata.last_page;
         this.max_length = d.metadata.total;
         this.old_max_length = this.max_length;
@@ -615,7 +614,11 @@ export class FactureComponent implements OnInit {
             vv.reste = vv.amount;
           }
           if (vv.reste > 0 /*&& vv.avance !== vv.reste*/) {
-            vv.bool = 1;
+            if (vv.bvs_id.search('AVC') === 9 || vv.bvs_id.search('AVC') === 7) {// facture d'avoir
+              vv.bool = 0;
+            } else {
+              vv.bool = 1;
+            }
           } else {
             vv.bool = 0;
           }
@@ -670,7 +673,7 @@ export class FactureComponent implements OnInit {
           }*/
         });
         // order by bool
-        this.factures = _.sortBy(this.factures, 'ordre');
+        this.factures = _.sortBy(this.factures, 'creation_date').reverse();
         this.isLoadingBills = false;
         this.page++;
         this.state = false;
@@ -783,7 +786,7 @@ export class FactureComponent implements OnInit {
   editFacture(fa) {
     console.log(fa);
     //fa.amount = 6778939;
-    fa.status = 'pending';
+    fa.status = 'paid';
     fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
