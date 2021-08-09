@@ -237,7 +237,6 @@ export class FactureComponent implements OnInit {
         this.user_name = this.sellers.find(i => i.id == this.user_id).name;
       }
       document.getElementById('non').click();
-      const x = this.commentaire3;
       this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       this.state = true;
       // actualisation
@@ -246,7 +245,7 @@ export class FactureComponent implements OnInit {
         f.received_at = moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss');
         f.status = 'paid';
         f.put().subscribe(d => {
-          const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY') + '|' + this.entite;
+          const note = this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3 + '|' + this.entite;
           const opt1 = {
             bill_id: f.id,
             amount: f.amount,
@@ -265,7 +264,7 @@ export class FactureComponent implements OnInit {
                 vendeur_id: this.user_id,
                 vendeur: this.user_name,
                 client: f.name,
-                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY'),
+                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
                 payment_method: this.payment_method,
                 id: da.body.id
               };
@@ -918,8 +917,8 @@ export class FactureComponent implements OnInit {
   editFacture(fa) {
     console.log(fa);
     // fa.amount = 767484;
-    // fa.status = 'pending';
-    // fa.put();
+     fa.status = 'pending';
+     fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
 }
