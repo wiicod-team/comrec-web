@@ -68,7 +68,8 @@
           <td>{{i.vendeur}}</td>
           <td>{{i.note}}</td>
           <td>
-            <button class="button mini" (click)="printReceipt(i)"><span class="mif-print"></span></button>
+            <button class="button mini" *ngIf="i.type == 'nouveau'" (click)="printNewReceipt(i)"><span class="mif-print"></span></button>
+            <button class="button mini" *ngIf="i.type == undefined" (click)="printReceipt(i)"><span class="mif-print"></span></button>
             <button class="button mini bg-red fg-white" *ngxPermissionsOnly="['edit.receipt']" (click)="openDeleteModal(i)"><span class="mif-cross"></span></button>
           </td>
         </tr>
