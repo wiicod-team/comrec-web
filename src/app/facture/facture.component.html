@@ -259,7 +259,7 @@
         </div>
       </div>
 
-      <div class="dialog" data-role="dialog" id="avanceDialog1">
+      <div class="dialog" data-role="dialog" id="avanceDialog2">
         <div class="dialog-title">Avance de paiement sur facure {{facture.bvs_id}}</div>
         <div class="dialog-content">
           Combien souhaitez-vous avancer ?
@@ -275,8 +275,8 @@
           <div class="form-group" *ngIf="customer_id == 0">
             <label>Vendeur</label>
             <m4-select
-                       [options]="users"
-                       [(ngModel)]="user_id"></m4-select>
+              [options]="users"
+              [(ngModel)]="user_id"></m4-select>
           </div>
 
           <div class="row">
@@ -385,6 +385,214 @@
 
         <div class="dialog-actions text-right">
           <button class="button bg-or fg-white"  (click)="validerAvance()">Valider</button>
+          <button class="button primary js-dialog-close bg-noir" id="close2">Fermer</button>
+        </div>
+      </div>
+
+      <div class="dialog" data-role="dialog" id="avanceDialog1" data-width="90%">
+        <div class="dialog-title">Avance de paiement sur facure {{facture.bvs_id}}</div>
+        <div class="dialog-content">
+          Selectionner un ou plusieurs modes de paiement
+          <div class="form-group">
+            <m4-switch [(ngModel)]="cheque" caption="Chèque"></m4-switch>
+            <m4-switch [(ngModel)]="espece" caption="Espèce"></m4-switch>
+            <m4-switch [(ngModel)]="orange" caption="Orange Money"></m4-switch>
+            <m4-switch [(ngModel)]="mtn" caption="MTN Mobile Money"></m4-switch>
+            <m4-switch [(ngModel)]="virement" caption="Virement"></m4-switch>
+            <m4-switch [(ngModel)]="traite" *ngIf="customer_id == 0" caption="Traite"></m4-switch>
+          </div>
+
+          <div class="row">
+            <div class="cell-4">
+              <div class="form-group">
+                <label>Entité</label>
+                <select [(ngModel)]="entite">
+                  <option value="BDC" selected>BVS Distribution</option>
+                  <option value="BPC">BVS Production</option>
+                </select>
+              </div>
+            </div>
+            <div class="cell-4">
+              <div class="form-group">
+                <label>Montant Total</label>
+                <input type="number" disabled [(ngModel)]="montant_avance" [value]="montant_virement+montant_orange+montant_traite+montant_mtn+montant_espece+montant_cheque"
+                       placeholder="Montant de l'avance"/>
+                <small class="text-muteds">Reste à payer : <strong>{{facture.reste |priceFormat}}</strong> FCFA</small>
+                <strong>
+                  <small *ngIf="(montant_virement+montant_orange+montant_traite+montant_mtn+montant_espece+montant_cheque) > (facture.reste)" class="fg-red">
+                    Montant de l'avance supérieur à la somme à payer</small>
+                </strong>
+              </div>
+            </div>
+            <div class="cell-4">
+              <div class="form-group" *ngIf="customer_id == 0">
+                <label>Vendeur</label>
+                <m4-select
+                  [options]="users"
+                  [(ngModel)]="user_id"></m4-select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="cell-3" *ngIf="cheque">
+              <strong>Chèque</strong>
+              <div class="row">
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>Date</label>
+                    <m4-calendar-picker [(ngModel)]="date_cheque" cls-calendar="compact"
+                                        [dialog-mode]="true"
+                                        locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                        calendar-button-icon="<span class='mif-calendar'></span>"
+                                        [show-header]="true"></m4-calendar-picker>
+                  </div>
+                </div>
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>Banque</label>
+                    <input type="text" [(ngModel)]="banque_cheque" placeholder="Banque"/>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>N° du chèque</label>
+                    <input type="text" [(ngModel)]="numero_cheque" placeholder="N° du chèque"/>
+                  </div>
+                </div>
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>Montant</label>
+                    <input type="number" [(ngModel)]="montant_cheque" min="0" max="{{facture.reste}}"
+                           placeholder="Montant"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="cell-3" *ngIf="espece">
+              <strong>Espèce</strong>
+              <div class="row">
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>Montant</label>
+                    <input type="number" [(ngModel)]="montant_espece" min="0" max="{{facture.reste}}" placeholder="Montant"/>
+                  </div>
+                </div>
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>Commentaire</label>
+                    <input type="text" [(ngModel)]="commentaire_espece" placeholder="Commentaire"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cell-3" *ngIf="mtn">
+              <strong>MTN Mobile Money</strong>
+              <div class="row">
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>Montant</label>
+                    <input type="number" [(ngModel)]="montant_mtn" min="0" max="{{facture.reste}}" placeholder="Montant"/>
+                  </div>
+                </div>
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>N° de la transaction</label>
+                    <input type="text" [(ngModel)]="transaction_mtn" placeholder="N° de la transaction"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cell-3" *ngIf="orange">
+              <strong>Orange Money</strong>
+              <div class="row">
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>Montant</label>
+                    <input type="number" [(ngModel)]="montant_orange" min="0" max="{{facture.reste}}" placeholder="Montant"/>
+                  </div>
+                </div>
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>N° de la transaction</label>
+                    <input type="text" [(ngModel)]="transaction_orange" placeholder="N° de la transaction"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cell-3" *ngIf="virement">
+              <strong>Virement</strong>
+              <div class="row">
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>Montant</label>
+                    <input type="number" [(ngModel)]="montant_virement" min="0" max="{{facture.reste}}" placeholder="Montant"/>
+                  </div>
+                </div>
+                <div class="cell-12">
+                  <div class="form-group">
+                    <label>Reférence</label>
+                    <input type="text" [(ngModel)]="reference_virement" placeholder="Référence"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cell-3" *ngIf="traite">
+              <strong>Traite</strong>
+              <div class="row">
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>Date</label>
+                    <m4-calendar-picker [(ngModel)]="date_traite" cls-calendar="compact"
+                                        [dialog-mode]="true"
+                                        locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                        calendar-button-icon="<span class='mif-calendar'></span>"
+                                        [show-header]="true"></m4-calendar-picker>
+                  </div>
+                </div>
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>Banque</label>
+                    <input type="text" [(ngModel)]="banque_traite" placeholder="Banque"/>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>N° de la traite</label>
+                    <input type="text" [(ngModel)]="numero_traite" placeholder="N° de la traite"/>
+                  </div>
+                </div>
+                <div class="cell-6">
+                  <div class="form-group">
+                    <label>Montant</label>
+                    <input type="number" [(ngModel)]="montant_traite" min="0" max="{{facture.reste}}"
+                           placeholder="Montant"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        <div class="dialog-actions text-right">
+          <strong>
+            <small *ngIf="(montant_virement+montant_orange+montant_traite+montant_mtn+montant_espece+montant_cheque) > (facture.reste)" class="fg-red">
+              Montant de l'avance supérieur à la somme à payer</small>
+          </strong>
+          <button class="button bg-or fg-white"
+                  *ngIf="(montant_virement+montant_orange+montant_traite+montant_mtn+montant_espece+montant_cheque) <= (facture.reste)
+                 && (montant_virement+montant_orange+montant_traite+montant_mtn+montant_espece+montant_cheque) !=0"
+                  (click)="validerAvance()">Valider</button>
           <button class="button primary js-dialog-close bg-noir" id="close">Fermer</button>
         </div>
       </div>

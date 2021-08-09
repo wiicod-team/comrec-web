@@ -4,7 +4,6 @@ import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgxRolesService} from 'ngx-permissions';
 
 declare var Metro;
 
@@ -38,22 +37,45 @@ export class FactureComponent implements OnInit {
   old_max_length = 0;
   last_page = 10000000;
   facture: { id: number, avance?: number, amount?: number, name?: string, bvs_id?: number, reste?: number } = {id: 0};
+  cheque = false;
+  banque_cheque = '';
+  date_cheque: any;
+  numero_cheque = '';
+  montant_cheque = 0;
+  orange = false;
+  montant_orange = 0;
+  transaction_orange = '';
+  mtn = false;
+  montant_mtn = 0;
+  transaction_mtn = '';
+  traite = false;
+  date_traite: any;
+  banque_traite = '';
+  numero_traite = '';
+  montant_traite = 0;
+  espece = false;
+  montant_espece = 0;
+  commentaire_espece = '';
+  virement = false;
+  montant_virement = 0;
+  reference_virement = '';
+  payment_methoda = '';
   payment_method = '';
   commentaire1 = '';
   commentaire2 = '';
   commentaire3: any;
   montant_avance;
-  today = new Date();
   per_page = 500;
   customer_id = 0;
 
   constructor(private api: ApiProvider, private route: ActivatedRoute, private router: Router) {
-    //console.log(moment(this.today).format('YYYY-MM-DD') + '' +  moment(new Date()).utcOffset(1).format('HH:mm:ss'));
     this.entite = 'BDC';
     this.customer_id = parseInt(this.route.snapshot.paramMap.get('customer_id'));
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
     this.commentaire3 = new Date();
+    this.date_traite = new Date();
+    this.date_cheque = new Date();
   }
 
   async ngOnInit() {
@@ -144,6 +166,9 @@ export class FactureComponent implements OnInit {
         delete opt.customer_id;
       }
       this.handleBills(opt);
+      if (s) {
+        Metro.activity.close(load);
+      }
     }
 
   }
@@ -207,12 +232,13 @@ export class FactureComponent implements OnInit {
   }
 
   validerEncaissement() {
-    if (this.checkNote()) {
+    if (this.checkNoteEncaissement()) {
       if (this.customer_id === 0) {
         this.user_name = this.sellers.find(i => i.id == this.user_id).name;
       }
       document.getElementById('non').click();
-      this.commentaire3 = moment(this.commentaire3);
+      const x = this.commentaire3;
+      this.commentaire3 = moment(new Date(this.commentaire3)).utcOffset(1).format('DD/MM/YYYY');
       this.state = true;
       // actualisation
       let i = 0;
@@ -243,9 +269,8 @@ export class FactureComponent implements OnInit {
                 payment_method: this.payment_method,
                 id: da.body.id
               };
-              console.log(e);
               this.printEncaissement(e, this.selected_bill);
-              // arret du loading je push encore
+              // arret du loading
               this.state = false;
               this.montant = 0;
             }
@@ -300,19 +325,56 @@ export class FactureComponent implements OnInit {
       if (this.customer_id === 0) {
         this.user_name = this.sellers.find(i => i.id == this.user_id).name;
       }
+      // fermeture du modal
       document.getElementById('close').click();
       this.state = true;
-      this.commentaire3 = moment(this.commentaire3);
-      const opt = {
-        amount: this.montant_avance,
-        note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY') + '|' + this.entite,
-        payment_method: this.payment_method,
-        bill_id: this.facture.id,
-        user_id: this.user_id,
-        received_at: moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss')
+      const donnees = {
+        payment_method : '',
+        note : '',
+        amount : 0,
+        bill_id : this.facture.id,
+        user_id : this.user_id,
+        received_at : moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss')
       };
-      this.api.Receipts.post(opt).subscribe(d => {
-        Metro.notify.create('Encaissement validé', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+      // traitement de l'encaissement suivant le mode de paiement
+      if (this.espece) {
+        donnees.payment_method += 'Espèce, ';
+        donnees.amount += this.montant_espece;
+        donnees.note += 'Mode de paiement: Espèce, Montant: ' + this.montant_espece + ', Commentaire: ' + this.commentaire_espece + ' | ';
+      }
+      if (this.virement) {
+        donnees.payment_method += 'Virement, ';
+        donnees.amount += this.montant_virement;
+        donnees.note += 'Mode de paiement: Virement, Montant: ' + this.montant_virement + ', Référence: ' + this.reference_virement + ' | ';
+      }
+      if (this.cheque) {
+        donnees.payment_method += 'Chèque, ';
+        donnees.amount += this.montant_cheque;
+        donnees.received_at = moment(new Date(this.date_cheque)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
+        donnees.note += 'Mode de paiement: Chèque, Montant: ' + this.montant_cheque + ', Date: ' + moment(new Date(this.date_cheque)).utcOffset(1).format('DD-MM-YYYY') + ', Banque: ' + this.banque_cheque + ', Numéro chèque: ' + this.numero_cheque + ' | ';
+      }
+      if (this.traite) {
+        donnees.payment_method += 'Traite, ';
+        donnees.amount += this.montant_traite;
+        donnees.received_at = moment(new Date(this.date_traite)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
+        donnees.note += 'Mode de paiement: Traite, Montant: ' + this.montant_traite + ', Date: ' + moment(new Date(this.date_traite)).utcOffset(1).format('DD-MM-YYYY') + ', Banque: ' + this.banque_traite + ', Numéro chèque: ' + this.numero_traite + ' | ';
+      }
+      if (this.orange) {
+        donnees.payment_method += 'Orange Money, ';
+        donnees.amount += this.montant_orange;
+        donnees.note += 'Mode de paiement: Orange Money , Montant: ' + this.montant_orange + ', Numéro transaction: ' + this.transaction_orange + ' | ';
+      }
+      if (this.mtn) {
+        donnees.payment_method += 'MTN Mobile Money, ';
+        donnees.amount += this.montant_mtn;
+        donnees.note += 'Mode de paiement: MTN Mobile Money, Montant: ' + this.montant_mtn + ', Numéro transaction: ' + this.transaction_mtn + ' | ';
+      }
+      this.montant_avance = this.montant_cheque + this.montant_espece + this.montant_mtn + this.montant_traite + this.montant_orange + this.montant_virement;
+      donnees.note += ' / ' + this.entite;
+      //console.log('donnees', donnees);
+
+      this.api.Receipts.post(donnees).subscribe(d => {
+        Metro.notify.create('Avance validée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
         if (this.montant_avance >= (this.facture.amount)) {
           // modification du statut de la facture
           this.api.Bills.get(this.facture.id).subscribe(data => {
@@ -322,14 +384,14 @@ export class FactureComponent implements OnInit {
               this.state = false;
               const e = {
                 id: datap.body.id,
-                note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3.format('DD/MM/YYYY'),
+                note: donnees.note,
                 received_at: data.body.received_at,
                 vendeur_id: this.user_id,
                 vendeur: this.user_name,
                 bill_id: this.facture.bvs_id,
                 client: this.facture.name,
                 reste: this.facture.reste - this.montant_avance,
-                payment_method: this.payment_method,
+                payment_method: donnees.payment_method,
                 avance: this.montant_avance,
                 amount: this.facture.amount
               };
@@ -384,14 +446,14 @@ export class FactureComponent implements OnInit {
           this.state = false;
           const e = {
             id: d.body.id,
-            note: this.commentaire1 + '|' + this.commentaire2 + '|' + this.commentaire3,
+            note: donnees.note,
             received_at: d.body.received_at,
             vendeur_id: this.user_id,
             vendeur: this.user_name,
             bill_id: this.facture.bvs_id,
             client: this.facture.name,
             avance: this.montant_avance,
-            payment_method: this.payment_method,
+            payment_method: donnees.payment_method,
             reste: this.facture.reste - this.montant_avance,
             amount: this.facture.amount
           };
@@ -424,8 +486,46 @@ export class FactureComponent implements OnInit {
   }
 
   checkNote() {
-    console.log(this.entite);
-    if (this.payment_method !== '' && this.user_id !== undefined && this.entite !== undefined) {
+    if (this.user_id !== undefined) {
+      if (this.espece && this.commentaire_espece !== '' && this.montant_espece !== 0) {
+        return true;
+      } else if (this.espece && (this.commentaire_espece === '' || this.montant_espece === 0)) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.virement && this.reference_virement !== '' && this.montant_virement !== 0) {
+        return true;
+      } else if (this.virement && (this.reference_virement === '' || this.montant_virement === 0)) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.traite && this.date_traite !== '' && this.montant_traite !== 0 && this.banque_traite !== '' && this.numero_traite !== '') {
+        return true;
+      } else if (this.traite && (this.date_traite === '' || this.montant_traite === 0 || this.banque_traite === '' || this.numero_traite === '')) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.cheque && this.date_cheque !== '' && this.montant_cheque !== 0 && this.banque_cheque !== '' && this.numero_cheque !== '') {
+        return true;
+      } else if (this.cheque && (this.date_cheque === '' || this.montant_cheque === 0 || this.banque_cheque === '' || this.numero_cheque === '')) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.orange && this.montant_orange !== 0 && this.transaction_orange !== '') {
+        return true;
+      } else if (this.orange && (this.montant_orange === 0 || this.transaction_orange === '')) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      } else if (this.mtn && this.montant_mtn !== 0 && this.transaction_mtn !== '') {
+        return true;
+      } else if (this.mtn && (this.montant_mtn === 0 || this.transaction_mtn === '')) {
+        Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+        return false;
+      }
+    } else {
+      Metro.toast.create('Merci de remplir tous les champs', null, 5000);
+      return false;
+    }
+  }
+
+  checkNoteEncaissement() {
+    if (this.payment_method !== '' && this.user_id !== undefined) {
       if (this.payment_method === 'Espèce' && this.commentaire1 !== '') {
         return true;
       } else if (this.payment_method === 'Espèce' && this.commentaire1 === '') {
@@ -453,85 +553,116 @@ export class FactureComponent implements OnInit {
         return false;
       }
     } else {
-      Metro.toast.create('Merci de remplir tous les champs et de selectionner l\'entité', null, 5000);
+      Metro.toast.create('Merci de remplir tous les champs', null, 5000);
       return false;
     }
   }
 
   printAvance(e) {
-    const doc = new jsPDF('P', 'mm', [130, 200]);
+    const x = e.note.split('/');
+    const y = x[0].split('|');
+    let count = 0;
+    for (let i = 0; i < y.length; i++) {
+      const z = y[i].split(',');
+      for (let j = 0; j < z.length; j++) {
+        count += 3;
+      }
+      count += 2;
+    }
+    const h = 150 + (count * 3);
+    const doc = new jsPDF('P', 'mm', [150, h]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
     // doc.setCreationDate(new Date());
     if (this.entite === 'BDC') {
       doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
-      doc.text('BP: 1352 Douala', 6, 8);
+      doc.setFontSize(5);
+      doc.text('BP: 1352 Douala', 6, 7);
     } else {
       doc.text('BVS PRODUCTION CAMEROUN S.A', 6, 5);
-      doc.text('BP: 4036 Douala', 6, 8);
+      doc.setFontSize(5);
+      doc.text('BP: 4036 Douala', 6, 7);
     }
-    doc.text('Montée BBR - BASSA', 6, 11);
-    doc.text('Tél.: 690 404 180/89', 6, 14);
-    // info sur le vendeur
-    doc.text('Avancé le : ' + e.received_at, 6, 17);
-    doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 20);
-    // Client vendeur
-    doc.text('ENC-' + e.id, 6, 23);
-    doc.setFontSize(5);
-    doc.text('Client: ' + e.client.toUpperCase(), 6, 26);
-    doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 29);
+    doc.text('Montée BBR - BASSA', 6, 9);
+    doc.text('Tél.: 690 404 180/89', 6, 11);
     doc.setFontSize(6);
-    doc.text('N° Facture: ' + e.bill_id, 6, 31);
-    doc.text('Avance: ' + this.api.formarPrice(e.avance) + ' FCFA', 6, 34);
-    doc.text('Reste: ' + this.api.formarPrice((e.amount - e.avance)) + ' FCFA', 6, 37);
-    doc.text('Mode de paiement: ' + e.payment_method, 6, 40);
-    doc.text('Commentaires', 6, 43);
+    doc.text('**************************************************', 6, 15);
+    // info sur le vendeur
+    doc.text('Avancé le : ' + e.received_at, 6, 19);
+    doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 22);
+    // Client vendeur
+    doc.text('ENC-' + e.id, 6, 28);
+    doc.text('Client: ' + e.client.toUpperCase(), 6, 31);
+    doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 34);
+    doc.text('N° Facture: ' + e.bill_id, 6, 37);
+    doc.text('Avance: ' + this.api.formarPrice(e.avance) + ' FCFA', 6, 43);
+    doc.text('Reste: ' + this.api.formarPrice((e.amount - e.avance)) + ' FCFA', 6, 46);
+    doc.text('*** Mode(s) de paiement ***', 6, 52);
 
-    if (e.payment_method === 'Espèce') {
-      doc.text(this.commentaire1, 6, 46);
-    } else if (e.payment_method === 'Virement') {
-      doc.text('Référence: ' + this.commentaire1, 6, 46);
-    } else if (e.payment_method === 'Chèque') {
-      doc.text('N° Chèque: ' + this.commentaire1, 6, 46);
-      doc.text('Banque: ' + this.commentaire2, 6, 49);
-      doc.text('Date: ' + this.commentaire3.format('DD/MM/YYYY'), 6, 52);
-    } else {
-      doc.text('N° Transaction: ' + this.commentaire1, 6, 46);
-      doc.text('Opérateur: ' + this.commentaire2, 6, 49);
+    // recuperation des modes de paiements
+    count = 0;
+    for (let i = 0; i < y.length; i++) {
+      const z = y[i].split(',');
+      for (let j = 0; j < z.length; j++) {
+        count += 3;
+        doc.text(z[j].trim(), 6, 52 + count);
+      }
+      count += 2;
     }
 
-    doc.save('bvs_avance_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
-    this.getBills(false);
-    this.commentaire1 = '';
-    this.commentaire2 = '';
-    this.payment_method = '';
-    this.montant_avance = 0;
+    doc.save('bvs_avance_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
+    this.getBills(true);
+    this.cheque = false;
+    this.banque_cheque = '';
+    this.date_cheque = new Date();
+    this.numero_cheque = '';
+    this.montant_cheque = 0;
+    this.orange = false;
+    this.montant_orange = 0;
+    this.transaction_orange = '';
+    this.mtn = false;
+    this.montant_mtn = 0;
+    this.transaction_mtn = '';
+    this.traite = false;
+    this.date_traite = new Date();
+    this.banque_traite = '';
+    this.numero_traite = '';
+    this.montant_traite = 0;
+    this.espece = false;
+    this.montant_espece = 0;
+    this.commentaire_espece = '';
+    this.virement = false;
+    this.montant_virement = 0;
+    this.reference_virement = '';
   }
 
   printEncaissement(e, bills) {
-    const doc = new jsPDF('P', 'mm', [130, 200 + (bills.length * 3)]);
+    const doc = new jsPDF('P', 'mm', [150, 200 + (bills.length * 3)]);
     doc.setFontSize(6);
     doc.setFontStyle('bold');
     if (this.entite === 'BDC') {
       doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
-      doc.text('BP: 1352 Douala', 6, 8);
+      doc.setFontSize(5);
+      doc.text('BP: 1352 Douala', 6, 7);
     } else {
       doc.text('BVS PRODUCTION CAMEROUN S.A', 6, 5);
-      doc.text('BP: 4036 Douala', 6, 8);
+      doc.setFontSize(5);
+      doc.text('BP: 4036 Douala', 6, 7);
     }
-    doc.text('Montée BBR - BASSA', 6, 11);
-    doc.text('Tél.: 690 404 180/89', 6, 14);
-    // info sur le vendeur
-    doc.text('Encaissé le : ' + e.received_at, 6, 20);
-    doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 23);
-    // Client vendeur
-    doc.text('ENC-' + e.id, 6, 29);
-    doc.setFontSize(5);
-    doc.text('Client: ' + e.client.toUpperCase(), 6, 32);
+    doc.text('Montée BBR - BASSA', 6, 9);
+    doc.text('Tél.: 690 404 180/89', 6, 11);
     doc.setFontSize(6);
-    doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 35);
+    doc.text('**************************************************', 6, 15);
+    // info sur le vendeur
+    doc.text('Encaissé le : ' + e.received_at, 6, 19);
+    doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 22);
 
-    doc.text('Factures ', 6, 41);
+    // Client vendeur
+    doc.text('ENC-' + e.id, 6, 28);
+    doc.text('Client: ' + e.client.toUpperCase(), 6, 31);
+    doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 34);
+    doc.text('Factures: ', 6, 40);
+
     let x = 43;
     let a = 0;
     bills.forEach((v, k) => {
@@ -541,24 +672,24 @@ export class FactureComponent implements OnInit {
     });
 
     doc.text('Montant versé: ' + this.api.formarPrice(a) + ' FCFA', 6, x);
-    doc.text('Mode de paiement: ' + e.payment_method, 6, x + 3);
-    doc.text('Commentaires', 6, x + 6);
+    doc.text('Mode de paiement: ' + e.payment_method, 6, x + 6);
+    doc.text('Commentaires', 6, x + 9);
 
     if (e.payment_method === 'Espèce') {
-      doc.text(this.commentaire1, 6, x + 9);
+      doc.text(this.commentaire1, 6, x + 12);
     } else if (e.payment_method === 'Virement') {
-      doc.text('Référence: ' + this.commentaire1, 6, x + 9);
+      doc.text('Référence: ' + this.commentaire1, 6, x + 12);
     } else if (e.payment_method === 'Chèque') {
-      doc.text('N° Chèque: ' + this.commentaire1, 6, x + 9);
-      doc.text('Banque: ' + this.commentaire2, 6, x + 12);
-      doc.text('Date: ' + this.commentaire3.format('DD/MM/YYYY'), 6, x + 15);
+      doc.text('N° Chèque: ' + this.commentaire1, 6, x + 12);
+      doc.text('Banque: ' + this.commentaire2, 6, x + 15);
+      doc.text('Date: ' + this.commentaire3, 6, x + 18);
     } else {
-      doc.text('N° Transaction: ' + this.commentaire1, 6, x + 9);
-      doc.text('Opérateur: ' + this.commentaire2, 6, x + 12);
+      doc.text('N° Transaction: ' + this.commentaire1, 6, x + 12);
+      doc.text('Opérateur: ' + this.commentaire2, 6, x + 15);
     }
 
-    doc.save('bvs_encaissement_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
-    this.getBills(false);
+    doc.save('bvs_encaissement_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
+    this.getBills(true);
     this.commentaire1 = '';
     this.commentaire2 = '';
     this.payment_method = '';
@@ -589,6 +720,7 @@ export class FactureComponent implements OnInit {
   handleBills(opt) {
     this.api.Bills.getList(opt).subscribe(
       d => {
+        // console.log(d);
         this.last_page = d.metadata.last_page;
         this.max_length = d.metadata.total;
         this.old_max_length = this.max_length;
@@ -785,9 +917,9 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-    //fa.amount = 6778939;
-    fa.status = 'paid';
-    fa.put();
+    // fa.amount = 767484;
+    // fa.status = 'pending';
+    // fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
 }
