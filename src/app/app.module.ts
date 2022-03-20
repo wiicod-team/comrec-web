@@ -32,6 +32,7 @@ import { CustomerUniverseComponent } from './customer-universe/customer-universe
 import { CustomerDetailComponent } from './customer-detail/customer-detail.component';
 import { ReceiptsComponent } from './receipts/receipts.component';
 import {LimitToPipe} from './pipe/limit-to';
+import {DateFormatPipe} from './pipe/date-format';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -90,6 +91,7 @@ export function RestangularConfigFactory(RestangularProvider) {
     CustomersComponent,
     FilterPipe,
     StatutPipe,
+    DateFormatPipe,
     LimitToPipe,
     PriceFormatPipe,
     Page404Component,

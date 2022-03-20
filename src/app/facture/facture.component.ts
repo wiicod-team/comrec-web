@@ -916,7 +916,7 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-    // fa.amount = 767484;
+     fa.amount = 1234800;
      fa.status = 'pending';
      fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
