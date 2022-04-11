@@ -16,6 +16,7 @@ import {ForgotComponent} from './forgot/forgot.component';
 import {CustomerUniverseComponent} from './customer-universe/customer-universe.component';
 import {CustomerDetailComponent} from './customer-detail/customer-detail.component';
 import {ReceiptsComponent} from './receipts/receipts.component';
+import {CashierComponent} from './cashier/cashier.component';
 
 
 
@@ -49,6 +50,17 @@ const routes: Routes = [
       {
         path : 'r',
         component : ReceiptsComponent,
+        /*canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.dashboard'],
+            redirectTo: '/403'
+          }
+        }*/
+      },
+      {
+        path : 'c',
+        component : CashierComponent,
         /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {

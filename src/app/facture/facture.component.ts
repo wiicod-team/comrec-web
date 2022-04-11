@@ -918,7 +918,7 @@ export class FactureComponent implements OnInit {
     console.log(fa);
      fa.amount = 1234800;
      fa.status = 'pending';
-     fa.put();
+     //fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
   }
 }

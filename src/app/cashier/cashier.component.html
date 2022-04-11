@@ -1,0 +1,338 @@
+<div *ngxPermissionsOnly="['consult.receipt']" style="margin-top: 52px">
+  <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
+    <div class="cell-md-6 d-flex flex-align-center">
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Caisse <small>{{today}}</small></h3>
+    </div>
+
+    <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+
+      <div class="buttongroup">
+        <button (click)="period()" class="button"><a class="page-link">Période <span class="icon"><span class="mif-calendar"></span></span></a></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-3"
+  >
+    <div class="row mt-2">
+      <div class="cell-2">
+        <m4-select prepend="<span class='mif-filter'></span>"
+                   [(ngModel)]="filtre"
+                   [options]="{ 'bill_id': 'N° facture',
+                     'received_at-lk': 'Date encaissement',
+                    'payment_method-lk': 'Mode de paiement'}"></m4-select>
+      </div>
+      <div class="cell-3">
+        <m4-input [(ngModel)]="search"
+                  placeholder="Recherche"
+                  (ngModelChange)="vide()"
+                  [ngModelOptions]="{standalone: true}"
+                  [search-button]="true" (search-button-click)="rechercher()"></m4-input>
+      </div>
+      <div class="cell-2">
+        Total : <strong>{{montant |priceFormat}} FCFA</strong>
+      </div>
+
+      <button class="button bg-noir fg-white ml-auto mr-2" (click)="openAddReceipt()">Ajouter</button>
+      <button class="button bg-or mr-2" (click)="validateReceipt()">Valider</button>
+      <button *ngxPermissionsOnly="['export.data']"
+              class="button mr-2" (click)="exportCsv()">Exporter</button>
+
+    </div>
+    <div class="row mt-2 main-panel" style="max-height: 490px; overflow-y: auto">
+      <table class="table cell-border compact table-border"
+      >
+        <thead>
+        <tr>
+          <th></th>
+          <th data-sortable="true" (click)="orderBy('id')">N°</th>
+          <th data-sortable="true" (click)="orderBy('bill.bvs_id')">N° Facture</th>
+          <th data-sortable="true" (click)="orderBy('received_at')">Date</th>
+          <th data-sortable="true" (click)="orderBy('bill.customer.name')">Client</th>
+          <th data-sortable="true" (click)="orderBy('amount')">Montant</th>
+          <th data-sortable="true" (click)="orderBy('payment_method')">Mode de paiement</th>
+          <th data-sortable="true" (click)="orderBy('type')">Type</th>
+          <th data-sortable="true" (click)="orderBy('user_id')">Vendeur</th>
+          <th data-sortable="true" (click)="orderBy('status')">Statut</th>
+          <th data-sortable="true" (click)="orderBy('vendeur')">Commentaire</th>
+          <th data-sortable="true">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let i of encaissements">
+          <td><input *ngIf="i.type!='shop' && i.status!='validated'" (click)="billChecked(i)" type="checkbox" data-role="checkbox" ></td>
+          <td>{{i.id}}</td>
+          <td>{{i.bill.bvs_id}}</td>
+          <td>{{i.received_at}}</td>
+          <td>{{i.bill.customer.name}}</td>
+          <td>{{i.amount |priceFormat}}</td>
+          <td>{{i.payment_method}}</td>
+          <td>{{i.type|status}}</td>
+          <td>{{i.vendeur}}</td>
+          <td [ngClass]="{'pending':i.status =='pending'}">{{i.status |status}}</td>
+          <td>{{i.note}}</td>
+          <td>
+            <button class="button mini bg-red fg-white" *ngxPermissionsOnly="['edit.receipt']" (click)="openDeleteModal(i)"><span class="mif-cross"></span></button>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row">
+      <div class="cell-2">
+        <small>{{encaissements.length}} Encaissement(s)</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="periodDialog">
+    <div class="dialog-title">Période</div>
+    <div class="dialog-content">
+      <div class="row">
+        <div class="cell-6">
+          <div class="label">Du</div>
+          <m4-calendar-picker [(ngModel)]="from" cls-calendar="compact"
+                              [dialog-mode]="false"
+                              locale="en-US" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
+        <div class="cell-6">
+          <div class="label">Au</div>
+          <m4-calendar-picker [(ngModel)]="to" cls-calendar="compact"
+                              [dialog-mode]="false"
+                              locale="en-US" format="%d/%m/%Y" size="100%"
+                              calendar-button-icon="<span class='mif-calendar'></span>"
+                              [show-header]="true"></m4-calendar-picker>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" (click)="validate()">Valider</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
+    </div>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="deleteDialog">
+    <div class="dialog-title">Annulation d'encaissement </div>
+    <div class="dialog-content">
+      <p style="font-weight: bold;">Voulez-vous annuler cet encaissement ?</p>
+
+      <div>N° Facture: {{r.bill.bvs_id}} </div>
+      <div>Date: {{r.received_at}}</div>
+      <div>Client: {{r.bill.customer.name}}</div>
+      <div>Montant: {{r.amount |priceFormat}}</div>
+      <div>Mode de paiement: {{r.payment_method}}</div>
+      <div>Entité: {{r.entite}}</div>
+      <div>Vendeur: {{r.vendeur}}</div>
+      <div>Commentaire: {{r.note}}</div>
+
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" (click)="cancelReceipt()">Valider</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
+    </div>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="addReceiptDialog" data-width="50%">
+    <div class="dialog-title">Nouvel encaissement boutique</div>
+    <div class="dialog-content">
+      Selectionner un ou plusieurs modes de paiement
+      <div class="form-group">
+        <m4-switch [(ngModel)]="cheque" caption="Chèque"></m4-switch>
+        <m4-switch [(ngModel)]="espece" caption="Espèce"></m4-switch>
+        <m4-switch [(ngModel)]="orange" caption="Orange Money"></m4-switch>
+        <m4-switch [(ngModel)]="mtn" caption="MTN Mobile Money"></m4-switch>
+      </div>
+
+      <div class="row">
+        <div class="cell-4">
+          <div class="form-group">
+            <label>Facture</label>
+            <input type="text" [(ngModel)]="bill_id" placeholder="N° de facture"/>
+          </div>
+        </div>
+        <div class="cell-4">
+          <div class="form-group">
+            <label>Entité</label>
+            <select [(ngModel)]="entite">
+              <option value="BDC" selected>BVS Distribution</option>
+              <option value="BPC">BVS Production</option>
+            </select>
+          </div>
+        </div>
+        <div class="cell-4">
+          <div class="form-group">
+            <label>Vendeur</label>
+            <m4-select
+              [options]="users"
+              [duration]="500"
+              [(ngModel)]="user_id"></m4-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="cell-6" *ngIf="cheque">
+          <strong>Chèque</strong>
+          <div class="row">
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Date</label>
+                <m4-calendar-picker [(ngModel)]="date_cheque" cls-calendar="compact"
+                                    [dialog-mode]="true"
+                                    locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                    calendar-button-icon="<span class='mif-calendar'></span>"
+                                    [show-header]="true"></m4-calendar-picker>
+              </div>
+            </div>
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Banque</label>
+                <input type="text" [(ngModel)]="banque_cheque" placeholder="Banque"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="cell-6">
+              <div class="form-group">
+                <label>N° du chèque</label>
+                <input type="text" [(ngModel)]="numero_cheque" placeholder="N° du chèque"/>
+              </div>
+            </div>
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Montant</label>
+                <input type="number" [(ngModel)]="montant_cheque" min="0"
+                       placeholder="Montant"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cell-3" *ngIf="espece">
+          <strong>Espèce</strong>
+          <div class="row">
+            <div class="cell-12">
+              <div class="form-group">
+                <label>Montant</label>
+                <input type="number" [(ngModel)]="montant_espece" min="0" placeholder="Montant"/>
+              </div>
+            </div>
+            <div class="cell-12">
+              <div class="form-group">
+                <label>Commentaire</label>
+                <input type="text" [(ngModel)]="commentaire_espece" placeholder="Commentaire"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cell-3" *ngIf="mtn">
+          <strong>MTN Mobile Money</strong>
+          <div class="row">
+            <div class="cell-12">
+              <div class="form-group">
+                <label>Montant</label>
+                <input type="number" [(ngModel)]="montant_mtn" min="0" placeholder="Montant"/>
+              </div>
+            </div>
+            <div class="cell-12">
+              <div class="form-group">
+                <label>N° de la transaction</label>
+                <input type="text" [(ngModel)]="transaction_mtn" placeholder="N° de la transaction"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cell-3" *ngIf="orange">
+          <strong>Orange Money</strong>
+          <div class="row">
+            <div class="cell-12">
+              <div class="form-group">
+                <label>Montant</label>
+                <input type="number" [(ngModel)]="montant_orange" min="0" placeholder="Montant"/>
+              </div>
+            </div>
+            <div class="cell-12">
+              <div class="form-group">
+                <label>N° de la transaction</label>
+                <input type="text" [(ngModel)]="transaction_orange" placeholder="N° de la transaction"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cell-3" *ngIf="virement">
+          <strong>Virement</strong>
+          <div class="row">
+            <div class="cell-12">
+              <div class="form-group">
+                <label>Montant</label>
+                <input type="number" [(ngModel)]="montant_virement" min="0"  placeholder="Montant"/>
+              </div>
+            </div>
+            <div class="cell-12">
+              <div class="form-group">
+                <label>Reférence</label>
+                <input type="text" [(ngModel)]="reference_virement" placeholder="Référence"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cell-3" *ngIf="traite">
+          <strong>Traite</strong>
+          <div class="row">
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Date</label>
+                <m4-calendar-picker [(ngModel)]="date_traite" cls-calendar="compact"
+                                    [dialog-mode]="true"
+                                    locale="fr-FR" format="%d/%m/%Y" size="100%"
+                                    calendar-button-icon="<span class='mif-calendar'></span>"
+                                    [show-header]="true"></m4-calendar-picker>
+              </div>
+            </div>
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Banque</label>
+                <input type="text" [(ngModel)]="banque_traite" placeholder="Banque"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="cell-6">
+              <div class="form-group">
+                <label>N° de la traite</label>
+                <input type="text" [(ngModel)]="numero_traite" placeholder="N° de la traite"/>
+              </div>
+            </div>
+            <div class="cell-6">
+              <div class="form-group">
+                <label>Montant</label>
+                <input type="number" [(ngModel)]="montant_traite" min="0"
+                       placeholder="Montant"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="dialog-actions text-right">
+        <button class="button bg-or fg-white"
+                *ngIf="can_validate"
+                (click)="addReceipt()">Valider</button>
+        <button class="button primary js-dialog-close bg-noir" id="close">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -33,6 +33,7 @@ import { CustomerDetailComponent } from './customer-detail/customer-detail.compo
 import { ReceiptsComponent } from './receipts/receipts.component';
 import {LimitToPipe} from './pipe/limit-to';
 import {DateFormatPipe} from './pipe/date-format';
+import { CashierComponent } from './cashier/cashier.component';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -101,6 +102,7 @@ export function RestangularConfigFactory(RestangularProvider) {
     CustomerUniverseComponent,
     CustomerDetailComponent,
     ReceiptsComponent,
+    CashierComponent,
   ],
   imports: [
     BrowserModule,

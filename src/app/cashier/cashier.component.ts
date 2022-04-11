@@ -1,28 +1,34 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {ApiProvider} from '../providers/api/api';
 import {ActivatedRoute} from '@angular/router';
+import {ApiProvider} from '../providers/api/api';
 import * as moment from 'moment';
 import * as jsPDF from 'jspdf';
 import * as _ from 'lodash';
 
 declare var Metro;
 @Component({
-  selector: 'app-receipts',
-  templateUrl: './receipts.component.html',
-  styleUrls: ['./receipts.component.scss']
+  selector: 'app-cashier',
+  templateUrl: './cashier.component.html',
+  styleUrls: ['./cashier.component.scss']
 })
-export class ReceiptsComponent implements OnInit {
-
+export class CashierComponent implements OnInit {
+  can_validate = true;
   encaissements = [];
   old_encaissements = [];
   user;
   from;
+  users = {};
+  sellers = [];
+  selected_bill = [];
   date_format = 'Y-M-D';
   today = 'du jour';
   now = new Date();
   to;
   deb;
+  entite = 'BDC';
   fin;
+  bill_id = '';
+  user_id = 0;
   max_length = 0;
   old_max_length = 0;
   search;
@@ -31,6 +37,34 @@ export class ReceiptsComponent implements OnInit {
   filtre = 'bill_id';
   state = false;
   isLoadingBills = false;
+  cheque = false;
+  banque_cheque = '';
+  date_cheque: any;
+  numero_cheque = '';
+  montant_cheque = 0;
+  orange = false;
+  montant_orange = 0;
+  transaction_orange = '';
+  mtn = false;
+  montant_mtn = 0;
+  transaction_mtn = '';
+  traite = false;
+  date_traite: any;
+  banque_traite = '';
+  numero_traite = '';
+  montant_traite = 0;
+  espece = false;
+  montant_espece = 0;
+  commentaire_espece = '';
+  virement = false;
+  montant_virement = 0;
+  reference_virement = '';
+  payment_methoda = '';
+  payment_method = '';
+  commentaire1 = '';
+  commentaire2 = '';
+  commentaire3: any;
+  montant_avance;
   r: {
     bill: { bvs_id: number, customer: {name: string} },
     received_at: string,
@@ -47,6 +81,8 @@ export class ReceiptsComponent implements OnInit {
   constructor( private api: ApiProvider, private route: ActivatedRoute) {
     this.from = new Date();
     this.to = new Date();
+    this.date_traite = new Date();
+    this.date_cheque = new Date();
     this.r = {
       bill: { bvs_id: 0, customer: {name: ''} },
       received_at: '',
@@ -77,6 +113,7 @@ export class ReceiptsComponent implements OnInit {
     this.deb = moment(deb);
     this.fin = moment(fin);
     this.getReceipts();
+    this.getUsers();
   }
 
   vide() {
@@ -98,12 +135,14 @@ export class ReceiptsComponent implements OnInit {
     if (this.search === '' || this.search === undefined) {
       this.encaissements = this.old_encaissements;
       this.max_length = this.old_max_length;
-    } else if (this.filtre === 'bill_id') {
-      opt['bill-fk'] = 'bvs_id-lk=' + this.search.trim();
-    } else if (this.filtre === 'customer_id') {
-      opt['bill-fk'] = 'customer_id-lk=' + this.search.trim();
     } else {
-      opt[this.filtre] = this.search.trim();
+      if (this.filtre === 'bill_id') {
+        opt['bill-fk'] = 'bvs_id-lk=' + this.search.trim();
+      } else if (this.filtre === 'customer_id') {
+        opt['bill-fk'] = 'customer_id-lk=' + this.search.trim();
+      } else {
+        opt[this.filtre] = this.search.trim();
+      }
     }
     this.api.Receipts.getList(opt).subscribe(b => {
       b.forEach((v, k) => {
@@ -161,7 +200,7 @@ export class ReceiptsComponent implements OnInit {
             v.bvs_id = v.note.split('!')[0];
             v.name = 'Encaissement cash';
             v.bill = {
-              bvs_id: v.note.split('!')[0],
+              bvs_id : v.note.split('!')[0],
               customer: {
                 name: 'Client boutique'
               }
@@ -181,7 +220,6 @@ export class ReceiptsComponent implements OnInit {
             const y = x[v.note.split('|').length - 1].split('/');
             if (y.length > 1) {
               v.entite = y[1];
-              v.type = 'nouveau';
             } else {
               v.entite = v.note.split('|')[v.note.split('|').length - 1];
             }
@@ -205,167 +243,6 @@ export class ReceiptsComponent implements OnInit {
     }
   }
 
-  printReceipt(e) {
-    let p = 0;
-    if (e.bill.amount - e.amount > 0) {
-      p = e.bill.amount - e.amount;
-    } else if (e.bill.amount - e.amount < 0) {
-      p = e.bill.amount;
-    }
-    const opt = {
-      bill_id: e.bill.id,
-      should_paginate: false,
-      'bill_id-gb': 'sum(amount) as total_amount'
-    };
-    this.api.Receipts.getList(opt).subscribe(d => {
-      const com = e.note.split('|');
-      const doc = new jsPDF('P', 'mm', [150, 210]);
-      doc.setFontSize(6);
-      doc.setFontStyle('bold');
-      if (com[3] === 'BDC') {
-        doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
-        doc.setFontSize(5);
-        doc.text('BP: 1352 Douala', 6, 7);
-      } else {
-        doc.text('BVS PRODUCTION CAMEROUN S.A', 6, 5);
-        doc.setFontSize(5);
-        doc.text('BP: 4036 Douala', 6, 7);
-      }
-      doc.text('Montée BBR - BASSA', 6, 9);
-      doc.text('Tél.: 690 404 180/89', 6, 11);
-      doc.setFontSize(6);
-      doc.text('**************************************************', 6, 15);
-      // info sur le vendeur
-      doc.text('Encaissé le : ' + e.received_at, 6, 19);
-      doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 22);
-
-      // Client vendeur
-      doc.text('ENC-' + e.id, 6, 28);
-      doc.text('Client: ' + e.bill.customer.name.toUpperCase(), 6, 31);
-      doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 34);
-
-      doc.text('Facture: ' + e.bill.bvs_id, 6, 40);
-      doc.text('Avance: ' + this.api.formarPrice(e.amount) + 'FCFA', 6, 44);
-      doc.text('Total encaissé: ' + this.api.formarPrice(d[0].total_amount) + 'FCFA', 6, 47);
-      doc.text('Reste à payer: ' + this.api.formarPrice(p) + 'FCFA', 6, 50);
-      doc.text('Mode de paiement: ' + d[0].payment_method, 6, 56);
-      doc.text('Commentaire', 6, 59);
-      let index = 0;
-      let x = 59;
-      doc.setFontSize(6);
-      for (const i of com) {
-        x += 3;
-        index ++;
-        if (index < 4) {
-          if (d[0].payment_method === 'Espèce') {
-            doc.text(i, 6, x);
-          } else if (d[0].payment_method === 'Virement') {
-            doc.text('Référence: ' + i, 6, x);
-          } else if (d[0].payment_method === 'Chèque') {
-            if (index === 1) {
-              doc.text('N° Chèque: ' + i, 6, x);
-            } else if (index === 2) {
-              doc.text('Banque: ' + i, 6, x);
-            } else {
-              doc.text('Date: ' + i, 6, x);
-            }
-          } else {
-            if (index === 1) {
-              doc.text('N° Trasanction: ' + i, 6, x);
-            } else if (index === 2) {
-              doc.text('Opérateur: ' + i, 6, x);
-            }
-          }
-        }
-      }
-      doc.save( 'bvs_avance_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      }
-    });
-  }
-
-  printNewReceipt(e) {
-    let p = 0;
-    if (e.bill.amount - e.amount > 0) {
-      p = e.bill.amount - e.amount;
-    } else if (e.bill.amount - e.amount < 0) {
-      p = e.bill.amount;
-    }
-    const opt = {
-      bill_id: e.bill.id,
-      should_paginate: false,
-      'bill_id-gb': 'sum(amount) as total_amount'
-    };
-    this.api.Receipts.getList(opt).subscribe(d => {
-      const x = e.note.split('/');
-      const y = x[0].split('|');
-      let count = 0;
-      for (let i = 0; i < y.length; i++) {
-        const z = y[i].split(',');
-        for (let j = 0; j < z.length; j++) {
-          count += 3;
-        }
-        count += 2;
-      }
-      const h = 150 + (count * 3);
-      const doc = new jsPDF('P', 'mm', [150, h]);
-      doc.setFontSize(6);
-      doc.setFontStyle('bold');
-      if (e.entite.trim() === 'BDC') {
-        doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
-        doc.setFontSize(5);
-        doc.text('BP: 1352 Douala', 6, 7);
-      } else {
-        doc.text('BVS PRODUCTION CAMEROUN S.A', 6, 5);
-        doc.setFontSize(5);
-        doc.text('BP: 4036 Douala', 6, 7);
-      }
-      doc.text('Montée BBR - BASSA', 6, 9);
-      doc.text('Tél.: 690 404 180/89', 6, 11);
-      doc.setFontSize(6);
-      doc.text('**************************************************', 6, 15);
-      // info sur le vendeur
-      doc.text('Avancé le : ' + e.received_at, 6, 19);
-      doc.text('Imprimé le : ' + moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'), 6, 22);
-      // Client vendeur
-      doc.text('ENC-' + e.id, 6, 28);
-      doc.text('Client: ' + e.bill.customer.name.toUpperCase(), 6, 31);
-      doc.text('Vendeur: ' + e.vendeur.toUpperCase(), 6, 34);
-      doc.text('N° Facture: ' + e.bill_id, 6, 37);
-      doc.text('Avance: ' + this.api.formarPrice(e.amount) + ' FCFA', 6, 43);
-      doc.text('Total encaissé: ' + this.api.formarPrice(d[0].total_amount) + ' FCFA', 6, 46);
-      doc.text('Reste: ' + this.api.formarPrice(p) + ' FCFA', 6, 49);
-      doc.text('*** Mode(s) de paiement ***', 6, 55);
-
-      // recuperation des modes de paiements
-      count = 0;
-      for (let i = 0; i < y.length; i++) {
-        const z = y[i].split(',');
-        for (let j = 0; j < z.length; j++) {
-          count += 3;
-          doc.text(z[j].trim(), 6, 55 + count);
-        }
-        count += 2;
-      }
-
-      doc.save( 'bvs_avance_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
-    }, q => {
-      if (q.data.error.status_code === 500) {
-        Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      } else if (q.data.error.status_code === 401) {
-        Metro.notify.create('Votre session a expiré, veuillez vous <a routerLink="/login">reconnecter</a>  ', 'Session Expirée ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 300});
-      } else {
-        Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-      }
-    });
-  }
-
   orderBy(text) {
     if (text === this.order) {
       this.encaissements = _.orderBy(this.encaissements, text).reverse();
@@ -376,9 +253,97 @@ export class ReceiptsComponent implements OnInit {
     }
   }
 
+  billChecked(bill) {
+    if (this.montant === 0) {
+      // console.log(this.montant, this.selected_bill.length);
+      this.selected_bill = [];
+    }
+    bill.check = !bill.check;
+    if (bill.check) {
+      this.montant += (bill.amount);
+      this.selected_bill.push(bill);
+    } else {
+      this.montant -= (bill.amount);
+      this.selected_bill.splice(this.selected_bill.indexOf(bill), 1);
+    }
+  }
+
   openDeleteModal(i) {
     this.r = i;
     Metro.dialog.open('#deleteDialog');
+  }
+
+  openAddReceipt() {
+    this.reset();
+    Metro.dialog.open('#addReceiptDialog');
+  }
+
+  reset() {
+    this.montant_orange = 0;
+    this.montant_mtn = 0;
+    this.montant_espece = 0;
+    this.montant_cheque = 0;
+    this.bill_id = '';
+    this.can_validate = true;
+    this.payment_method = '';
+  }
+
+  addReceipt() {
+    this.can_validate = false;
+    if (this.cheque) {
+      this.payment_method += 'Chèque, ';
+    }
+    if (this.espece) {
+      this.payment_method += 'Espèce, ';
+    }
+    if (this.orange) {
+      this.payment_method += 'Orange Money, ';
+    }
+    if (this.mtn) {
+      this.payment_method += 'MTN Mobile Money, ';
+    }
+    const opt1 = {
+      note: this.bill_id + '!',
+      type: 'shop',
+      status: 'validated',
+      payment_method: '',
+      amount: 0,
+      received_at : moment(new Date()).utcOffset(1).format('YYYY-MM-DD HH:mm:ss'),
+      user_id: this.user_id
+    };
+
+    if (this.espece) {
+      opt1.payment_method += 'Espèce, ';
+      opt1.amount += this.montant_espece;
+      opt1.note += 'Mode de paiement: Espèce, Montant: ' + this.montant_espece + ', Commentaire: ' + this.commentaire_espece + ' | ';
+    }
+    if (this.cheque) {
+      opt1.payment_method += 'Chèque, ';
+      opt1.amount += this.montant_cheque;
+      opt1.received_at = moment(new Date(this.date_cheque)).utcOffset(1).format('YYYY-MM-DD') + ' ' +  moment(new Date()).utcOffset(1).format('HH:mm:ss');
+      opt1.note += 'Mode de paiement: Chèque, Montant: ' + this.montant_cheque + ', Date: ' + moment(new Date(this.date_cheque)).utcOffset(1).format('DD-MM-YYYY') + ', Banque: ' + this.banque_cheque + ', Numéro chèque: ' + this.numero_cheque + ' | ';
+    }
+    if (this.orange) {
+      opt1.payment_method += 'Orange Money, ';
+      opt1.amount += this.montant_orange;
+      opt1.note += 'Mode de paiement: Orange Money , Montant: ' + this.montant_orange + ', Numéro transaction: ' + this.transaction_orange + ' | ';
+    }
+    if (this.mtn) {
+      opt1.payment_method += 'MTN Mobile Money, ';
+      opt1.amount += this.montant_mtn;
+      opt1.note += 'Mode de paiement: MTN Mobile Money, Montant: ' + this.montant_mtn + ', Numéro transaction: ' + this.transaction_mtn + ' | ';
+    }
+    opt1.note += ' / ' + this.entite;
+    console.log(opt1);
+    this.api.Receipts.post(opt1).subscribe(da => {
+      console.log(da);
+      // reset
+      document.getElementById('close').click();
+      Metro.notify.create('Facture encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});
+    });
+
+
+
   }
 
   cancelReceipt() {
@@ -394,6 +359,20 @@ export class ReceiptsComponent implements OnInit {
         });
       });
     });
+  }
+
+  validateReceipt() {
+    if (this.selected_bill.length > 0) {
+      console.log(this.selected_bill);
+      this.selected_bill.forEach((v, k) => {
+        v.status = 'validated';
+        v.put().subscribe((d: any) => {
+          console.log(d);
+        });
+      });
+    } else {
+      Metro.toast.create('Aucun encaissement selectionné');
+    }
   }
 
   exportCsv() {
@@ -429,4 +408,25 @@ export class ReceiptsComponent implements OnInit {
     this.today = 'du ' + moment(this.from).format('DD/MM/YYYY') + ' au ' + moment(this.to).format('DD/MM/YYYY');
     this.init(this.from, this.to);
   }
+
+  getUsers() {
+    const x = {};
+    const opt = {
+      should_paginate: false,
+      _includes: 'roles',
+      _sort: 'name',
+      _sortDir: 'asc',
+      status: 'enable'
+    };
+    this.api.Users.getList(opt).subscribe(d => {
+      this.sellers = d;
+      d.forEach(v => {
+        if (v.roles !== undefined && v.roles.find(a => a.name === 'vendeurs.bvs') !== undefined) {
+          x[v.id] = v.name;
+        }
+      });
+      this.users = x;
+    });
+  }
+
 }
