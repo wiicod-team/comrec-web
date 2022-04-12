@@ -32,9 +32,6 @@ export class CustomerUniverseComponent implements OnInit {
   montant_collect = 0;
   montant_caisse = 0;
   private user: any;
-  public barChartLabels;
-  public barChartType = 'bar';
-
   public barChartOptions: ChartOptions = {
     responsive: true,
     scales: {
@@ -47,7 +44,7 @@ export class CustomerUniverseComponent implements OnInit {
       ]
     }
   };
-  public barChartLabels: Label[] = [moment(new Date()).format('D - M - Y')];
+  public barChartLabels: any = [moment(new Date()).format('D - M - Y')];
   public barChartType: ChartType = 'bar';
   public barChartLegend = true;
   public barChartPlugins = [];
@@ -75,7 +72,7 @@ export class CustomerUniverseComponent implements OnInit {
   ngOnInit() {
   }
 
-  init(deb, fin) {
+  init(deb?, fin?) {
     this.load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',

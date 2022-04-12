@@ -59,6 +59,8 @@ export class CashierComponent implements OnInit {
     entite: string,
     vendeur: string,
     note: string,
+    status: string,
+    type: string,
     payment_method: string,
     amount: number,
     remove(): any
@@ -68,7 +70,6 @@ export class CashierComponent implements OnInit {
   constructor( private api: ApiProvider, private route: ActivatedRoute) {
     this.from = new Date();
     this.to = new Date();
-    this.date_traite = new Date();
     this.date_cheque = new Date();
     this.r = {
       bill: { bvs_id: 0, customer: {name: ''} },
@@ -77,6 +78,8 @@ export class CashierComponent implements OnInit {
       entite: '',
       vendeur: '',
       note: '',
+      type: '',
+      status: '',
       payment_method: '',
       amount: 0,
       remove: () => {}
