@@ -17,7 +17,6 @@ export class ReceiptsComponent implements OnInit {
   old_encaissements = [];
   user;
   from;
-  date_format = 'Y-M-D';
   today = 'du jour';
   now = new Date();
   to;
@@ -58,14 +57,6 @@ export class ReceiptsComponent implements OnInit {
       amount: 0,
       remove: () => {}
     };
-    const date = new Date();
-    const j = date.getDay();
-    let d = j % 7;
-    let f = 6 - j % 7;
-    if (d === 0) {
-      d = 7;
-      f = -1;
-    }
     this.search = '';
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
@@ -147,8 +138,8 @@ export class ReceiptsComponent implements OnInit {
         _includes: 'bill.customer,user',
         _sort: 'received_at',
         should_paginate: false,
-        'received_at-get': this.deb.format(this.date_format),
-        'received_at-let': this.fin.format(this.date_format),
+        'received_at-get': this.deb.format(this.api.date_format),
+        'received_at-let': this.fin.format(this.api.date_format),
         _sortDir: 'desc',
       };
       this.api.Receipts.getList(opt).subscribe(b => {
@@ -381,7 +372,7 @@ export class ReceiptsComponent implements OnInit {
     Metro.dialog.open('#deleteDialog');
   }
 
-  cancelReceipt() {
+  deleteReceipt() {
     console.log(this.r);
     // suppression du receipt et modification de la facture à echue
     this.r.remove().subscribe(d => {
@@ -396,6 +387,12 @@ export class ReceiptsComponent implements OnInit {
     });
   }
 
+  cancelReceipt(v) {
+    v.status = 'pending';
+    v.put().subscribe((d: any) => {
+      Metro.toast.create('Statut mis à jour');
+    });
+  }
   exportCsv() {
     let csv = '#,.Facture,.Date,.Client,.Montant,.Mode de paiement,.Entite,.Vendeur,.Reseau,.Commentaire\n';
     this.encaissements.forEach(e => {

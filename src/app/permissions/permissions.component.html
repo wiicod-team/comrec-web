@@ -1,0 +1,100 @@
+<div *ngxPermissionsOnly="['consult.permission']">
+  <div class="row border-bottom bd-lightGray m-3 mr-0" style="margin-top:52px !important;">
+    <div class="cell-md-4 d-flex flex-align-center">
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Permissions</h3>
+    </div>
+
+    <div class="cell-md-8 d-flex flex-justify-center flex-justify-end-md flex-align-center">
+      <ul class="breadcrumbs bg-transparent">
+        <li class="page-item"><a (click)="refresh()" class="page-link">Actualiser <span class="icon"><span class="mif-refresh"></span></span></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="m-3">
+    <div class="row mt-2">
+      <div class="cell-4">
+        <input type="text" [(ngModel)]="searchR" [ngModelOptions]="{standalone: true}" placeholder="Recherche">
+      </div>
+
+      <button *ngxPermissionsOnly="['edit.permission']" class="button ml-auto mr-2" (click)="openNewPermission()">Ajouter</button>
+    </div>
+
+    <table class="table cell-border compact table-border"
+    >
+      <thead>
+      <tr>
+        <th data-sortable="true">Code</th>
+        <th data-sortable="true">Nom</th>
+        <th data-sortable="true">Description</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let i of permissions | filter:{ id: searchR, name: searchR, seller: searchR, status: searchR } : false" [ngClass]="{'dark':i.check==true}">
+        <td>{{i.name}}</td>
+        <td>{{i.display_name}}</td>
+        <td>{{i.description}}</td>
+        <td *ngIf="i.name != 'comrec.user'">
+          <button *ngxPermissionsOnly="['edit.permission']" class="button mini" (click)="openEdit(i)"><span class="mif-pencil"></span></button>
+          <div *ngIf="i.name!='super.administrator'"><button *ngxPermissionsOnly="['delete.permission']" class="button mini" (click)="delete(i)"><span class="mif-bin"></span></button></div>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="permissionDialog1">
+    <div class="dialog-title">
+      Modifier permission
+    </div>
+    <div class="dialog-content" >
+      <form action="">
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" [(ngModel)]="permission.display_name" [ngModelOptions]="{standalone: true}" placeholder="Nom"/>
+        </div>
+        <div class="form-group">
+          <label>Code</label>
+          <input type="text" [(ngModel)]="permission.name" [ngModelOptions]="{standalone: true}" placeholder="Code"/>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" [(ngModel)]="permission.description" [ngModelOptions]="{standalone: true}" placeholder="Description"/>
+        </div>
+      </form>
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['manage.admin']" (click)="updatePermission()">Enregistrer</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
+    </div>
+  </div>
+
+  <div class="dialog" data-role="dialog" id="newPermissionDialog1">
+    <div class="dialog-title">
+      Nouvelle permission
+    </div>
+    <div class="dialog-content" >
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" [(ngModel)]="new.display_name" placeholder="Nom"/>
+      </div>
+      <div class="form-group">
+        <label>Code</label>
+        <input type="text" [(ngModel)]="new.name" placeholder="Code"/>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea data-role="textarea" [(ngModel)]="new.description" placeholder="Description"></textarea>
+      </div>
+    </div>
+
+    <div class="dialog-actions text-right">
+      <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['edit.permission']" (click)="newPermission()">Enregistrer</button>
+      <button class="button primary js-dialog-close bg-noir">Fermer</button>
+    </div>
+  </div>
+
+</div>

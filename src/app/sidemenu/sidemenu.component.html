@@ -22,14 +22,8 @@
             <span class="caption">Univers clients</span>
           </a>
         </li>
-        <li *ngxPermissionsOnly="['consult.receipt-caisse']">
-          <a routerLink="/s/r">
-            <span class="icon"><span class="mif-money"></span></span>
-            <span class="caption">Encaissements</span>
-          </a>
-        </li>
 
-        <li>
+        <li *ngxPermissionsOnly="['consult.receipt-caisse']">
           <a routerLink="/s/c">
             <span class="icon"><span class="mif-dollars"></span></span>
             <span class="caption">Caisse</span>
@@ -71,6 +65,12 @@
               <span class="caption">Factures</span>
             </a>
           </li>
+          <li *ngxPermissionsOnly="['consult.receipt-caisse']">
+            <a routerLink="/s/r">
+              <span class="icon"><span class="mif-money"></span></span>
+              <span class="caption">Encaissements</span>
+            </a>
+          </li>
           <li *ngxPermissionsOnly="['consult.user']">
             <a routerLink="/admin/u">
               <span class="icon"><span class="mif-user"></span></span>
@@ -83,11 +83,17 @@
               <span class="caption">Rôles</span>
             </a>
           </li>
+          <li *ngxPermissionsOnly="['consult.permission']">
+            <a routerLink="/admin/p">
+              <span class="icon"><span class="mif-key"></span></span>
+              <span class="caption">Permission</span>
+            </a>
+          </li>
         </div>
       </ul>
 
       <div class="w-100 text-center text-small data-box p-2 border-top bg-noir bd-grayMouse" style="position: absolute; bottom: 0">
-        <div><span class="fg-or">&copy; 2020 </span><a href="mailto:info@bvssas.com" class="text-muted fg-white-hover no-decor">BVS Distribution Cameroun S.A.S</a></div>
+        <div><span class="fg-or">&copy; 2022 </span><a href="mailto:info@bvssas.com" class="text-muted fg-white-hover no-decor">BVS Distribution Cameroun S.A.S</a></div>
       </div>
     </div>
 

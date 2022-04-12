@@ -34,38 +34,52 @@
       </div>
     </div>
 
-    <div class="row mt-2 main-panel" style="max-height: 500px; overflow-y: scroll">
-      <table class="table cell-border compact table-border"
-      >
-        <thead>
-        <tr>
-          <th data-sortable="true" data-sort-dir="asc" data-name="facture">#</th>
-          <th data-sortable="true">Nom</th>
-          <th data-sortable="true" data-name="client">Réseau</th>
-          <th data-sortable="true">Vendeur</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ bvs_id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}">
-          <td>{{i.bvs_id}}</td>
-          <td>{{i.name}}</td>
-          <td>{{i.sale_network}}</td>
-          <td>{{i.username}}</td>
-          <td>
-            <button class="button mini bg-noir fg-white" routerLink="/s/detail-client/{{i.id}}">Details</button>
-            <button class="button mini bg-noir fg-white" *ngxPermissionsOnly="['can.notify']">Notifier</button>
-          </td>
-        </tr>
+    <div class="row mt-2 main-panel">
+      <div class="cell-8">
+        <div style="max-height: 490px; overflow-y: auto">
+          <table class="table cell-border compact table-border" style="margin-top: 0!important;">
+            <thead>
+            <tr>
+              <th data-sortable="true" data-sort-dir="asc" data-name="facture">#</th>
+              <th data-sortable="true">Nom</th>
+              <th data-sortable="true" data-name="client">Réseau</th>
+              <th hidden>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let i of customers;trackBy:trackByIndex |filter:{ bvs_id: search, name: search, username: search, sale_network: search } : false" [ngClass]="{'dark':i.check==true}"
+                routerLink="/s/detail-client/{{i.id}}"
+            >
+              <td>{{i.bvs_id}}</td>
+              <td><u style="cursor: pointer">{{i.name}}</u></td>
+              <td>{{i.sale_network}}</td>
+              <td hidden>
+                <button class="button mini bg-noir fg-white" routerLink="/s/detail-client/{{i.id}}">Details</button>
+                <button class="button mini bg-noir fg-white" *ngxPermissionsOnly="['can.notify']">Notifier</button>
+              </td>
+            </tr>
 
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <small>{{customers.length}} sur {{max_length}} Clients</small>
+        </div>
+      </div>
+      <div class="cell-4" style="padding: 0!important;">
+        <div class="card">
+          <canvas baseChart
+                  [datasets]="barChartData"
+                  [labels]="barChartLabels"
+                  [options]="barChartOptions"
+                  [plugins]="barChartPlugins"
+                  [legend]="barChartLegend"
+                  [chartType]="barChartType">
+          </canvas>
+        </div>
+      </div>
+
     </div>
-
-    <div class="cell-2">
-      <small>{{customers.length}} sur {{max_length}} Clients</small>
-    </div>
-
 
   </div>
 

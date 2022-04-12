@@ -17,6 +17,7 @@ import {CustomerUniverseComponent} from './customer-universe/customer-universe.c
 import {CustomerDetailComponent} from './customer-detail/customer-detail.component';
 import {ReceiptsComponent} from './receipts/receipts.component';
 import {CashierComponent} from './cashier/cashier.component';
+import {PermissionsComponent} from './permissions/permissions.component';
 
 
 
@@ -146,6 +147,17 @@ const routes: Routes = [
       {
         path : 'r',
         component : RolesComponent,
+        /*canActivate: [NgxPermissionsGuard],
+        data: {
+          permissions: {
+            only: ['consult.role'],
+            redirectTo: '/403'
+          }
+        }*/
+      },
+      {
+        path : 'p',
+        component : PermissionsComponent,
         /*canActivate: [NgxPermissionsGuard],
         data: {
           permissions: {

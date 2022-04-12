@@ -48,23 +48,10 @@ export class CashierComponent implements OnInit {
   mtn = false;
   montant_mtn = 0;
   transaction_mtn = '';
-  traite = false;
-  date_traite: any;
-  banque_traite = '';
-  numero_traite = '';
-  montant_traite = 0;
   espece = false;
   montant_espece = 0;
   commentaire_espece = '';
-  virement = false;
-  montant_virement = 0;
-  reference_virement = '';
-  payment_methoda = '';
   payment_method = '';
-  commentaire1 = '';
-  commentaire2 = '';
-  commentaire3: any;
-  montant_avance;
   r: {
     bill: { bvs_id: number, customer: {name: string} },
     received_at: string,
@@ -346,8 +333,7 @@ export class CashierComponent implements OnInit {
 
   }
 
-  cancelReceipt() {
-    console.log(this.r);
+  deleteReceipt() {
     // suppression du receipt et modification de la facture à echue
     this.r.remove().subscribe(d => {
       this.api.Bills.get(this.r.bill_id).subscribe(da => {
@@ -361,13 +347,19 @@ export class CashierComponent implements OnInit {
     });
   }
 
+  cancelReceipt(v) {
+    v.status = 'pending';
+    v.put().subscribe((d: any) => {
+      Metro.toast.create('Statut mis à jour');
+    });
+  }
+
   validateReceipt() {
     if (this.selected_bill.length > 0) {
-      console.log(this.selected_bill);
       this.selected_bill.forEach((v, k) => {
         v.status = 'validated';
         v.put().subscribe((d: any) => {
-          console.log(d);
+          Metro.toast.create('Statut mis à jour');
         });
       });
     } else {
@@ -376,9 +368,9 @@ export class CashierComponent implements OnInit {
   }
 
   exportCsv() {
-    let csv = '#,.Facture,.Date,.Client,.Montant,.Mode de paiement,.Entite,.Vendeur,.Reseau,.Commentaire\n';
+    let csv = '#,.Facture,.Date,.Client,.Montant,.Type,.Statut,.Mode de paiement,.Entite,.Vendeur,.Reseau,.Commentaire\n';
     this.encaissements.forEach(e => {
-      csv += e.id + ',.' + e.bill.bvs_id + ',.' + e.created_at + ',.' + e.bill.customer.name + ',.' + e.amount + ',.'
+      csv += e.id + ',.' + e.bill.bvs_id + ',.' + e.created_at + ',.' + e.bill.customer.name + ',.' + e.amount + ',.' + e.type + ',.' + e.status + ',.'
         + e.payment_method + ',.' + e.entite + ',.' + e.user.name + ',.' + e.user.network + ',.' + e.note;
       csv += '\n';
     });

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
+import * as moment from 'moment';
+import {ChartDataSets, ChartOptions, ChartType} from 'chart.js';
+import {Label} from 'ng2-charts';
 declare var Metro;
 @Component({
   selector: 'app-customer-universe',
@@ -16,6 +19,8 @@ export class CustomerUniverseComponent implements OnInit {
   isLoadingBills = false;
   user_id;
   customer;
+  deb;
+  fin;
   page = 1;
   per_page = 100;
   max_length = 0;
@@ -24,18 +29,53 @@ export class CustomerUniverseComponent implements OnInit {
   throttle = 30;
   scrollDistance = 1;
   scrollUpDistance = 2;
+  montant_collect = 0;
+  montant_caisse = 0;
   private user: any;
+  public barChartLabels;
+  public barChartType = 'bar';
+
+  public barChartOptions: ChartOptions = {
+    responsive: true,
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true
+          }
+        }
+      ]
+    }
+  };
+  public barChartLabels: Label[] = [moment(new Date()).format('D - M - Y')];
+  public barChartType: ChartType = 'bar';
+  public barChartLegend = true;
+  public barChartPlugins = [];
+
+  public barChartData: ChartDataSets[] = [
+    { data: [this.montant_collect],
+      label: 'Montant déclaré dans collect',
+      borderColor: '#000',
+      hoverBackgroundColor: '#888888',
+      backgroundColor: '#c29d3d' },
+    { data: [this.montant_caisse],
+      label: 'Montant reçu à la caisse',
+      borderColor: '#000',
+      hoverBackgroundColor: '#c29d3d',
+      backgroundColor: '#888888',}
+  ];
+
   constructor(private api: ApiProvider) {
     this.api.checkUser();
     this.user = JSON.parse(localStorage.getItem('user'));
     this.search = '';
-    this.init();
+    this.init(moment(new Date()), moment(new Date()));
   }
 
   ngOnInit() {
   }
 
-  init() {
+  init(deb, fin) {
     this.load = Metro.activity.open({
       type: 'metro',
       overlayColor: '#fff',
@@ -44,9 +84,11 @@ export class CustomerUniverseComponent implements OnInit {
       overlayClickClose: true
     });
     this.getCustomers(true);
+    this.deb = moment(deb);
+    this.fin = moment(fin);
+    this.getReceiptsOfSeller(this.user.id);
     Metro.activity.close(this.load);
   }
-
 
   vide() {
     if (this.search === '' || this.search === undefined) {
@@ -76,7 +118,6 @@ export class CustomerUniverseComponent implements OnInit {
       };
 
       this.api.Customers.getList(opt).subscribe(data => {
-        console.log(opt,data);
         this.last_page = data.metadata.last_page;
         this.max_length = data.metadata.total;
         data.forEach((v, k) => {
@@ -183,5 +224,43 @@ export class CustomerUniverseComponent implements OnInit {
   }
 
   onUp(ev) {}
+
+  getReceiptsOfSeller(id) {
+
+   const opt = {
+     should_paginate: false,
+     user_id: id,
+     _sort: 'received_at',
+     'received_at-get': this.deb.format(this.api.date_format),
+     'received_at-let': this.fin.format(this.api.date_format),
+     _sortDir: 'desc',
+   };
+
+   this.api.Receipts.getList(opt).subscribe(d => {
+     this.montant_collect = 0;
+     this.montant_caisse = 0;
+     d.forEach(v => {
+       this.montant_collect += v.amount;
+       if (v.status === 'validated') {
+         this.montant_caisse += v.amount;
+       }
+     });
+     this.barChartData = [];
+     this.barChartData.push(
+       { data: [this.montant_collect],
+         label: 'Montant déclaré dans collect',
+         borderColor: '#000',
+         hoverBackgroundColor: '#888888',
+         backgroundColor: '#c29d3d'
+       },
+       { data: [this.montant_caisse],
+         label: 'Montant reçu à la caisse',
+         borderColor: '#000',
+         hoverBackgroundColor: '#c29d3d',
+         backgroundColor: '#888888',
+       }
+     );
+   });
+  }
 
 }

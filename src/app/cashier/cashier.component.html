@@ -1,7 +1,7 @@
 <div *ngxPermissionsOnly="['consult.receipt']" style="margin-top: 52px">
   <div class="row border-bottom bd-lightGray m-3" style="margin-top:52px !important;">
     <div class="cell-md-6 d-flex flex-align-center">
-      <h3 class="dashboard-section-title  text-center text-left-md w-100">Caisse <small>{{today}}</small></h3>
+      <h3 class="dashboard-section-title  text-center text-left-md w-100">Encaissements <small>{{today}}</small></h3>
     </div>
 
     <div class="cell-md-6 d-flex flex-justify-center flex-justify-end-md flex-align-center">
@@ -44,7 +44,7 @@
       >
         <thead>
         <tr>
-          <th></th>
+          <th *ngxPermissionsOnly="['validate.receipt']"></th>
           <th data-sortable="true" (click)="orderBy('id')">N°</th>
           <th data-sortable="true" (click)="orderBy('bill.bvs_id')">N° Facture</th>
           <th data-sortable="true" (click)="orderBy('received_at')">Date</th>
@@ -60,7 +60,9 @@
         </thead>
         <tbody>
         <tr *ngFor="let i of encaissements">
-          <td><input *ngIf="i.type!='shop' && i.status!='validated'" (click)="billChecked(i)" type="checkbox" data-role="checkbox" ></td>
+          <td  *ngxPermissionsOnly="['validate.receipt']">
+            <input *ngIf="i.type!='shop' && i.status!='validated'" (click)="billChecked(i)" type="checkbox" data-role="checkbox" >
+          </td>
           <td>{{i.id}}</td>
           <td>{{i.bill.bvs_id}}</td>
           <td>{{i.received_at}}</td>
@@ -126,6 +128,8 @@
       <div>Client: {{r.bill.customer.name}}</div>
       <div>Montant: {{r.amount |priceFormat}}</div>
       <div>Mode de paiement: {{r.payment_method}}</div>
+      <div>Type: {{r.type|status}}</div>
+      <div>Statut: <strong [ngClass]="{'fg-red':r.status=='pending','fg-or':r.status=='validated'}">{{r.status |status}}</strong></div>
       <div>Entité: {{r.entite}}</div>
       <div>Vendeur: {{r.vendeur}}</div>
       <div>Commentaire: {{r.note}}</div>
@@ -133,7 +137,8 @@
     </div>
 
     <div class="dialog-actions text-right">
-      <button class="button js-dialog-close bg-or fg-white" (click)="cancelReceipt()">Valider</button>
+      <button class="button js-dialog-close bg-gray fg-black" *ngxPermissionsOnly="['validate.receipt']" (click)="cancelReceipt(r)">Modifier le statut</button>
+      <button class="button js-dialog-close bg-or fg-white" *ngxPermissionsOnly="['delete.receipt']" (click)="deleteReceipt()">Supprimer</button>
       <button class="button primary js-dialog-close bg-noir">Fermer</button>
     </div>
   </div>

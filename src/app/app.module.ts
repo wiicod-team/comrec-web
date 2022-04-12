@@ -34,6 +34,7 @@ import { ReceiptsComponent } from './receipts/receipts.component';
 import {LimitToPipe} from './pipe/limit-to';
 import {DateFormatPipe} from './pipe/date-format';
 import { CashierComponent } from './cashier/cashier.component';
+import { PermissionsComponent } from './permissions/permissions.component';
 
 export function RestangularConfigFactory(RestangularProvider) {
   RestangularProvider
@@ -103,6 +104,7 @@ export function RestangularConfigFactory(RestangularProvider) {
     CustomerDetailComponent,
     ReceiptsComponent,
     CashierComponent,
+    PermissionsComponent,
   ],
   imports: [
     BrowserModule,
