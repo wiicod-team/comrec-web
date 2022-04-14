@@ -22,7 +22,7 @@
     "chart.js": "^2.9.3",
     "jspdf": "^1.5.3",
     "metro4": "^4.3.5",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "ng-metro4": "^2.0.0",
     "ng2-charts": "^2.3.0",
     "ngx-infinite-scroll": "^8.0.1",
