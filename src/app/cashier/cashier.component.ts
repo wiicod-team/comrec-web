@@ -2,10 +2,17 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiProvider} from '../providers/api/api';
 import * as moment from 'moment';
-import * as jsPDF from 'jspdf';
 import * as _ from 'lodash';
+import jsPDF from "jspdf";
 
 declare var Metro;
+declare global {
+  interface Navigator {
+    msSaveBlob?: (blob: any, defaultName?: string) => boolean
+  }
+}
+
+
 @Component({
   selector: 'app-cashier',
   templateUrl: './cashier.component.html',
@@ -266,6 +273,11 @@ export class CashierComponent implements OnInit {
   openAddReceipt() {
     this.reset();
     Metro.dialog.open('#addReceiptDialog');
+  }
+
+  printNewReceipt(e) {
+    console.log(e);
+    this.api.printNewReceipt(e);
   }
 
   reset() {

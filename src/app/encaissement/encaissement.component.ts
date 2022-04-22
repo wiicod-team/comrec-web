@@ -1,9 +1,14 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-import * as jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import * as moment from 'moment';
 import {ActivatedRoute} from '@angular/router';
 declare var Metro;
+declare global {
+  interface Navigator {
+    msSaveBlob?: (blob: any, defaultName?: string) => boolean
+  }
+}
 
 @Component({
   selector: 'app-encaissement',
@@ -81,9 +86,10 @@ export class EncaissementComponent implements OnInit {
     };
     this.api.Receipts.getList(opt).subscribe(d => {
       const com = e.note.split('|');
-      const doc = new jsPDF('P', 'mm', [130, 200]);
+      const doc = new jsPDF('p', 'mm', [130, 200]);
       doc.setFontSize(6);
-      doc.setFontStyle('bold');
+      // @ts-ignore
+      //doc.setFontStyle('bold');
       if (com[3] === 'BDC') {
         doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
         doc.text('BP: 1352 Douala', 6, 8);
@@ -146,5 +152,10 @@ export class EncaissementComponent implements OnInit {
         Metro.notify.create('printReceipt ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
       }
     });
+  }
+
+  printNewReceipt(e) {
+    e.entite = e.note.split('|')[3];
+    this.api.printNewReceipt(e);
   }
 }

@@ -1,12 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiProvider} from '../providers/api/api';
-import * as jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import {ActivatedRoute, Router} from '@angular/router';
 
 declare var Metro;
-
+declare global {
+  interface Navigator {
+    msSaveBlob?: (blob: any, defaultName?: string) => boolean
+  }
+}
 @Component({
   selector: 'app-facture',
   templateUrl: './facture.component.html',
@@ -568,10 +572,17 @@ export class FactureComponent implements OnInit {
       }
       count += 2;
     }
-    const h = 150 + (count * 3);
-    const doc = new jsPDF('P', 'mm', [150, h]);
+    const h = 60 + (count);
+    const doc = new jsPDF(
+      {
+        orientation: "p",
+        unit: "mm",
+        format: [58, h]
+      }
+    );
     doc.setFontSize(6);
-    doc.setFontStyle('bold');
+    // @ts-ignore
+    //doc.setFontStyle('bold');
     // doc.setCreationDate(new Date());
     if (this.entite === 'BDC') {
       doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
@@ -609,7 +620,7 @@ export class FactureComponent implements OnInit {
       count += 2;
     }
 
-    doc.save('bvs_avance_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
+    doc.save('bvs_collect_ticket_avance_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
     this.cheque = false;
     this.banque_cheque = '';
@@ -636,9 +647,17 @@ export class FactureComponent implements OnInit {
   }
 
   printEncaissement(e, bills) {
-    const doc = new jsPDF('P', 'mm', [150, 200 + (bills.length * 3)]);
+    //const doc = new jsPDF('p', 'mm', [58, 45 + (bills.length * 3)]);
+    const doc = new jsPDF(
+      {
+        orientation: "p",
+        unit: "mm",
+        format: [58, 60 + (bills.length * 3)]
+      }
+    );
     doc.setFontSize(6);
-    doc.setFontStyle('bold');
+    // @ts-ignore
+    //doc.setFontStyle('bold');
     if (this.entite === 'BDC') {
       doc.text('BVS DISTRIBUTION CAMEROUN S.A.S', 6, 5);
       doc.setFontSize(5);
@@ -687,7 +706,7 @@ export class FactureComponent implements OnInit {
       doc.text('Opérateur: ' + this.commentaire2, 6, x + 15);
     }
 
-    doc.save('bvs_encaissement_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
+    doc.save('bvs_collect_ticket_encaissement_' + e.id + '_' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.pdf');
     this.getBills(true);
     this.commentaire1 = '';
     this.commentaire2 = '';
