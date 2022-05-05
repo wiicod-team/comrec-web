@@ -155,7 +155,13 @@ export class EncaissementComponent implements OnInit {
   }
 
   printNewReceipt(e) {
-    e.entite = e.note.split('|')[3];
+    const y = e.note.split('|')[e.note.split('|').length-1].split('/');
+    if (y.length > 1) {
+      e.entite = y[1];
+    } else {
+      e.entite = e.note.split('|')[e.note.split('|').length - 1];
+    }
+    e.entite = e.entite.trim();
     this.api.printNewReceipt(e);
   }
 }

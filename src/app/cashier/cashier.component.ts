@@ -276,7 +276,7 @@ export class CashierComponent implements OnInit {
   }
 
   printNewReceipt(e) {
-    console.log(e);
+    //console.log(e);
     this.api.printNewReceipt(e);
   }
 
@@ -336,9 +336,7 @@ export class CashierComponent implements OnInit {
       opt1.note += 'Mode de paiement: MTN Mobile Money, Montant: ' + this.montant_mtn + ', Numéro transaction: ' + this.transaction_mtn + ' | ';
     }
     opt1.note += ' / ' + this.entite;
-    console.log(opt1);
     this.api.Receipts.post(opt1).subscribe(da => {
-      console.log(da);
       // reset
       document.getElementById('close').click();
       Metro.notify.create('Facture encaissée', 'Succès', {cls: 'bg-or fg-white', timeout: 5000});

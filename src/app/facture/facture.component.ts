@@ -373,7 +373,7 @@ export class FactureComponent implements OnInit {
         donnees.note += 'Mode de paiement: MTN Mobile Money, Montant: ' + this.montant_mtn + ', Numéro transaction: ' + this.transaction_mtn + ' | ';
       }
       this.montant_avance = this.montant_cheque + this.montant_espece + this.montant_mtn + this.montant_traite + this.montant_orange + this.montant_virement;
-      donnees.note += ' / ' + this.entite;
+      donnees.note += this.entite;
       //console.log('donnees', donnees);
 
       this.api.Receipts.post(donnees).subscribe(d => {
@@ -401,7 +401,6 @@ export class FactureComponent implements OnInit {
               this.printAvance(e);
               this.montant = 0;
             }, q => {
-              console.log('C');
               if (q.data.error.status_code === 500) {
                 Metro.notify.create('validerAvance ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {
                   cls: 'alert',
@@ -730,7 +729,6 @@ export class FactureComponent implements OnInit {
 
   getX3Bills() {
     this.api.X3.getList({per_page: 100}).subscribe( d => {
-      console.log(d);
     });
     // https://api-izis.bvs-sas.com/api/retrieve-bills
   }
@@ -935,7 +933,7 @@ export class FactureComponent implements OnInit {
 
   editFacture(fa) {
     console.log(fa);
-     fa.amount = 1234800;
+     fa.amount = 95694;
      fa.status = 'pending';
      //fa.put();
     // this.api.Permissions.post({display_name:'Comptabilité',name:'comptabilite'});
