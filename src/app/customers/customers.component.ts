@@ -240,7 +240,7 @@ export class CustomersComponent implements OnInit {
             } else {
               Metro.activity.close(this.load);
               Metro.notify.create('link ' + JSON.stringify(q.data.error.errors), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
-              this.getCustomers(true);
+              //this.getCustomers(true);
               this.user_id = 0;
             }
           });
@@ -248,7 +248,7 @@ export class CustomersComponent implements OnInit {
           this.api.CustomerUsers.getList({customer_id: this.customer.id, user_id: v.id}).subscribe(d => {
             d[0].remove().subscribe(data => {
               Metro.notify.create('Client ' + this.customer.name + ' délié du vendeur', 'Succès', {cls: 'bg-or fg-white', keepopen: true});
-              this.getCustomers(true);
+              //this.getCustomers(true);
             }, q => {
               if (q.data.error.status_code === 500) {
                 Metro.notify.create('link ' + JSON.stringify(q.data.error.message), 'Erreur ' + q.data.error.status_code, {cls: 'alert', keepOpen: true, width: 500});
@@ -268,7 +268,7 @@ export class CustomersComponent implements OnInit {
             }
           });
         }
-        this.getCustomers(true);
+        //this.getCustomers(true);
       });
     }
   }

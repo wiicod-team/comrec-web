@@ -335,7 +335,7 @@ export class ReceiptsComponent implements OnInit {
       csv += '\n';
     });
 
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(["\ufeff",csv], { type: 'text/csv;charset=utf-8;' });
     if (navigator.msSaveBlob) { // IE 10+
       navigator.msSaveBlob(blob, 'BC_encaissements' + moment(new Date()).utcOffset(1).format('YYMMDDHHmmss') + '.csv');
     } else {
